@@ -1,0 +1,161 @@
+a{
+    text-decoration: none!important;
+}
+.edit-customer{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+/* Form grupları */
+.form-group {
+    margin-bottom: 1rem; /* Bootstrap uyumlu boşluk */
+}
+
+/* Bootstrap'in form kontrolleri ile uyumlu hale getirme */
+.form-control {
+    border-radius: 0.5rem; /* Daha modern, yuvarlatılmış görünüm */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Focus efekti */
+.form-control:focus {
+    border-color: #0096FF;
+    box-shadow: 0 0 8px rgba(0, 150, 255, 0.5);
+}
+
+/* Hata ve başarı durumları */
+.is-invalid {
+    border-color: #dc3545 !important; /* Bootstrap’in hata rengi */
+}
+
+.is-invalid:focus {
+    box-shadow: 0 0 8px rgba(220, 53, 69, 0.5);
+}
+
+.is-valid {
+    border-color: #28a745 !important; /* Bootstrap’in başarı rengi */
+}
+
+.is-valid:focus {
+    box-shadow: 0 0 8px rgba(40, 167, 69, 0.5);
+}
+
+
+
+/* Butonlar */
+.btn-primary {
+    background-color: #0096FF;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    font-size: 1rem;
+    transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #007bb5;
+    box-shadow: 0 0 10px rgba(0, 123, 181, 0.5);
+}
+
+/* Başarı Mesajı */
+.alert-success {
+    background-color: #4CAF50;
+    color: white;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    font-size: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-filter:hover {
+    background-color: #0056b3;
+}
+
+/* Arama Çubuğu */
+.search-container {
+    flex-grow: 1;
+    display: flex;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1rem;
+}
+
+.search-input:focus {
+    border-color: #007bff;
+    box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+}
+
+.card p{
+    margin: 0;
+}
+.alert {
+    margin: 10px 0px 0px 0px!important;
+    padding: 5px 10px!important;
+}
+/* Etiketler (Interests) */
+.badge-interest {
+    background: #007bff;
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.interests_item {
+    padding: 0 15px;
+    margin-right: 5px;
+    margin-bottom:5px;
+    line-height: 35px;
+    background-color: #e6e6e6;
+    border-radius: 5px;
+    display: inline-block;
+}
+.interests_item.guncelleme_taihi {
+    background-color: #fff999;
+    position: absolute;
+    bottom: 3px;
+    right: 3px;
+    font-size: 12px;
+    padding: 0 5px;
+}
+.interests_item.is_tipi {
+    background-color: #26d367;
+}
+.interests_item.inItem {
+    background-color: #85b6fd;
+}
+
+.largeSpan{
+    font-size:16px;
+}
+
+/*Dashboard */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background: #343a40;
+    color: white;
+    padding: 15px;
+}
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    cursor: pointer;
+}
+.sidebar a:hover {
+    background: #495057;
+}
+.content {
+    flex-grow: 1;
+    padding: 20px;
+}
