@@ -83,7 +83,7 @@ const CustomerList = () => {
         <>
             {/* Müşteri Sayısı Labeli */}
             <div className="d-flex justify-content-between align-items-center mb-3">
-                <h4>Toplam Müşteri Sayısı: <span className="badge bg-primary">{filteredCustomers.length}</span></h4>
+                <h4>Toplam Müşteri Sayıları: <span className="badge bg-primary">{filteredCustomers.length}</span></h4>
             </div>
 
             <CustomerFilter onSearchChange={handleSearchChange} onFilterChange={handleFilterChange}/>
