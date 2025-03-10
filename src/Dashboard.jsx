@@ -7,7 +7,7 @@ import CompletedWorks from "./CompletedWorks.jsx";
 import FaultyWork from "./FaultyWork.jsx";
 
 const Dashboard = () => {
-    const [activePage, setActivePage] = useState("customerList");
+    const [activePage, setActivePage] = useState("addCustomer");
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
@@ -26,11 +26,11 @@ const Dashboard = () => {
                     </button>
 
                     <h4 className="text-center w-100">
-                        <a href="/" className="text-white text-decoration-none">Admin Panel</a>
+                        <a href="/dashboard" className="text-white text-decoration-none">Admin Panel</a>
                     </h4>
 
                     <nav className="nav flex-column w-100">
-                        <a href="#" className="nav-link text-white" onClick={() => setActivePage("addCustomer")}>
+                        <a href="#" className={`nav-link text-white ${activePage === "addCustomer" ? "active" : ""}`} onClick={() => setActivePage("addCustomer")}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                  className="bi bi-person-plus-fill" viewBox="0 0 16 16">
                                 <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
@@ -39,7 +39,7 @@ const Dashboard = () => {
                             </svg>
                             Yeni Müşteri Ekle
                         </a>
-                        <a href="#" className="nav-link text-white" onClick={() => setActivePage("customerList")}>
+                        <a href="#" className={`nav-link text-white ${activePage === "customerList" ? "active" : ""}`} onClick={() => setActivePage("customerList")}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                  className="bi bi-list-task" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd"
@@ -51,11 +51,11 @@ const Dashboard = () => {
                             </svg>
                             Müşteri Listesi
                         </a>
-                        <a href="#" className="nav-link text-white"
+                        <a href="#" className={`nav-link text-white ${activePage === "upcomingAppointments" ? "active" : ""}`}
                            onClick={() => setActivePage("upcomingAppointments")}>
                             Yaklaşan Randevular
                         </a>
-                        <a href="#" className="nav-link text-white" onClick={() => setActivePage("completedWorks")}>
+                        <a href="#" className={`nav-link text-white ${activePage === "completedWorks" ? "active" : ""}`} onClick={() => setActivePage("completedWorks")}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                  className="bi bi-check-lg" viewBox="0 0 16 16">
                                 <path
@@ -63,7 +63,7 @@ const Dashboard = () => {
                             </svg>
                             Tamamlanan İşler
                         </a>
-                        <a href="#" className="nav-link text-white" onClick={() => setActivePage("faultyWorks")}>
+                        <a href="#" className={`nav-link text-white ${activePage === "faultyWorks" ? "active" : ""}`} onClick={() => setActivePage("faultyWorks")}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                  className="bi bi-x-circle-fill" viewBox="0 0 16 16">
                                 <path
@@ -72,7 +72,7 @@ const Dashboard = () => {
                             Hatalı İşler
                         </a>
 
-                        <a href="#" className="nav-link text-white" onClick={() => setActivePage("faultyWorks")}>
+                        <a href="#" className={`nav-link text-white ${activePage === "customerList" ? "active" : ""}`} onClick={() => setActivePage("faultyWorks")}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                  className="bi bi-building-fill-gear" viewBox="0 0 16 16">
                                 <path
@@ -82,7 +82,7 @@ const Dashboard = () => {
                             </svg>
                             Proje Bekleyen İşler
                         </a>
-                        <a href="#" className="nav-link text-white" onClick={() => setActivePage("faultyWorks")}>
+                        <a href="#" className={`nav-link text-white ${activePage === "customerList" ? "active" : ""}`} onClick={() => setActivePage("faultyWorks")}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                  className="bi bi-x-circle-fill" viewBox="0 0 16 16">
                                 <path
@@ -90,7 +90,7 @@ const Dashboard = () => {
                             </svg>
                             Montaj Bekleyen İşler
                         </a>
-                        <a href="#" className="nav-link text-white" onClick={() => setActivePage("faultyWorks")}>
+                        <a href="#" className={`nav-link text-white ${activePage === "customerList" ? "active" : ""}`} onClick={() => setActivePage("faultyWorks")}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                  className="bi bi-x-circle-fill" viewBox="0 0 16 16">
                                 <path
@@ -98,7 +98,7 @@ const Dashboard = () => {
                             </svg>
                             Randevu Bekleyen İşler
                         </a>
-                        <a href="#" className="nav-link text-white" onClick={() => setActivePage("faultyWorks")}>
+                        <a href="#" className={`nav-link text-white ${activePage === "customerList" ? "active" : ""}`} onClick={() => setActivePage("faultyWorks")}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                  className="bi bi-x-circle-fill" viewBox="0 0 16 16">
                                 <path
@@ -107,6 +107,12 @@ const Dashboard = () => {
                             Servis Bekleyen İşler
                         </a>
                     </nav>
+                    <div className="row">
+                        <div className="col-12">
+                            <span>Merhaba, </span><span>Batuhan</span>
+                            <a href="#">Çıkış Yap</a>
+                        </div>
+                    </div>
                 </nav>
 
                 {/* Ana İçerik */}

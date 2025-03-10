@@ -7,6 +7,9 @@
         width: calc(100% - 250px);
     }
 }
+.active{
+    font-weight: bold; background-color: rgba(255, 255, 255, 0.2);
+}
 
 .sidebar {
     position: fixed;

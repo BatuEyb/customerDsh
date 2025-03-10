@@ -12,6 +12,7 @@ const CustomerCard = ({ customer, onUpdate }) => {
         return `${day}/${month}/${year}`;
     };
 
+    const userRole = localStorage.getItem("role");
     return (
         <div className="col-md-6">
             <div className="card mb-3">
@@ -41,6 +42,7 @@ const CustomerCard = ({ customer, onUpdate }) => {
                     </div>
                     <span className="interests_item cihaz_turu inItem mt-2">{customer.is_durumu}</span>
                     <span className="interests_item cihaz_turu inItem mt-2">Randevu Tarihi : {formatDate(customer.randevu_tarihi)}</span>
+                    {userRole === "admin" && (
                     <button className="btn edit-btn" onClick={() => setIsModalOpen(true)}>
                         <svg width="34px" height="34px" viewBox="0 0 24 24" fill="none"
                              xmlns="http://www.w3.org/2000/svg">
@@ -53,6 +55,7 @@ const CustomerCard = ({ customer, onUpdate }) => {
                             </g>
                         </svg>
                     </button>
+                     )}
                 </div>
                 <div className="card-footer">
                     <div className="interests">

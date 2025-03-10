@@ -9,7 +9,7 @@ const CustomerList = () => {
     // Müşteri verilerini çek
     const fetchCustomers = async () => {
         try {
-            const response = await fetch("http://localhost/reactDashboard/src/api/get_all_customers.php");
+            const response = await fetch("http://localhost/customerDsh/src/api/get_all_customers.php");
             const data = await response.json();
             setCustomers(data);
             setFilteredCustomers(data);

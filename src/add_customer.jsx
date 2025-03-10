@@ -186,7 +186,7 @@ function Add_customer() {
         };
 
         try {
-            const response = await fetch("http://localhost/reactDashboard/src/api/form-handler.php", {
+            const response = await fetch("http://localhost/customerDsh/src/api/form-handler.php", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
