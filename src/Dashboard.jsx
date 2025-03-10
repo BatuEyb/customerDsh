@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Add_customer from "./Add_customer";
 import CustomerList from "./CustomerList";
 import { FaBars, FaTimes } from "react-icons/fa";
@@ -9,6 +10,16 @@ import FaultyWork from "./FaultyWork.jsx";
 const Dashboard = () => {
     const [activePage, setActivePage] = useState("addCustomer");
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    const navigate = useNavigate();
+    const first_name = localStorage.getItem("first_name");
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        localStorage.removeItem("username");
+        navigate("/"); // Giriş sayfasına yönlendir
+    };
 
     return (
         <div className="container-fluid">
@@ -109,8 +120,10 @@ const Dashboard = () => {
                     </nav>
                     <div className="row">
                         <div className="col-12">
-                            <span>Merhaba, </span><span>Batuhan</span>
-                            <a href="#">Çıkış Yap</a>
+                        <span>Merhaba, {first_name ? first_name : "Misafir"}!</span>
+                        <button className="btn btn-danger" onClick={handleLogout}>
+        Çıkış Yap
+      </button>
                         </div>
                     </div>
                 </nav>

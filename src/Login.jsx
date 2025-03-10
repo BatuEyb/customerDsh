@@ -21,6 +21,7 @@ const Login = () => {
       if (data.success) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", data.role);
+        localStorage.setItem("first_name", data.first_name);
         navigate("/dashboard");
       } else {
         setError(data.message || "Geçersiz kullanıcı adı veya şifre");
