@@ -218,7 +218,6 @@ function Add_customer() {
                         placeholder="Müşteri Tüketim Numarası"
                         value={tuketimNo}
                         onChange={(e) => setTuketimNo(e.target.value)}
-                        required
                     /></div>
             </div>
             <div class="row">
@@ -227,7 +226,7 @@ function Add_customer() {
                         type="text"
                         className="form-control"
                         name="ad_soyad"
-                        placeholder="Müşterinin Adı Soyadı"
+                        placeholder="Müşterinin Adı Soyadı *"
                         value={adSoyad}
                         onChange={(e) => setAdSoyad(e.target.value)}
                         required
@@ -241,7 +240,6 @@ function Add_customer() {
                         placeholder="İgdaş Sözleşme Adı Soyadı"
                         value={igdasSozlesme}
                         onChange={(e) => setIgdasSozlesme(e.target.value)}
-                        required
                     />
                 </div>
             </div>
@@ -251,7 +249,7 @@ function Add_customer() {
                         type="tel"
                         className="form-control"
                         name="telefon1"
-                        placeholder="Müşteri Telefon Numarası"
+                        placeholder="Müşteri Telefon Numarası *"
                         value={telefon1}
                         onChange={(e) => setTelefon1(e.target.value)}
                         required
@@ -277,7 +275,7 @@ function Add_customer() {
                         onChange={handleIlChange}
                         required
                     >
-                        <option value="">İl Seçin</option>
+                        <option value="">İl Seçin *</option>
                         <option value="İstanbul">İstanbul</option>
                         <option value="Kocaeli">Kocaeli</option>
                     </select>
@@ -290,7 +288,7 @@ function Add_customer() {
                         onChange={handleIlceChange}
                         required
                     >
-                        <option value="">İlçe Seçin</option>
+                        <option value="">İlçe Seçin *</option>
                         {ilceler.map((ilce) => (
                             <option key={ilce} value={ilce}>
                                 {ilce}
@@ -301,7 +299,7 @@ function Add_customer() {
                 <div class="col-md-4">
                     <select className="form-select" name="mahalle" value={mahalle}
                             onChange={(e) => setMahalle(e.target.value)} required>
-                        <option value="">Mahalle Seçin</option>
+                        <option value="">Mahalle Seçin *</option>
                         {mahalleler.map((mahalle) => (
                             <option key={mahalle} value={mahalle}>
                                 {mahalle}
@@ -312,15 +310,15 @@ function Add_customer() {
             </div>
             <div class="row mt-2">
                 <div class="col-md-4">
-                    <input type="text" className="form-control" name="sokak_adi" placeholder="Açık Adres"
+                    <input type="text" className="form-control" name="sokak_adi" placeholder="Sokak Adı *"
                            value={sokakAdi} onChange={(e) => setSokakAdi(e.target.value)} required/>
                 </div>
                 <div class="col-md-4">
-                    <input type="text" className="form-control" name="bina_no" placeholder="Bina No" value={binaNo}
+                    <input type="text" className="form-control" name="bina_no" placeholder="Bina Numarası *" value={binaNo}
                            onChange={(e) => setBinaNo(e.target.value)} required/>
                 </div>
                 <div class="col-md-4">
-                    <input type="text" className="form-control" name="daire_no" placeholder="Daire No" value={daireNo}
+                    <input type="text" className="form-control" name="daire_no" placeholder="Daire Numarası *" value={daireNo}
                            onChange={(e) => setDaireNo(e.target.value)} required/>
                 </div>
             </div>
@@ -328,7 +326,7 @@ function Add_customer() {
                 <div class="col-md-6">
                     <select className="form-select" name="cihaz_turu" value={cihazTuru}
                             onChange={(e) => setCihazTuru(e.target.value)} required>
-                        <option value="">Cihaz Türü</option>
+                        <option value="">Cihaz Türü *</option>
                         <option value="Kombi">Kombi</option>
                         <option value="Şofben">Şofben</option>
                         <option value="Soba">Soba</option>
@@ -338,7 +336,7 @@ function Add_customer() {
                 <div class="col-md-6">
                     <select className="form-select" name="cihaz_markasi" value={cihazMarkasi}
                             onChange={(e) => setCihazMarkasi(e.target.value)} required>
-                        <option value="">Cihazın Markası</option>
+                        <option value="">Cihazın Markası *</option>
                         <option value="Demirdöküm">Demirdöküm</option>
                         <option value="Baymak">Baymak</option>
                         <option value="Eca">Eca</option>
@@ -351,11 +349,11 @@ function Add_customer() {
             </div>
             <div class="row mt-2">
                 <div class="col-md-6">
-                    <input type="text" className="form-control" name="cihaz_modeli" placeholder="Cihaz Modeli"
+                    <input type="text" className="form-control" name="cihaz_modeli" placeholder="Cihaz Modeli *"
                            value={cihazModeli} onChange={(e) => setCihazModeli(e.target.value)} required/>
                 </div>
                 <div class="col-md-6">
-                    <input type="text" className="form-control" name="cihaz_seri_numarasi" placeholder="Cihaz Seri No"
+                    <input type="text" className="form-control" name="cihaz_seri_numarasi" placeholder="Cihaz Seri Numarası *"
                            value={cihazSeriNo} onChange={(e) => setCihazSeriNo(e.target.value)} required/>
                 </div>
             </div>
@@ -366,14 +364,14 @@ function Add_customer() {
                 </div>
                 <div class="col-md-6">
                     <input type="date" className="form-control" name="montaj_tarihi" value={montajTarihi}
-                           onChange={(e) => setMontajTarihi(e.target.value)} required/>
+                           onChange={(e) => setMontajTarihi(e.target.value)}/>
                 </div>
             </div>
             <div className="row mt-2">
                 <div className="col-md-4">
                     <select className="form-select" name="musteri_temsilcisi" value={musteriTemsilcisi}
                             onChange={(e) => setMusteriTemsilcisi(e.target.value)} required>
-                        <option value="">Müşteri Temsilcisi Seçin</option>
+                        <option value="">Müşteri Temsilcisi Seçin *</option>
                         <option value="Batuhan Eyüboğlu">Batuhan Eyüboğlu</option>
                         <option value="Çiler Şahin">Çiler Şahin</option>
                         <option value="Melisa Şimşek">Melisa Şimşek</option>
@@ -384,7 +382,7 @@ function Add_customer() {
                 <div className="col-md-4">
                     <select name="is_tipi" className="form-select" value={isTipi}
                             onChange={(e) => setIsTipi(e.target.value)} required>
-                        <option value="">İş Tipi Seçiniz</option>
+                        <option value="">İş Tipi Seçiniz *</option>
                         <option value="Cihaz Değişimi">Cihaz Değişimi</option>
                         <option value="Sıfır Proje">Sıfır Proje</option>
                         <option value="Tekli Satış">Tekli Satış</option>
@@ -393,7 +391,7 @@ function Add_customer() {
                 <div className="col-md-4">
                     <select name="is_durumu" className="form-select" value={isDurumu}
                             onChange={(e) => setIsDurumu(e.target.value)} required>
-                        <option value="">İş Durumunu Seçiniz</option>
+                        <option value="">İş Durumunu Seçiniz *</option>
                         <option value="Sipariş Alındı">Sipariş Alındı</option>
                         <option value="Montaj Yapıldı">Montaj Yapıldı</option>
                         <option value="Abonelik Yok">Abonelik Yok</option>

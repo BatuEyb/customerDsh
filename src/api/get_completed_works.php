@@ -9,7 +9,7 @@ $tuketimNo = isset($_GET['tuketimNo']) ? $_GET['tuketimNo'] : '';
 $sokak = isset($_GET['sokak']) ? $_GET['sokak'] : '';
 $binaNo = isset($_GET['binaNo']) ? $_GET['binaNo'] : '';
 $isTipi = isset($_GET['isTipi']) ? $_GET['isTipi'] : '';
-$cihazMarkasi = isset($_GET['cihazMarkasi']) ? $_GET['cihazMarkasi'] : '';
+$cihazMarkasi = isset($_GET['cihazMarkasi's]) ? $_GET['cihazMarkasi'] : '';
 $isDurumu = isset($_GET['isDurumu']) ? $_GET['isDurumu'] : '';
 $musteriTemsilcisi = isset($_GET['musteriTemsilcisi']) ? $_GET['musteriTemsilcisi'] : '';
 
@@ -17,7 +17,7 @@ $startDate = isset($_GET['startDate']) ? $_GET['startDate'] : '';
 $endDate = isset($_GET['endDate']) ? $_GET['endDate'] : '';
 
 // SQL sorgusu oluştur
-$sql = "SELECT * FROM customer_form WHERE is_durumu = 'Servis Yönlendirildi'";
+$sql = "SELECT * FROM customer_form WHERE is_durumu = 'İş Tamamlandı'";
 
 if ($search) {
     $sql .= " AND (ad_soyad LIKE '%$search%' OR telefon1 LIKE '%$search%' OR telefon2 LIKE '%$search%' OR igdas_sozlesme LIKE '%$search%')";

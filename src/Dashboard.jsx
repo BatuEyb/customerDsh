@@ -6,9 +6,12 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import UpcomingAppointments from "./upcoming_appointment.jsx";
 import CompletedWorks from "./CompletedWorks.jsx";
 import FaultyWork from "./FaultyWork.jsx";
+import ChartData from "./charts.jsx";
+
+
 
 const Dashboard = () => {
-    const [activePage, setActivePage] = useState("addCustomer");
+    const [activePage, setActivePage] = useState("chartData");
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const navigate = useNavigate();
@@ -21,6 +24,8 @@ const Dashboard = () => {
         navigate("/"); // Giriş sayfasına yönlendir
     };
 
+    const [isOpen, setIsOpen] = useState(false);
+    
     return (
         <div className="container-fluid">
             <div className="row">
@@ -41,6 +46,15 @@ const Dashboard = () => {
                     </h4>
 
                     <nav className="nav flex-column w-100">
+                        <a href="#" className={`nav-link text-white ${activePage === "chartData" ? "active" : ""}`} onClick={() => setActivePage("chartData")}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                className="bi bi-person-plus-fill" viewBox="0 0 16 16">
+                                <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                                <path fill-rule="evenodd"
+                                    d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5"/>
+                            </svg>
+                            Veriler
+                        </a>
                         <a href="#" className={`nav-link text-white ${activePage === "addCustomer" ? "active" : ""}`} onClick={() => setActivePage("addCustomer")}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                  className="bi bi-person-plus-fill" viewBox="0 0 16 16">
@@ -118,13 +132,27 @@ const Dashboard = () => {
                             Servis Bekleyen İşler
                         </a>
                     </nav>
-                    <div className="row">
-                        <div className="col-12">
-                        <span>Merhaba, {first_name ? first_name : "Misafir"}!</span>
-                        <button className="btn btn-danger" onClick={handleLogout}>
-        Çıkış Yap
-      </button>
-                        </div>
+                    <div className="dropdown">
+                        <button 
+                            className="btn btn-secondary dropdown-toggle" 
+                            type="button" 
+                            onClick={() => setIsOpen(!isOpen)}
+                            aria-expanded={isOpen}
+                        >
+                            Merhaba, <b>{first_name ? first_name : "Misafir"}</b>
+                        </button>
+                        {isOpen && (
+                            <ul className="dropdown-menu show" style={{ position: "absolute" }}>
+                                <li>
+                                    <button 
+                                        className="dropdown-item text-danger" 
+                                        onClick={handleLogout}
+                                    >
+                                        Çıkış Yap
+                                    </button>
+                                </li>
+                            </ul>
+                        )}
                     </div>
                 </nav>
 
@@ -137,6 +165,7 @@ const Dashboard = () => {
 
                     <h2 className="mt-4">Hoş Geldiniz!</h2>
                     <div className="mt-3">
+                        {activePage === "chartData" && <ChartData/>}
                         {activePage === "addCustomer" && <Add_customer/>}
                         {activePage === "customerList" && <CustomerList/>}
                         {activePage === "upcomingAppointments" && <UpcomingAppointments/>}
