@@ -123,7 +123,7 @@ export default function Dashboard() {
 
 
         {/* 📌 Günlük Sipariş Sayısı Grafiği */}
-        <div className="col-md-9">
+        <div className="col-md-12">
           <Card>
             <h2 className="h5">Günlük Sipariş Sayısı</h2>
             {data.daily_orders.length > 0 ? (
@@ -173,8 +173,6 @@ export default function Dashboard() {
                 <h2 className="h5 mb-3">Müşteri Temsilcileri Verileri</h2>
                 {data.sales_representative_top_brands && data.sales_representative_top_brands.length > 0 ? (
                     <div id="salesRepresentativeCarousel" className="musteriTemsilcisi carousel carousel-dark slide" data-bs-ride="carousel">
-                        
-
                         <div className="carousel-inner">
                             {data.sales_representative_top_brands.reduce((chunks, item, index) => {
                                 if (index % 2 === 0) {
@@ -190,12 +188,11 @@ export default function Dashboard() {
                                             <div key={index} className="col-md-6">
                                                 <Card className="shadow-sm musteri_temsilcisi_item">
                                                     <h5 className="mb-2">{item.representative}</h5>
-                                                    <p><strong>En Çok Sattığı Marka:</strong> {item.top_brand}</p>
-                                                    <p><strong>Toplam Satış:</strong> {item.total_sales}</p>
-
+                                                    <p>En Çok Sattığı Marka: {item.top_brand}</p>
+                                                    <p>Toplam Satış: {item.total_sales}</p>
                                                     {/* 📌 Marka Dağılımı */}
                                                     <div>
-                                                        <strong>Marka Dağılımı:</strong>
+                                                        Marka Dağılımı:
                                                         <div className="d-flex flex-wrap gap-2 mt-2">
                                                             {Object.entries(item.brand_sales).map(([brand, count], i) => (
                                                                 <span key={i} className="badge bg-primary p-2">

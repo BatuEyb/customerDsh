@@ -11,6 +11,7 @@ const CustomerFilter = ({ onSearchChange, onFilterChange }) => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [musteriTemsilcisi, setmusteriTemsilcisi] = useState('');
+    const [hataSebebi, sethataSebebi] = useState('');
     const [isFiltersVisible, setIsFiltersVisible] = useState(false);
 
     // Arama girişini yönet
@@ -28,7 +29,7 @@ const CustomerFilter = ({ onSearchChange, onFilterChange }) => {
 
     // Filtreleri uygula
     const handleApplyFilters = () => {
-        onFilterChange({ tuketimNo, sokak, binaNo, isTipi, cihazMarkasi, isDurumu, startDate, endDate, musteriTemsilcisi });
+        onFilterChange({ tuketimNo, sokak, binaNo, isTipi, cihazMarkasi, isDurumu, startDate, endDate, musteriTemsilcisi, hataSebebi });
     };
 
     const handleResetFilters = () => {
@@ -41,17 +42,73 @@ const CustomerFilter = ({ onSearchChange, onFilterChange }) => {
         setStartDate('');
         setEndDate('');
         setmusteriTemsilcisi('');
+        sethataSebebi('');
 
         onFilterChange({
             tuketimNo: '', sokak: '', binaNo: '', isTipi: '',
             cihazMarkasi: '', isDurumu: '', startDate: '',
-            endDate: '', musteriTemsilcisi: ''
+            endDate: '', musteriTemsilcisi: '', hataSebebi: ''
         });
     };
 
+    const handleQuickFilter = (filterType) => {
+        let updatedFilters = { isDurumu: '', hataSebebi: '' };
+
+        switch (filterType) {
+            case "montajBekleyen":
+                updatedFilters.isDurumu = "Sipariş Alındı";
+                break;
+            case "projeBekleyen":
+                updatedFilters.isDurumu = "Montaj Yapıldı";
+                break;
+            case "randevuBekleyen":
+                updatedFilters.isDurumu = "Randevu Bekliyor";
+                break;
+            case "servisBekleyen":
+                updatedFilters.isDurumu = "Gaz Açıldı";
+                break;
+            case "tamamlanan":
+                updatedFilters.isDurumu = "İş Tamamlandı";
+                break;
+            case "hatalı":
+                updatedFilters.hataSebebi = true;
+                break;
+            default:
+                break;
+        }
+
+        setisDurumu(updatedFilters.isDurumu);
+        onFilterChange(updatedFilters);
+    };
+
     return (
-        <div className="filters-container mt-3 row">
+        <div className="filters-container mt-1 row">
             <div class="col-12">
+            <div className="row">
+                <div className="button-group d-flex flex-wrap mb-2">
+                    <div className="col-md-2 col-sm-12 p-1">
+                       <button className="btn btn-info w-100" onClick={() => handleQuickFilter("montajBekleyen")}>Montaj Bekleyen</button>
+                    </div>
+                    <div className="col-md-2 col-sm-6 p-1">
+                        <button className="btn btn-warning w-100" onClick={() => handleQuickFilter("projeBekleyen")}>Proje Bekleyen</button>
+                    </div>
+                    <div className="col-md-2 col-sm-6 p-1">
+                        <button className="btn btn-primary w-100" onClick={() => handleQuickFilter("randevuBekleyen")}>Randevu Bekleyen</button>
+                    </div>
+                    <div className="col-md-2 col-sm-6 p-1">
+                        <button className="btn btn-success w-100" onClick={() => handleQuickFilter("servisBekleyen")}>Servis Bekleyen</button>
+                    </div>
+                    <div className="col-md-2 col-sm-6 p-1">
+                        <button className="btn btn-secondary w-100" onClick={() => handleQuickFilter("tamamlanan")}>Tamamlanan İşler</button>
+                    </div>
+                    <div className="col-md-2 col-sm-6 p-1">
+                        <button className="btn btn-danger w-100" onClick={() => handleQuickFilter("hatalı")}>Hatalı İşler</button>
+                    </div>
+                </div>
+            </div>
+            <button className="btn btn-primary me-2 filter-button" onClick={handleResetFilters}>
+                <img src="src/assets/svg/arrow-clockwise.svg"/>
+            </button>
             <button
                 className="btn btn-primary filter-button"
                 onClick={() => setIsFiltersVisible(!isFiltersVisible)}
@@ -61,15 +118,14 @@ const CustomerFilter = ({ onSearchChange, onFilterChange }) => {
                     <div><img src="src/assets/svg/caret-down-fill.svg"/> <img
                         src="src/assets/svg/filter-square-fill.svg"/></div>}
             </button>
-
-                <div className="search-container">
-                    <input
-                        type="text"
-                    className="search-input"
-                    placeholder="İsim veya telefon numarası ara..."
-                    value={searchInput}
-                    onChange={handleSearchChange}
-                    onKeyPress={handleSearchKeyPress}
+            <div className="search-container">
+                <input
+                    type="text"
+                className="search-input"
+                placeholder="İsim veya telefon numarası ara..."
+                value={searchInput}
+                onChange={handleSearchChange}
+                onKeyPress={handleSearchKeyPress}
                 />
             </div>
             </div>
@@ -87,13 +143,15 @@ const CustomerFilter = ({ onSearchChange, onFilterChange }) => {
                                 <select value={isDurumu} className="form-select"
                                         onChange={(e) => setisDurumu(e.target.value)}>
                                     <option value="">İş Durumunu Seçiniz</option>
-                                    <option value="Sipariş Alındı">Sipariş Alındı</option>
-                                    <option value="Montaj Yapıldı">Montaj Yapıldı</option>
-                                    <option value="Proje Onayda">Proje Onayda</option>
-                                    <option value="Randevu Alındı">Randevu Alındı</option>
-                                    <option value="Proje Onaylandı">Proje Onaylandı</option>
-                                    <option value="Proje Red">Proje Red</option>
-                                    <option value="Servis Yönlendirildi">Servis Yönlendirildi</option>
+                                        <option value="Sipariş Alındı">Sipariş Alındı</option>
+                                        <option value="Montaj Yapıldı">Montaj Yapıldı</option>
+                                        <option value="Abonelik Yok">Abonelik Yok</option>
+                                        <option value="Proje Onayda">Proje Onayda</option>
+                                        <option value="Sözleşme Yok">Sözleşme Yok</option>
+                                        <option value="Randevu Bekliyor">Randevu Bekliyor</option>
+                                        <option value="Randevu Alındı">Randevu Alındı</option>
+                                        <option value="Gaz Açıldı">Gaz Açıldı</option>
+                                        <option value="İş Tamamlandı">İş Tamamlandı / Servis Yönlendirildi</option>
                                 </select>
                             </div>
                             <div className="col-md-4">
@@ -132,6 +190,11 @@ const CustomerFilter = ({ onSearchChange, onFilterChange }) => {
                                     <option value="Selin Beyler">Selin Beyler</option>
                                     <option value="Aytekin Demir">Aytekin Demir</option>
                                 </select>
+                            </div>
+                            <div className="col-md-4" style={{ display: "none" }}>
+                                <label className="form-label">Hata Sebebi</label>
+                                <input type="text" placeholder="Hata Sebebi" className="form-control" value={hataSebebi}
+                                       onChange={(e) => sethataSebebi(e.target.value)}/>
                             </div>
                             <div className="col-md-6">
                                 <label className="form-label">Cihaz Markası</label>

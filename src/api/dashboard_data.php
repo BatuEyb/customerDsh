@@ -30,7 +30,8 @@ $sql = "SELECT cihaz_markasi, COUNT(*) as total,
         SUM(CASE WHEN is_durumu = 'İş Tamamlandı' THEN 1 ELSE 0 END) as completed,
         SUM(CASE WHEN hata_durumu = '1' THEN 1 ELSE 0 END) as faulty
         FROM customer_form 
-        GROUP BY cihaz_markasi";
+        GROUP BY cihaz_markasi
+        ORDER BY total DESC";
 
 $result = $conn->query($sql);
 
@@ -64,7 +65,7 @@ while ($row = $result->fetch_assoc()) {
     $response["upcoming_appointments"][] = $row;
 }
 
-// 4️⃣ **Önümüzdeki 7 gün içinde randevusu olan müşterileri al**
+// 4️⃣ **En son güncellenen müşterileri al**
 $sql = "SELECT * FROM customer_form WHERE guncelleme_tarihi BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 DAY)";
 $result = $conn->query($sql);
 while ($row = $result->fetch_assoc()) {
@@ -107,14 +108,11 @@ if ($totalCustomers > 0) {
     }
 }
 
-// 📌 Başlangıç ve bitiş tarihlerini al (Eğer yoksa tüm verileri getir)
-$start_date = isset($_GET['start_date']) ? $_GET['start_date'] : '2000-01-01';
-$end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
 
 // 7️⃣ **Müşteri temsilcilerinin yaptığı satışları al**
 $sql = "SELECT musteri_temsilcisi, cihaz_markasi, COUNT(*) AS total_sales
         FROM customer_form
-        WHERE siparis_tarihi BETWEEN '$start_date' AND '$end_date'
+        WHERE siparis_tarihi
         GROUP BY musteri_temsilcisi, cihaz_markasi
         ORDER BY musteri_temsilcisi, total_sales DESC";
 

@@ -12,7 +12,7 @@ $isTipi = isset($_GET['isTipi']) ? $_GET['isTipi'] : '';
 $cihazMarkasi = isset($_GET['cihazMarkasi']) ? $_GET['cihazMarkasi'] : '';
 $isDurumu = isset($_GET['isDurumu']) ? $_GET['isDurumu'] : '';
 $musteriTemsilcisi = isset($_GET['musteriTemsilcisi']) ? $_GET['musteriTemsilcisi'] : '';
-
+$hataSebebi = isset($_GET['hataSebebi']) ? $_GET['hataSebebi'] : '';
 $startDate = isset($_GET['startDate']) ? $_GET['startDate'] : '';
 $endDate = isset($_GET['endDate']) ? $_GET['endDate'] : '';
 
@@ -43,6 +43,9 @@ if ($isDurumu) {
 if ($musteriTemsilcisi) {
     $sql .= " AND musteri_temsilcisi LIKE '%$musteriTemsilcisi%'";
 }
+if ($hataSebebi) {
+    $sql .= " AND hata_sebebi LIKE '%$hataSebebi%'";
+}
 
 // Sipariş tarihi aralığını kontrol et
 if (!empty($startDate) && !empty($endDate)) {
@@ -53,6 +56,7 @@ if (!empty($startDate) && !empty($endDate)) {
     $sql .= " AND siparis_tarihi <= '$endDate'";
 }
 
+$sql .= " ORDER BY siparis_tarihi DESC";
 // Sorguyu çalıştır ve sonuçları al
 $result = $conn->query($sql);
 

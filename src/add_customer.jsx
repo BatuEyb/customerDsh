@@ -162,12 +162,16 @@ function Add_customer() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        // Veritabanına yalnızca rakamları göndermek için maskelenmiş numarayı temizliyoruz
+        const telefon1Raw = telefon1.replace(/\D/g, '').slice(-11); // Telefon1 numarasını yalnızca rakam olarak al
+        const telefon2Raw = telefon2.replace(/\D/g, '').slice(-11); // Telefon2 numarasını yalnızca rakam olarak al
+
         const formData = {
             tuketim_no: tuketimNo,
             ad_soyad: adSoyad,
             igdas_sozlesme: igdasSozlesme,
-            telefon1: telefon1,
-            telefon2: telefon2,
+            telefon1: telefon1Raw,
+            telefon2: telefon2Raw,
             il: il,
             ilce: ilce,
             mahalle: mahalle,
@@ -198,6 +202,28 @@ function Add_customer() {
 
             if (data.success) {
                 alert("Müşteri başarıyla eklendi!");
+                
+                // Formu sıfırlıyoruz
+                setTuketimNo('');
+                setAdSoyad('');
+                setIgdasSozlesme('');
+                setTelefon1('');
+                setTelefon2('');
+                setIl('');
+                setIlce('');
+                setMahalle('');
+                setSokakAdi('');
+                setBinaNo('');
+                setDaireNo('');
+                setCihazTuru('');
+                setCihazMarkasi('');
+                setCihazModeli('');
+                setCihazSeriNo('');
+                setSiparisTarihi('');
+                setMontajTarihi('');
+                setMusteriTemsilcisi('');
+                setIsTipi('');
+                setIsDurumu('');
             } else {
                 alert("Bir hata oluştu: " + data.message);
             }
@@ -205,7 +231,38 @@ function Add_customer() {
             console.error('Veri gönderme hatası:', error);
             alert('Bir hata oluştu.');
         }
+
     };
+
+    // Telefon numarasını +90 (XXX) XXX XX XX formatında maskeleme fonksiyonu
+    const maskPhoneNumber = (value) => {
+        const cleaned = value.replace(/\D/g, '');  // Yalnızca rakamları al
+
+        if (cleaned.length <= 3) {
+            return `+90 (${cleaned}`;
+        } else if (cleaned.length <= 6) {
+            return `+90 (${cleaned.slice(0, 3)}) ${cleaned.slice(3)}`;
+        } else if (cleaned.length <= 8) {
+            return `+90 (${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)} ${cleaned.slice(6)}`;
+        } else {
+            return `+90 (${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)} ${cleaned.slice(6, 8)} ${cleaned.slice(8, 10)}`;
+        }
+    };
+
+    // Telefon numarasını değiştirme fonksiyonu
+    const handleTelefonChange = (e, setTelefon) => {
+        const inputValue = e.target.value;
+
+        // "+90" kısmını sabit tutarak maskeleme
+        if (inputValue.startsWith('+90')) {
+            const maskedValue = maskPhoneNumber(inputValue.slice(3));  // "+90" kısmını atarak maskeleme
+            setTelefon('+90' + maskedValue.slice(3));  // "+90" kısmını tekrar ekle
+        } else {
+            const maskedValue = maskPhoneNumber(inputValue);  // Maskelenmiş değeri al
+            setTelefon(maskedValue);
+        }
+    };
+    
   return (
     <>
         <form id="customer-form" onSubmit={handleSubmit}>
@@ -251,7 +308,7 @@ function Add_customer() {
                         name="telefon1"
                         placeholder="Müşteri Telefon Numarası *"
                         value={telefon1}
-                        onChange={(e) => setTelefon1(e.target.value)}
+                        onChange={(e) => handleTelefonChange(e, setTelefon1)}
                         required
                     />
                 </div>
@@ -262,7 +319,7 @@ function Add_customer() {
                         name="telefon2"
                         placeholder="Müşteri 2. Telefon Numarası"
                         value={telefon2}
-                        onChange={(e) => setTelefon2(e.target.value)}
+                        onChange={(e) => handleTelefonChange(e, setTelefon2)}
                     />
                 </div>
             </div>

@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $data->password;
 
     // Veritabanında kullanıcıyı ara
-    $stmt = $conn->prepare("SELECT id, username, password, first_name, role FROM users WHERE username = ?");
+    $stmt = $conn->prepare("SELECT id, username, password, first_name, last_name, role FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -32,7 +32,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 'message' => 'Başarıyla giriş yapıldı.',
                 'role' => $user['role'],
                 'token' => 'sample-jwt-token', // JWT veya başka bir token kullanabilirsiniz
-                'first_name' => $user['first_name']
+                'first_name' => $user['first_name'],
+                'last_name' => $user['last_name']
             ]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Hatalı şifre!']);

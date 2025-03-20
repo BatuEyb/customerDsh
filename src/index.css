@@ -20,6 +20,9 @@ body{
     transform: translateY(-50%);
     opacity: 0.5;
 }
+.musteriTemsilcisi .carousel-inner .musteri_temsilcisi_item:first-child .musteriTemsilcisiIcon{
+    content: url("/src/assets/svg/cup-first-svgrepo-com.svg");
+}
 
 .heightAuto {
     max-height: 250px;
@@ -92,8 +95,7 @@ a{
 
 
 /* Butonlar */
-.btn-primary {
-    background-color: #0096FF;
+.btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-warning, .btn-info {
     border: none;
     border-radius: 0.5rem;
     padding: 0.75rem;
@@ -101,8 +103,7 @@ a{
     transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
-.btn-primary:hover {
-    background-color: #007bb5;
+.btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn-danger:hover, .btn-warning:hover, .btn-info:hover {
     box-shadow: 0 0 10px rgba(0, 123, 181, 0.5);
 }
 

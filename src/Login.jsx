@@ -9,19 +9,20 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    setError(""); // Hata mesajını sıfırla
+    setError("");
     try {
-      const response = await fetch("http://localhost/customerDsh/src/api/login.php", {  // Backend API yolu
+      const response = await fetch("http://localhost/customerDsh/src/api/login.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json();  // JSON verisini çözümle
+      const data = await response.json();
       if (data.success) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", data.role);
         localStorage.setItem("first_name", data.first_name);
+        localStorage.setItem("last_name", data.last_name);
         navigate("/dashboard");
       } else {
         setError(data.message || "Geçersiz kullanıcı adı veya şifre");
@@ -33,37 +34,55 @@ const Login = () => {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100">
-      <div className="card" style={{ width: "25rem" }}>
-        <div className="card-body">
-          <h5 className="card-title text-center mb-4">Giriş Yap</h5>
-          {error && <div className="alert alert-danger">{error}</div>}
+    <div className="vh-100 d-flex align-items-center justify-content-center">
+      <div className="row w-100 h-100">
+        {/* Sol Taraf: Başlık ve Açıklama */}
+        <div className="col-lg-8 col-md-8 d-none d-md-flex flex-column justify-content-center align-items-center text-white bg-primary p-5">
+          <h1 className="fw-bold">Hoş Geldiniz!</h1>
+          <p className="lead text-center" style={{ maxWidth: "500px" }}>
+            Hızlı ve güvenli bir şekilde giriş yaparak panelinize erişebilirsiniz.
+          </p>
+        </div>
 
-          <div className="mb-3">
-            <label htmlFor="username" className="form-label">Kullanıcı Adı</label>
-            <input
-              type="text"
-              id="username"
-              className="form-control"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
+        {/* Sağ Taraf: Login Formu */}
+        <div className="col-lg-4 col-md-4 col-sm-12 d-flex align-items-center justify-content-center bg-light p-5">
+          <div style={{ width: "100%", maxWidth: "500px" }}>
+            <h2 className="text-center mb-4">Giriş Yap</h2>
+            {error && <div className="alert alert-danger">{error}</div>}
+
+            <div className="mb-3">
+              <label htmlFor="username" className="form-label">Kullanıcı Adı</label>
+              <input
+                type="text"
+                id="username"
+                className="form-control form-control-lg"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">Şifre</label>
+              <input
+                type="password"
+                id="password"
+                className="form-control form-control-lg"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+
+            <button 
+              className="btn btn-primary w-100 btn-lg"
+              onClick={handleLogin}
+            >
+              Giriş Yap
+            </button>
+
+            <p className="mt-3 text-center">
+              <a href="#" className="text-primary">Şifremi Unuttum</a>
+            </p>
           </div>
-
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">Şifre</label>
-            <input
-              type="password"
-              id="password"
-              className="form-control"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-
-          <button className="btn btn-primary w-100" onClick={handleLogin}>
-            Giriş Yap
-          </button>
         </div>
       </div>
     </div>
