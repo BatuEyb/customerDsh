@@ -44,18 +44,68 @@ const CustomerCard = ({ customer, onUpdate }) => {
                     <span className="interests_item cihaz_turu inItem mt-2">Randevu Tarihi : {formatDate(customer.randevu_tarihi)}</span>
                     {userRole === "admin" && (
                     <button className="btn edit-btn" onClick={() => setIsModalOpen(true)}>
-                        <svg width="34px" height="34px" viewBox="0 0 24 24" fill="none"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                            <g id="SVGRepo_iconCarrier">
-                                <path opacity="0.15" d="M4 20H8L18 10L14 6L4 16V20Z" fill="#ffffff"></path>
-                                <path d="M18 10L21 7L17 3L14 6M18 10L8 20H4V16L14 6M18 10L14 6" stroke="#ffffff"
-                                      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                            </g>
-                        </svg>
+                        <img src="src\assets\svg\edit.svg" alt="" />
                     </button>
                      )}
+                    <div class="dropdown message_drp">
+                        <span class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="src/assets/svg/messages.svg"/>
+                        </span>
+                        <ul class="dropdown-menu">
+                            <li>
+                            <a
+                                href={`https://wa.me/+90${customer.telefon1}?text=${encodeURIComponent(
+                                    `Sayın ${customer.ad_soyad},
+
+Satın almış olduğunuz ${customer.cihaz_markasi} - ${customer.cihaz_modeli} ürününüzün montajı için ekibimiz bugün içerisinde adresinize gelecektir.
+
+Montaj Adresi: ${customer.mahalle} ${customer.sokak_adi}, No:${customer.bina_no}, D:${customer.daire_no}
+
+Montaj ekibimiz gelmeden önce sizi bilgilendirecektir. Herhangi bir sorunuz olursa bizimle iletişime geçebilirsiniz.
+İyi günler dileriz.
+
+Eykom Teknik Servis`
+                                  )}`}
+                                class="dropdown-item"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Montaj Mesajı Gönder
+                            </a>
+                            </li>
+                            <li><a class="dropdown-item"
+                            href={`https://wa.me/+90${customer.telefon1}?text=${encodeURIComponent(
+                                `Sayın ${customer.ad_soyad}, montaj işleminiz başarılı bir şekilde tamamlanmıştır.  
+                              
+Sizlere en iyi hizmeti sunabilmek için geri bildirimleriniz bizim için çok değerli. Hizmetimizle ilgili yorumlarınızı paylaşarak bize destek olabilirsiniz.  
+                              
+Yorum yapmak için tıklayın: https://g.page/r/CVPuFo8Ysm_eEBM/review  
+                              
+Görüşleriniz için şimdiden teşekkür ederiz.
+
+Eykom Teknik Servis`
+                              )}`}>
+                                Yorum İste
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                href={`https://wa.me/+90${customer.telefon1}?text=${encodeURIComponent(
+                                    `Sayın ${customer.ad_soyad}, satın almış olduğunuz ${customer.cihaz_markasi} - ${customer.cihaz_modeli} cihazınızın garanti başlangıcı için yetkili servis yönlendirilmiştir.  
+                                  
+Eykom olarak sürecimizi başarıyla tamamladık.  
+                                  
+Size keyifli ve sorunsuz bir kullanım dileriz. Herhangi bir sorunuz olursa bizimle iletişime geçebilirsiniz.  
+                                  
+İyi günler dileriz.
+
+Eykom Teknik Servis`
+                                  )}`}>
+                                    Servis Gönderildi Mesajı
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 <div className="card-footer">
                     <div className="interests">

@@ -5,6 +5,7 @@ import CustomerList from "./CustomerList";
 import { FaBars, FaTimes } from "react-icons/fa";
 import UpcomingAppointments from "./upcoming_appointment.jsx";
 import ChartData from "./charts.jsx";
+import ProductManager from "./ProductManager.jsx";
 
 
 
@@ -79,6 +80,10 @@ const Dashboard = () => {
                            onClick={() => setActivePage("upcomingAppointments")}>
                             Yaklaşan Randevular
                         </a>
+                        <a href="#" className={`nav-link text-white ${activePage === "productManager" ? "active" : ""}`}
+                           onClick={() => setActivePage("productManager")}>
+                            Ürünler
+                        </a>
                     </nav>
                     <div className="dropdown">
                         <button 
@@ -115,6 +120,7 @@ const Dashboard = () => {
                         {activePage === "addCustomer" && <Add_customer/>}
                         {activePage === "customerList" && <CustomerList/>}
                         {activePage === "upcomingAppointments" && <UpcomingAppointments/>}
+                        {activePage === "productManager" && <ProductManager/>}
                     </div>
                 </main>
             </div>

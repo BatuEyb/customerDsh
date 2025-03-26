@@ -59,11 +59,20 @@
     justify-content: space-between;
     margin-bottom: 10px;
 }
-.edit-btn{
+.edit-btn, .message_drp{
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 11px;
     padding: 0!important;
+}
+.edit-btn img, .message_drp img{
+    width: 44px;
+    height: 44px;
+}
+.edit-btn{
+    right: 10px;
+}
+.message_drp{
+    right: 70px;
 }
 
 .search-container {
