@@ -265,6 +265,7 @@ function Add_customer() {
     
   return (
     <>
+        <h2>Bireysel Müşteri Ekle</h2>
         <form id="customer-form" onSubmit={handleSubmit}>
             <div class="row mb-2">
                 <div class="col-12">

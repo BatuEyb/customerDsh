@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import './customer_filter.css';
+import { FaSearch, FaSync, FaChevronDown, FaChevronUp, FaFilter } from "react-icons/fa";
 const CustomerFilter = ({ onSearchChange, onFilterChange }) => {
     const [searchInput, setSearchInput] = useState('');
     const [tuketimNo, setTuketimNo] = useState('');
@@ -10,6 +11,8 @@ const CustomerFilter = ({ onSearchChange, onFilterChange }) => {
     const [isDurumu, setisDurumu] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [projestartDate, setprojeStartDate] = useState('');
+    const [projeendDate, setprojeEndDate] = useState('');
     const [musteriTemsilcisi, setmusteriTemsilcisi] = useState('');
     const [hataSebebi, sethataSebebi] = useState('');
     const [isFiltersVisible, setIsFiltersVisible] = useState(false);
@@ -29,7 +32,7 @@ const CustomerFilter = ({ onSearchChange, onFilterChange }) => {
 
     // Filtreleri uygula
     const handleApplyFilters = () => {
-        onFilterChange({ tuketimNo, sokak, binaNo, isTipi, cihazMarkasi, isDurumu, startDate, endDate, musteriTemsilcisi, hataSebebi });
+        onFilterChange({ tuketimNo, sokak, binaNo, isTipi, cihazMarkasi, isDurumu, startDate, endDate, projestartDate, projeendDate, musteriTemsilcisi, hataSebebi });
     };
 
     const handleResetFilters = () => {
@@ -41,13 +44,15 @@ const CustomerFilter = ({ onSearchChange, onFilterChange }) => {
         setisDurumu('');
         setStartDate('');
         setEndDate('');
+        setprojeStartDate('');
+        setprojeEndDate('');
         setmusteriTemsilcisi('');
         sethataSebebi('');
 
         onFilterChange({
             tuketimNo: '', sokak: '', binaNo: '', isTipi: '',
             cihazMarkasi: '', isDurumu: '', startDate: '',
-            endDate: '', musteriTemsilcisi: '', hataSebebi: ''
+            endDate: '',projestartDate:'' , projeendDate: '' ,musteriTemsilcisi: '', hataSebebi: ''
         });
     };
 
@@ -107,16 +112,13 @@ const CustomerFilter = ({ onSearchChange, onFilterChange }) => {
                 </div>
             </div>
             <button className="btn btn-primary me-2 filter-button" onClick={handleResetFilters}>
-                <img src="src/assets/svg/arrow-clockwise.svg"/>
+                <FaSync />
             </button>
             <button
                 className="btn btn-primary filter-button"
                 onClick={() => setIsFiltersVisible(!isFiltersVisible)}
             >
-                {isFiltersVisible ? <div><img src="src/assets/svg/caret-up-fill.svg"/> <img
-                        src="src/assets/svg/filter-square-fill.svg"/></div> :
-                    <div><img src="src/assets/svg/caret-down-fill.svg"/> <img
-                        src="src/assets/svg/filter-square-fill.svg"/></div>}
+                {isFiltersVisible ? <FaChevronUp /> : <FaChevronDown />} <FaFilter />
             </button>
             <div className="search-container">
                 <input
@@ -226,14 +228,28 @@ const CustomerFilter = ({ onSearchChange, onFilterChange }) => {
                             </div>
                         </div>
 
+                        {/* Proje Tarihi Aralığı */}
+                        <div className="row mb-2">
+                            <div className="col-md-6">
+                                <label className="form-label">Randevu Tarihi Başlangıç:</label>
+                                <input type="date" className="form-control" value={projestartDate}
+                                       onChange={(e) => setprojeStartDate(e.target.value)}/>
+                            </div>
+                            <div className="col-md-6">
+                                <label className="form-label">Randevu Tarihi Bitiş:</label>
+                                <input type="date" className="form-control" value={projeendDate}
+                                       onChange={(e) => setprojeEndDate(e.target.value)}/>
+                            </div>
+                        </div>
+
                         <div className="row">
                             <div className="col-md-12">
                                 <div class="btn-group float-end" role="group" aria-label="Basic mixed styles example">
                                     <button className="btn btn-primary mt-2" onClick={handleApplyFilters}>
-                                        <img src="src/assets/svg/search.svg"/>
+                                        <FaSearch />
                                     </button>
                                     <button className="btn btn-danger mt-2" onClick={handleResetFilters}>
-                                        <img src="src/assets/svg/arrow-clockwise.svg"/>
+                                        <FaSync />
                                     </button>
                                 </div>
                             </div>

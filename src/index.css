@@ -23,7 +23,20 @@ body{
 .musteriTemsilcisi .carousel-inner .musteri_temsilcisi_item:first-child .musteriTemsilcisiIcon{
     content: url("/src/assets/svg/cup-first-svgrepo-com.svg");
 }
-
+.customer-card .card-header{
+    position: relative;
+}
+.customer-edit-drp{
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 10px;
+    z-index: 11111;
+}
+.customer-edit-drp span::after{
+    display: none;
+}
 .heightAuto {
     max-height: 250px;
     overflow: auto;
@@ -104,7 +117,7 @@ a{
 }
 
 .btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn-danger:hover, .btn-warning:hover, .btn-info:hover {
-    box-shadow: 0 0 10px rgba(0, 123, 181, 0.5);
+    filter: brightness(0.9);
 }
 
 /* Başarı Mesajı */

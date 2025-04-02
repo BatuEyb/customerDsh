@@ -1,5 +1,34 @@
 import React, { useState, useEffect } from "react";
 
+// Telefon numarasını değiştirme fonksiyonu
+const handleTelefonChange = (e, setTelefon) => {
+    const inputValue = e.target.value;
+
+    // "+90" kısmını sabit tutarak maskeleme
+    if (inputValue.startsWith('+90')) {
+        const maskedValue = maskPhoneNumber(inputValue.slice(3));  // "+90" kısmını atarak maskeleme
+        setTelefon('+90' + maskedValue.slice(3));  // "+90" kısmını tekrar ekle
+    } else {
+        const maskedValue = maskPhoneNumber(inputValue);  // Maskelenmiş değeri al
+        setTelefon(maskedValue);
+    }
+};
+
+// Telefon numarasını +90 (XXX) XXX XX XX formatında maskeleme fonksiyonu
+const maskPhoneNumber = (value) => {
+    const cleaned = value.replace(/\D/g, '');  // Yalnızca rakamları al
+
+    if (cleaned.length <= 3) {
+        return `+90 (${cleaned}`;
+    } else if (cleaned.length <= 6) {
+        return `+90 (${cleaned.slice(0, 3)}) ${cleaned.slice(3)}`;
+    } else if (cleaned.length <= 8) {
+        return `+90 (${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)} ${cleaned.slice(6)}`;
+    } else {
+        return `+90 (${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)} ${cleaned.slice(6, 8)} ${cleaned.slice(8, 10)}`;
+    }
+};
+
 const CustomerEditModal = ({ customer, onClose, onUpdate }) => {
     const [formData, setFormData] = useState({
         ad_soyad: "",
@@ -28,7 +57,11 @@ const CustomerEditModal = ({ customer, onClose, onUpdate }) => {
 
     useEffect(() => {
         if (customer) {
-            setFormData({ ...customer });
+            setFormData({
+                ...customer,
+                telefon1: maskPhoneNumber(customer.telefon1),  // Veriyi alırken maskele
+                telefon2: maskPhoneNumber(customer.telefon2),  // Veriyi alırken maskele
+            });
         }
     }, [customer]);
 
@@ -39,13 +72,26 @@ const CustomerEditModal = ({ customer, onClose, onUpdate }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+    
+        // Son 10 haneyi al
+        const formatPhoneNumber = (phone) => {
+            const cleaned = phone.replace(/\D/g, '');  // Yalnızca rakamları al
+            return cleaned.slice(-10);  // Son 10 hane
+        };
+    
+        const updatedFormData = {
+            ...formData,
+            telefon1: formatPhoneNumber(formData.telefon1),
+            telefon2: formatPhoneNumber(formData.telefon2),
+        };
+    
         try {
             const response = await fetch("http://localhost/reactDashboard/src/api/update-customer.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(updatedFormData),
             });
-
+    
             if (response.ok) {
                 alert("Müşteri başarıyla güncellendi!");
                 onUpdate();
@@ -110,12 +156,14 @@ const CustomerEditModal = ({ customer, onClose, onUpdate }) => {
                             <div className="row">
                                 <div className="col-md-6 mb-1">
                                     <label className="form-label">Telefon 1</label>
-                                    <input type="text" name="telefon1" value={formData.telefon1} onChange={handleChange}
+                                    <input type="text" name="telefon1" value={formData.telefon1}
+                                           onChange={(e) => handleTelefonChange(e, (value) => setFormData((prev) => ({ ...prev, telefon1: value })))}
                                            className="form-control"/>
                                 </div>
                                 <div className="col-md-6 mb-1">
                                     <label className="form-label">Telefon 2</label>
-                                    <input type="text" name="telefon2" value={formData.telefon2} onChange={handleChange}
+                                    <input type="text" name="telefon2" value={formData.telefon2}
+                                           onChange={(e) => handleTelefonChange(e, (value) => setFormData((prev) => ({ ...prev, telefon2: value })))}
                                            className="form-control"/>
                                 </div>
                             </div>

@@ -57,8 +57,18 @@ function getProducts($mysqli) {
 
 function addProduct($mysqli) {
     $data = json_decode(file_get_contents("php://input"), true);
+
+    // Boş veri kontrolü
+    if (empty($data['stok_numarasi'])) {
+        echo json_encode(["message" => "Stok numarası boş olamaz"]);
+        return;
+    }
+
+    $stok_numarasi = strval($data['stok_numarasi']); // Stok numarasını string'e dönüştür
+
     $stmt = $mysqli->prepare("INSERT INTO urunler (kategori, urun_adi, marka, stok_numarasi, stok_adedi, fiyat) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssiii", $data['kategori'], $data['urun_adi'], $data['marka'], $data['stok_numarasi'], $data['stok_adedi'], $data['fiyat']);
+    $stmt->bind_param("ssssss", $data['kategori'], $data['urun_adi'], $data['marka'], $stok_numarasi, $data['stok_adedi'], $data['fiyat']);
+
     if ($stmt->execute()) {
         echo json_encode(["message" => "Ürün eklendi"]);
     } else {

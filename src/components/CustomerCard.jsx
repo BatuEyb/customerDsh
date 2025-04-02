@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import CustomerEditModal from "./CustomerEditModal.jsx";
+import { FaEllipsisV } from "react-icons/fa";
+import DejaVuSans from "../assets/DejaVuSans-normal.js";
+import { jsPDF } from "jspdf";
 
 const CustomerCard = ({ customer, onUpdate }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -13,13 +16,153 @@ const CustomerCard = ({ customer, onUpdate }) => {
     };
 
     const userRole = localStorage.getItem("role");
+
+    const handleOpenAsPdf = () => {
+        const doc = new jsPDF();
+    
+        // 📌 DejaVuSans fontunu ekle
+        doc.addFileToVFS("DejaVuSans.ttf", DejaVuSans);
+        doc.addFont("DejaVuSans.ttf", "DejaVuSans", "normal");
+        doc.setFont("DejaVuSans");
+    
+        // Set font size and color
+        doc.setFontSize(22);
+        doc.setTextColor(255, 255, 255);
+        doc.setFillColor(0, 123, 255);  // Bootstrap primary color
+        doc.rect(0, 0, 210, 30, 'F');  // Rectangle for header
+        doc.text("Müşteri Bilgileri", 105, 20, { align: 'center' });
+    
+        // Customer Details Section
+        doc.setFontSize(14);
+        doc.setTextColor(0, 0, 0);
+    
+        doc.setFontSize(12);
+        doc.text(`Müşteri Adı: ${customer.ad_soyad}`, 14, 40);
+        doc.text(`Telefon 1: ${customer.telefon1}`, 14, 50);
+        doc.text(`Telefon 2: ${customer.telefon2}`, 14, 60);
+        doc.text(`İgdaş Abone Adı: ${customer.igdas_sozlesme}`, 14, 70);
+        doc.text(`Tüketim Numarası: ${customer.tuketim_no}`, 14, 80);
+        doc.text(`Adres: ${customer.il}, ${customer.ilce}, ${customer.mahalle}, ${customer.sokak_adi}, No:${customer.bina_no}, D:${customer.daire_no}`, 14, 90);
+    
+        // Device Information Section
+        doc.setFontSize(14);
+        doc.setTextColor(0, 0, 0);
+        doc.text("Cihaz Bilgileri", 14, 110);
+        doc.setFontSize(12);
+        doc.text(`Cihaz Türü: ${customer.cihaz_turu}`, 14, 120);
+        doc.text(`Cihaz Markası: ${customer.cihaz_markasi}`, 14, 130);
+        doc.text(`Cihaz Modeli: ${customer.cihaz_modeli}`, 14, 140);
+        doc.text(`Seri Numarası: ${customer.cihaz_seri_numarasi}`, 14, 150);
+    
+        // Dates Section
+        doc.setFontSize(14);
+        doc.setTextColor(0, 0, 0);
+        doc.text("Tarih Bilgileri", 14, 160);
+        doc.setFontSize(12);
+        doc.text(`Randevu Tarihi: ${formatDate(customer.randevu_tarihi)}`, 14, 170);
+        doc.text(`Sipariş Tarihi: ${formatDate(customer.siparis_tarihi)}`, 14, 180);
+        doc.text(`Montaj Tarihi: ${formatDate(customer.montaj_tarihi)}`, 14, 190);
+        doc.text(`Güncelleme Tarihi: ${formatDate(customer.guncelleme_tarihi)}`, 14, 200);
+    
+        // Customer Representative
+        doc.setFontSize(14);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Müşteri Temsilcisi: ${customer.musteri_temsilcisi}`, 14, 210);
+    
+        // Alert/Status Section
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        const statusText = customer.hata_sebebi ? `Hata Sebebi: ${customer.hata_sebebi}` : "Hata Yoktur";
+        doc.text(statusText, 14, 220);
+    
+        // Footer Section
+        doc.setFontSize(10);
+        doc.setTextColor(150, 150, 150);  // Light grey color
+        doc.text("Görüşleriniz bizim için önemlidir!", 105, 230, { align: 'center' });
+    
+        // File name formatting
+        const fileName = `${customer.ad_soyad} - ${customer.cihaz_markasi} / ${customer.cihaz_modeli}.pdf`;
+    
+        // Save the PDF with the custom file name
+        doc.save(fileName);
+    };
+    
+    
     return (
         <div className="col-md-6">
-            <div className="card mb-3">
+            <div className="customer-card card mb-3">
                 <h5 className="card-header bg-primary text-white ad_soyad">
                     {customer.ad_soyad}<br />
                     <span className="largeSpan telefon1">{customer.telefon1}</span> /
                     <span className="largeSpan telefon2">{customer.telefon2}</span>
+                    {userRole === "admin" && ( 
+                    <>
+                        <div class="dropdown customer-edit-drp">
+                            <span class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <FaEllipsisV size={32}/>
+                            </span>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" onClick={() => setIsModalOpen(true)}>Düzenle / Sil</a></li>
+                                <li><hr class="dropdown-divider"/></li>
+                                <li>
+                                <a
+                                    href={`https://wa.me/+90${customer.telefon1}?text=${encodeURIComponent(
+                                    `Sayın ${customer.ad_soyad},
+
+Satın almış olduğunuz ${customer.cihaz_markasi} - ${customer.cihaz_modeli} ürününüzün montajı için ekibimiz bugün içerisinde adresinize gelecektir.
+
+Montaj Adresi: ${customer.mahalle} ${customer.sokak_adi}, No:${customer.bina_no}, D:${customer.daire_no}
+
+Montaj ekibimiz gelmeden önce sizi bilgilendirecektir. Herhangi bir sorunuz olursa bizimle iletişime geçebilirsiniz.
+İyi günler dileriz.
+
+Eykom Teknik Servis`
+                                  )}`}
+                                class="dropdown-item"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Montaj Mesajı Gönder
+                            </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                    href={`https://wa.me/+90${customer.telefon1}?text=${encodeURIComponent(
+                                    `Sayın ${customer.ad_soyad}, montaj işleminiz başarılı bir şekilde tamamlanmıştır.  
+                                
+Sizlere en iyi hizmeti sunabilmek için geri bildirimleriniz bizim için çok değerli. Hizmetimizle ilgili yorumlarınızı paylaşarak bize destek olabilirsiniz.  
+                            
+Yorum yapmak için tıklayın: https://g.page/r/CVPuFo8Ysm_eEBM/review  
+                            
+Görüşleriniz için şimdiden teşekkür ederiz.
+
+Eykom Teknik Servis`
+                                )}`}>
+                                    Yorum İste
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                    href={`https://wa.me/+90${customer.telefon1}?text=${encodeURIComponent(
+                                    `Sayın ${customer.ad_soyad}, satın almış olduğunuz ${customer.cihaz_markasi} - ${customer.cihaz_modeli} cihazınızın garanti başlangıcı için yetkili servis yönlendirilmiştir.  
+                                  
+Eykom olarak sürecimizi başarıyla tamamladık.  
+                                  
+Size keyifli ve sorunsuz bir kullanım dileriz. Herhangi bir sorunuz olursa bizimle iletişime geçebilirsiniz.  
+                                  
+İyi günler dileriz.
+
+Eykom Teknik Servis`
+                                  )}`}>
+                                    Servis Gönderildi Mesajı
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"/></li>
+                                <li><a class="dropdown-item" onClick={handleOpenAsPdf}>Fiş Olarak Yazdır</a></li>
+                            </ul>
+                        </div>
+                    </>
+                     )}
                 </h5>
                 <div className="card-body">
                     <h6 className="card-title">İgdaş Abone Adı : <span
@@ -42,70 +185,6 @@ const CustomerCard = ({ customer, onUpdate }) => {
                     </div>
                     <span className="interests_item cihaz_turu inItem mt-2">{customer.is_durumu}</span>
                     <span className="interests_item cihaz_turu inItem mt-2">Randevu Tarihi : {formatDate(customer.randevu_tarihi)}</span>
-                    {userRole === "admin" && (
-                    <button className="btn edit-btn" onClick={() => setIsModalOpen(true)}>
-                        <img src="src\assets\svg\edit.svg" alt="" />
-                    </button>
-                     )}
-                    <div class="dropdown message_drp">
-                        <span class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="src/assets/svg/messages.svg"/>
-                        </span>
-                        <ul class="dropdown-menu">
-                            <li>
-                            <a
-                                href={`https://wa.me/+90${customer.telefon1}?text=${encodeURIComponent(
-                                    `Sayın ${customer.ad_soyad},
-
-Satın almış olduğunuz ${customer.cihaz_markasi} - ${customer.cihaz_modeli} ürününüzün montajı için ekibimiz bugün içerisinde adresinize gelecektir.
-
-Montaj Adresi: ${customer.mahalle} ${customer.sokak_adi}, No:${customer.bina_no}, D:${customer.daire_no}
-
-Montaj ekibimiz gelmeden önce sizi bilgilendirecektir. Herhangi bir sorunuz olursa bizimle iletişime geçebilirsiniz.
-İyi günler dileriz.
-
-Eykom Teknik Servis`
-                                  )}`}
-                                class="dropdown-item"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                Montaj Mesajı Gönder
-                            </a>
-                            </li>
-                            <li><a class="dropdown-item"
-                            href={`https://wa.me/+90${customer.telefon1}?text=${encodeURIComponent(
-                                `Sayın ${customer.ad_soyad}, montaj işleminiz başarılı bir şekilde tamamlanmıştır.  
-                              
-Sizlere en iyi hizmeti sunabilmek için geri bildirimleriniz bizim için çok değerli. Hizmetimizle ilgili yorumlarınızı paylaşarak bize destek olabilirsiniz.  
-                              
-Yorum yapmak için tıklayın: https://g.page/r/CVPuFo8Ysm_eEBM/review  
-                              
-Görüşleriniz için şimdiden teşekkür ederiz.
-
-Eykom Teknik Servis`
-                              )}`}>
-                                Yorum İste
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item"
-                                href={`https://wa.me/+90${customer.telefon1}?text=${encodeURIComponent(
-                                    `Sayın ${customer.ad_soyad}, satın almış olduğunuz ${customer.cihaz_markasi} - ${customer.cihaz_modeli} cihazınızın garanti başlangıcı için yetkili servis yönlendirilmiştir.  
-                                  
-Eykom olarak sürecimizi başarıyla tamamladık.  
-                                  
-Size keyifli ve sorunsuz bir kullanım dileriz. Herhangi bir sorunuz olursa bizimle iletişime geçebilirsiniz.  
-                                  
-İyi günler dileriz.
-
-Eykom Teknik Servis`
-                                  )}`}>
-                                    Servis Gönderildi Mesajı
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
                 <div className="card-footer">
                     <div className="interests">

@@ -1,23 +1,27 @@
-// src/main.jsx veya src/App.jsx
-
-import React from 'react';
-import ReactDOM from "react-dom/client"; // React 18'de doğru import
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Login from './Login';
-import Dashboard from './Dashboard';
-import PrivateRoute from './components/PrivateRoute'; // PrivateRoute bileşenini dahil et
-import './components/customer_filter.css';
-import './index.css';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./Login";
+import Dashboard from "./Dashboard";
+import PrivateRoute from "./components/PrivateRoute";
+import "./index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-  <React.StrictMode>
-    <Router>
+  <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/" element={<Login />} />
+          
+          {/* Varsayılan olarak chartData sayfasına yönlendir */}
+          <Route path="/dashboard" element={<Navigate to="/dashboard/chartData" />} />
+
+          {/* PrivateRoute içinde tüm dashboard sekmelerini tanımla */}
+          <Route path="/dashboard/*" element={<PrivateRoute />}>
+              <Route path="chartData" element={<Dashboard />} />
+              <Route path="customerList" element={<Dashboard />} />
+              <Route path="addCustomer" element={<Dashboard />} />
+          </Route>
       </Routes>
-    </Router>
-  </React.StrictMode>
+  </BrowserRouter>
 );

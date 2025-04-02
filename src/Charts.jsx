@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FaAward } from "react-icons/fa";
 import { BarChart, Bar,LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend} from "recharts";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -40,6 +41,8 @@ export default function Dashboard() {
   }
   
   return (
+    <>
+    <h2>Yönetim Paneli</h2>
     <div className="mt-4">
       <div className="row">
         <div className="col-md-4">
@@ -187,7 +190,10 @@ export default function Dashboard() {
                                         {chunk.map((item, index) => (
                                             <div key={index} className="col-md-6">
                                                 <Card className="shadow-sm musteri_temsilcisi_item">
-                                                    <h5 className="mb-2">{item.representative}</h5>
+                                                    <h5 className="mb-2">
+                                                        {index === 0 && chunkIndex === 0 && <FaAward className="text-warning me-2" />} 
+                                                        {item.representative}
+                                                    </h5>
                                                     <p>En Çok Sattığı Marka: {item.top_brand}</p>
                                                     <p>Toplam Satış: {item.total_sales}</p>
                                                     {/* 📌 Marka Dağılımı */}
@@ -277,6 +283,6 @@ export default function Dashboard() {
 
       </div>
     </div>
-    
+    </>
   );
 }

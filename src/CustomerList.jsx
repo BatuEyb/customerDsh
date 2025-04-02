@@ -4,6 +4,7 @@ import CustomerFilter from "./components/customer_filter.jsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import DejaVuSans from "./assets/DejaVuSans-normal.js";
+import { FaDownload } from "react-icons/fa";
 
 
 const CustomerList = () => {
@@ -106,6 +107,24 @@ const CustomerList = () => {
                 }
                 if (filters.endDate) {
                     return siparisTarihi <= new Date(filters.endDate);
+                }
+            });
+        }
+
+        // Proje tarihi aralığı filtresi
+        if (filters.projestartDate || filters.projeendDate) {
+            filtered = filtered.filter(c => {
+                if (!c.siparis_tarihi) return false; // Tarihi olmayanları filtrele
+                const siparisTarihi = new Date(c.randevu_tarihi); // Tarihi Date objesine çevir
+
+                if (filters.projestartDate && filters.projeendDate) {
+                    return siparisTarihi >= new Date(filters.projestartDate) && siparisTarihi <= new Date(filters.projeendDate);
+                }
+                if (filters.projestartDate) {
+                    return siparisTarihi >= new Date(filters.projestartDate);
+                }
+                if (filters.projeendDate) {
+                    return siparisTarihi <= new Date(filters.projeendDate);
                 }
             });
         }
@@ -254,15 +273,19 @@ const CustomerList = () => {
 
     return (
         <>
-            {/* Müşteri Sayısı Labeli */}
-            <div className="d-flex justify-content-between align-items-center">
-                <h5>{title}: <span className="badge bg-primary">{filteredCustomers.length}</span></h5>
-                <button onClick={generatePDF} className="btn btn-primary">
-                        <img src="src/assets/svg/download-square-svgrepo-com.svg" style={{width: "24px"}}/> Rapor İndir
-                </button>
-            </div>
-
+            <h2>Bireysel Müşteriler</h2>
             <CustomerFilter onSearchChange={handleSearchChange} onFilterChange={handleFilterChange}/>
+            {/* Müşteri Sayısı Labeli */}
+            <div className="card mb-2">
+                <div class="card-body p-2">
+                    <div className="d-flex justify-content-between align-items-center">
+                        <h5>{title}: <span className="badge bg-primary">{filteredCustomers.length}</span></h5>
+                        <button onClick={generatePDF} className="btn btn-primary">
+                            <FaDownload size={20} /> Rapor İndir
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div className="row">
                 {currentCustomers.map((customer) => (
                     <CustomerCard
