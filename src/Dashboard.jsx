@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Add_customer from "./Add_customer";
 import CustomerList from "./CustomerList";
-import { FaRegUser, FaBars, FaTimes, FaChartBar, FaUsers, FaUserPlus, FaClipboardList, FaPlusCircle } from "react-icons/fa";
+import { FaRegUser, FaBars, FaTimes, FaChartBar, FaUsers, FaUserPlus, FaClipboardList, FaPlusCircle, FaPlusSquare ,FaBox } from "react-icons/fa";
 import ChartData from "./charts.jsx";
-import ProductManager from "./ProductManager.jsx";
-import AddProduct from "./AddProduct.jsx";
+import StockManagement from "./StockManagement.jsx";
+import StockAndCategoryManagement from "./AddStock.jsx";
 
 const Dashboard = () => {
     const location = useLocation();
@@ -41,7 +41,7 @@ const Dashboard = () => {
                 </button>
 
                 <h4 className="text-center w-100 mb-3">
-                    <a href="/dashboard" className="text-white text-decoration-none fw-bold">Admin Panel</a>
+                    Admin Paneli
                 </h4>
 
                 <nav className="nav flex-column w-100">
@@ -50,7 +50,7 @@ const Dashboard = () => {
                         <FaChartBar className="me-2" /> Yönetim Paneli (Veriler)
                     </a>
 
-                    <h6 className="text-white mt-3 fw-bold">Kampanyalı Satışlar</h6>
+                    <h6 className="text-white mt-3 fw-bold">Bireysel Müşteriler</h6>
                     <a className={`nav-link text-white ${activePage === "customerList" ? "active" : ""}`} 
                         onClick={() => handlePageChange("customerList")}>
                         <FaUsers className="me-2" /> Müşteri Listesi
@@ -58,6 +58,16 @@ const Dashboard = () => {
                     <a className={`nav-link text-white ${activePage === "addCustomer" ? "active" : ""}`} 
                         onClick={() => handlePageChange("addCustomer")}>
                         <FaUserPlus className="me-2" /> Müşteri Ekle
+                    </a>
+
+                    <h6 className="text-white mt-3 fw-bold">Stok Yönetimi</h6>
+                    <a className={`nav-link text-white ${activePage === "stockManagement" ? "active" : ""}`} 
+                        onClick={() => handlePageChange("stockManagement")}>
+                        <FaBox  className="me-2" /> Stok Takibi
+                    </a>
+                    <a className={`nav-link text-white ${activePage === "addStock" ? "active" : ""}`} 
+                        onClick={() => handlePageChange("addStock")}>
+                        <FaPlusSquare  className="me-2" /> Stok Ekle
                     </a>
                 </nav>
             </nav>
@@ -74,7 +84,7 @@ const Dashboard = () => {
                             <FaRegUser />
                         </button>
                         <ul className="dropdown-menu dropdown-menu-end">
-                            <li><span className="dropdown-item-text fw-bold">Merhaba, {localStorage.getItem("first_name") || "Misafir"}</span></li>
+                            <li><span className="dropdown-item-text fw-bold">Merhaba, {localStorage.getItem("name") || "Misafir"}</span></li>
                             <li><button className="dropdown-item text-danger" onClick={handleLogout}>Çıkış Yap</button></li>
                         </ul>
                     </div>
@@ -86,6 +96,8 @@ const Dashboard = () => {
                         {activePage === "chartData" && <ChartData />}
                         {activePage === "customerList" && <CustomerList />}
                         {activePage === "addCustomer" && <Add_customer />}
+                        {activePage === "stockManagement" && <StockManagement />}
+                        {activePage === "addStock" && <StockAndCategoryManagement />}
                     </div>
                 </main>
             </div>

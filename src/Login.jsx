@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Login = () => {
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(""); // password_hash yerine düz password kullan
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -14,15 +14,14 @@ const Login = () => {
       const response = await fetch("http://localhost/customerDsh/src/api/login.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password }), // "password_hash" yerine "password"
       });
 
       const data = await response.json();
       if (data.success) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", data.role);
-        localStorage.setItem("first_name", data.first_name);
-        localStorage.setItem("last_name", data.last_name);
+        localStorage.setItem("name", data.name);
         navigate("/dashboard");
       } else {
         setError(data.message || "Geçersiz kullanıcı adı veya şifre");
