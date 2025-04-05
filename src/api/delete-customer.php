@@ -1,11 +1,7 @@
 <?php
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
-header("Access-Control-Allow-Origin: *"); // Tüm kaynaklara izin ver
-header("Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE"); // İzin verilen metodlar
-header("Access-Control-Allow-Headers: Content-Type, Authorization"); // İzin verilen başlıklar
-header("Content-Type: application/json");
 
 // OPTIONS isteğine 200 OK döndür (Tarayıcı preflight request atarsa engellenmez)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

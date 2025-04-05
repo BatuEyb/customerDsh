@@ -1,11 +1,7 @@
 <?php
-session_start();
+
 include 'api.php'; // Veritabanı bağlantısı
 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
 
 // Kategorileri listeleme
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {

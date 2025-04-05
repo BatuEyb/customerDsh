@@ -8,29 +8,36 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    setError("");
-    try {
-      const response = await fetch("http://localhost/customerDsh/src/api/login.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }), // "password_hash" yerine "password"
-      });
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-      const data = await response.json();
-      if (data.success) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("role", data.role);
-        localStorage.setItem("name", data.name);
-        navigate("/dashboard");
-      } else {
-        setError(data.message || "Geçersiz kullanıcı adı veya şifre");
-      }
-    } catch (error) {
-      console.error("Hata: ", error);
-      setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+    const response = await fetch('http://localhost/customerDsh/src/api/login.php', {
+        method: 'POST',
+        credentials: "include",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password,
+        }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+        // Giriş başarılıysa, kullanıcı bilgilerini localStorage'a kaydet
+        localStorage.setItem('user_id', data.user_id); // Kullanıcı ID'sini kaydediyoruz
+        localStorage.setItem('role', data.role);
+        localStorage.setItem('username', data.username);
+        localStorage.setItem('name', data.name);
+        // Dashboard'a yönlendir
+        navigate('/dashboard');
+    } else {
+        // Giriş başarısızsa hata mesajı
+        setError(data.message || 'Giriş yaparken bir hata oluştu');
     }
-  };
+};
 
   return (
     <div className="vh-100 d-flex align-items-center justify-content-center">

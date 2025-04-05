@@ -1,9 +1,17 @@
-import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import React from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
 
 const PrivateRoute = () => {
-    const token = localStorage.getItem("token"); // Kullanıcı giriş yapmış mı kontrol et
-    return token ? <Outlet /> : <Navigate to="/" />; // Eğer giriş yapılmadıysa giriş sayfasına yönlendir
+    // localStorage'dan user_id'yi kontrol et
+    const isAuthenticated = localStorage.getItem('user_id') !== null;
+
+    if (!isAuthenticated) {
+        // Kullanıcı giriş yapmamışsa, login sayfasına yönlendir
+        return <Navigate to="/" />;
+    }
+
+    // Eğer oturum açmışsa, alt bileşenlere geçiş yapılacak
+    return <Outlet />;
 };
 
 export default PrivateRoute;

@@ -1,11 +1,7 @@
 <?php
-session_start();
+session_start(); // Session başlatıyoruz
+session_regenerate_id(true);
 include 'api.php'; // Veritabanı bağlantısı
-
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
 
 $data = json_decode(file_get_contents("php://input"));
 
@@ -43,6 +39,7 @@ if ($result->num_rows > 0) {
             'message' => 'Başarıyla giriş yapıldı.',
             'role' => $user['role'],
             'name' => $user['name'],  // Kullanıcının adı da gönderiliyor
+            'user_id' =>$user['id'],
             'token' => 'sample-jwt-token', // Gerçek bir JWT ekleyebilirsin
         ]);
     } else {

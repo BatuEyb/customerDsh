@@ -1,10 +1,6 @@
 <?php
-include('api.php');
 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
+include('api.php');
 
 // Boş bir sonuç nesnesi oluştur
 $response = [

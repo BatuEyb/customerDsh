@@ -1,9 +1,7 @@
 <?php
+
 include('api.php');
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
-header("Access-Control-Allow-Headers: Content-Type");
-// Sorgu parametrelerini al
+
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $tuketimNo = isset($_GET['tuketimNo']) ? $_GET['tuketimNo'] : '';
 $sokak = isset($_GET['sokak']) ? $_GET['sokak'] : '';

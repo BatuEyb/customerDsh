@@ -10,20 +10,20 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <BrowserRouter>
-      <Routes>
-          <Route path="/" element={<Login />} />
-          
-          {/* Varsayılan olarak chartData sayfasına yönlendir */}
-          <Route path="/dashboard" element={<Navigate to="/dashboard/chartData" />} />
+    <Routes>
+      <Route path="/" element={<Login />} />
 
-          {/* PrivateRoute içinde tüm dashboard sekmelerini tanımla */}
-          <Route path="/dashboard/*" element={<PrivateRoute />}>
-              <Route path="chartData" element={<Dashboard />} />
-              <Route path="customerList" element={<Dashboard />} />
-              <Route path="addCustomer" element={<Dashboard />} />
-              <Route path="stockManagement" element={<Dashboard />} />
-              <Route path="addStock" element={<Dashboard />} />
-          </Route>
-      </Routes>
+      {/* Varsayılan olarak dashboard'a yönlendirme */}
+      <Route path="/dashboard" element={<Navigate to="/dashboard/chartData" />} />
+
+      {/* PrivateRoute içinde tüm dashboard sekmelerini tanımla */}
+      <Route path="/dashboard/*" element={<PrivateRoute />}>
+        <Route path="chartData" element={<Dashboard />} />
+        <Route path="customerList" element={<Dashboard />} />
+        <Route path="addCustomer" element={<Dashboard />} />
+        <Route path="stockManagement" element={<Dashboard />} />
+        <Route path="addStock" element={<Dashboard />} />
+      </Route>
+    </Routes>
   </BrowserRouter>
 );
