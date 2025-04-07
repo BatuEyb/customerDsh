@@ -27,9 +27,18 @@ const StockAndCategoryManagement = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost/customerDsh/src/api/categories.php');
+            const response = await fetch('http://localhost/customerDsh/src/api/categories.php', {
+                credentials: 'include', // session varsa bunu da ekle
+            });
             const data = await response.json();
-            setCategories(data);
+            
+            if (Array.isArray(data)) {
+                setCategories(data); // doğrudan diziyse
+            } else if (Array.isArray(data.data)) {
+                setCategories(data.data); // iç içe diziyse
+            } else {
+                throw new Error('Beklenmeyen veri formatı');
+            }
         } catch (error) {
             setError('Kategoriler yüklenirken bir hata oluştu.');
         }
@@ -38,22 +47,32 @@ const StockAndCategoryManagement = () => {
     // Stok ekleme
     const handleAddStock = async (e) => {
         e.preventDefault();
-        if (!newStock.category_id) {
-            setError('Lütfen geçerli bir kategori seçin.');
-            return;
-        }
+        
+        // Sayısal değerleri sayıya çevir
+        const stockData = {
+            ...newStock,
+            quantity: parseInt(newStock.quantity),
+            price: parseFloat(newStock.price),
+        };
+    
         try {
-            const response = await fetch('http://localhost/customerDsh/src/api/stock_management.php', {
+            // Eğer stockData.id varsa, güncelleme işlemi yapılacak
+            const url = stockData.id
+                ? 'http://localhost/customerDsh/src/api/stock_management.php' // Güncelleme
+                : 'http://localhost/customerDsh/src/api/stock_management.php';  // Ekleme (aynı endpoint)
+            
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(newStock),
+                credentials: "include",
+                body: JSON.stringify(stockData),
             });
-
+    
             const data = await response.json();
             if (data.success) {
-                setSuccessMessage('Stok başarıyla eklendi!');
+                setSuccessMessage(stockData.id ? 'Ürün başarıyla güncellendi!' : 'Stok başarıyla eklendi!');
                 setNewStock({
                     stock_code: '',
                     product_name: '',
@@ -63,10 +82,10 @@ const StockAndCategoryManagement = () => {
                     category_id: '',
                 });
             } else {
-                setError(data.message || 'Stok eklenirken bir hata oluştu.');
+                setError(data.message || 'İşlem sırasında bir hata oluştu.');
             }
         } catch (error) {
-            setError('Stok eklerken bir hata oluştu.');
+            setError('Stok işlemi sırasında bir hata oluştu.');
         }
     };
 
@@ -83,6 +102,7 @@ const StockAndCategoryManagement = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include', // session varsa bunu da ekle
                 body: JSON.stringify({ name: newCategory }),
             });
 
@@ -131,7 +151,7 @@ const StockAndCategoryManagement = () => {
         }
     };
     return (
-        <div className="container mt-4">
+        <div className="mt-4">
             <h2>Stok ve Kategori Ekleme</h2>
             {error && <Alert variant="danger">{error}</Alert>}
             {successMessage && <Alert variant="success">{successMessage}</Alert>}

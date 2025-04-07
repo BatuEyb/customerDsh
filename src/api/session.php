@@ -1,0 +1,44 @@
+<?php
+/// Oturumun başlatılması yalnızca bir kez yapılmalıdır
+if (session_status() === PHP_SESSION_NONE) {
+    session_start(); // Eğer oturum başlatılmamışsa başlatıyoruz
+}
+
+// Oturumda kullanıcı bilgileri varsa, mevcut oturumdaki kullanıcı bilgilerine erişim sağlıyoruz
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $username = $_SESSION['username'];
+} else {
+    $user_id = null;
+    $username = null;
+}
+
+// Kullanıcı oturumunu kontrol et
+if ($user_id === null || $username === null) {
+    echo json_encode(['success' => false, 'message' => 'Kullanıcı oturumu bulunamadı']);
+    exit();
+}
+
+// Loglama fonksiyonu
+function log_activity($message) {
+    // Kullanıcı bilgilerini almak için session'ı kontrol et
+    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'Bilinmiyor';
+    $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Bilinmiyor';
+
+    // Log mesajını oluştur
+    $logFile = __DIR__ . '/../logs/activity_log.txt'; // Log dosyasının yolu
+    $date = date('Y-m-d H:i:s');
+    $logMessage = "[$date] - Kullanıcı: $username (ID: $user_id) - $message\n";
+
+    // Dosyaya log yazma işlemi
+    if (is_writable($logFile)) {
+        if (file_put_contents($logFile, $logMessage, FILE_APPEND) === false) {
+            // Eğer yazma işlemi başarısız olursa hata mesajı
+            error_log("Log yazma işlemi başarısız: $logMessage");
+        }
+    } else {
+        // Log dosyasına yazılamıyorsa hata mesajı
+        error_log("Log dosyasına yazılamıyor: $logFile");
+    }
+}
+?>

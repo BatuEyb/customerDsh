@@ -1,8 +1,7 @@
 <?php
-
-header("Access-Control-Allow-Origin: http://localhost:5175");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS, DELETE");
-header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Origin: http://localhost:5173");  // React uygulamanızın adresi
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
 
 // OPTIONS isteğine 200 OK döndür (Tarayıcı preflight request atarsa engellenmez)

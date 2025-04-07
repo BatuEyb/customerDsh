@@ -1,19 +1,10 @@
 <?php
-session_start(); // Session başlatıyoruz
-include 'api.php'; // Veritabanı bağlantısı
+include 'session.php'; // Veritabanı bağlantısı
+include 'api.php'; // Veritabanı bağlantısını içe aktar
 
-// Eğer OPTIONS isteği yapılırsa hemen cevap dönebiliriz
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
+$created_by = $_SESSION['user_id']; // Oturumdaki kullanıcı ID'si
+$username = $_SESSION['username']; // Oturumdaki kullanıcı adı
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Kullanıcı oturumu bulunamadı']);
-    exit;
-}
-
-$created_by = $_SESSION['user_id'];
 
 // Dosya kontrolü
 if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
@@ -22,7 +13,7 @@ if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
 }
 
 $filePath = $_FILES['file']['tmp_name'];
-require __DIR__ . '/../../vendor/autoload.php'; // Proje kök dizininden
+require __DIR__ . '/../../vendor/autoload.php'; // PhpSpreadsheet autoload
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 $spreadsheet = IOFactory::load($filePath);
@@ -63,12 +54,32 @@ foreach ($sheetData as $index => $row) {
         $existingCategories[$category_name] = $category_id;
     }
 
-    // Ürünü ekle
-    $stmt = $conn->prepare("INSERT INTO stocks (stock_code, product_name, brand, quantity, price, created_by, updated_by, created_at, updated_at, category_id) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?)");
-    $stmt->bind_param("sssdisss", $stock_code, $product_name, $brand, $quantity, $price, $created_by, $created_by, $existingCategories[$category_name]);
-    
-    if ($stmt->execute()) {
-        $insertedProducts[] = $product_name;
+    // Ürün var mı kontrol et
+    $stmt = $conn->prepare("SELECT id FROM stocks WHERE stock_code = ?");
+    $stmt->bind_param("s", $stock_code);
+    $stmt->execute();
+    $stmt->bind_result($existing_product_id);
+    $stmt->fetch();
+    $stmt->close();
+
+    if ($existing_product_id) {
+        // Ürün mevcut, güncelle
+        $stmt = $conn->prepare("UPDATE stocks SET product_name = ?, brand = ?, quantity = ?, price = ?, updated_by = ?, updated_at = NOW(), category_id = ? WHERE stock_code = ?");
+        $stmt->bind_param("ssdisss", $product_name, $brand, $quantity, $price, $created_by, $existingCategories[$category_name], $stock_code);
+        
+        if ($stmt->execute()) {
+            log_activity("Ürün güncellendi: $product_name, Stock Code: $stock_code");
+            $insertedProducts[] = $product_name;
+        }
+    } else {
+        // Ürün yok, yeni ürün ekle
+        $stmt = $conn->prepare("INSERT INTO stocks (stock_code, product_name, brand, quantity, price, created_by, updated_by, created_at, updated_at, category_id) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?)");
+        $stmt->bind_param("sssdisss", $stock_code, $product_name, $brand, $quantity, $price, $created_by, $created_by, $existingCategories[$category_name]);
+        
+        if ($stmt->execute()) {
+            log_activity("Ürün eklendi: $product_name, Stock Code: $stock_code");
+            $insertedProducts[] = $product_name;
+        }
     }
 
     $stmt->close();

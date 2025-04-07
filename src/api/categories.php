@@ -1,7 +1,10 @@
 <?php
 
 include 'api.php'; // Veritabanı bağlantısı
+include 'session.php' ;
 
+$created_by = $_SESSION['user_id']; // Oturumdaki kullanıcı ID'si
+$username = $_SESSION['username']; // Oturumdaki kullanıcı adı
 
 // Kategorileri listeleme
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -23,13 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!isset($data->id) || empty($data->id)) {
         // Yeni kategori ekleme
+        $category_id = uniqid("cat_");
         $name = $data->name;
-        $insert_sql = "INSERT INTO categories (name) VALUES (?)";
+        $insert_sql = "INSERT INTO categories (id, name, created_by, updated_by, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())";
         $stmt = $conn->prepare($insert_sql);
-        $stmt->bind_param("s", $name);
+        $stmt->bind_param("ssss", $category_id ,$name, $created_by, $created_by);
 
         if ($stmt->execute()) {
             echo json_encode(['success' => true, 'message' => 'Kategori başarıyla eklendi!']);
+            log_activity("Kategori Eklendi: $name");
         } else {
             echo json_encode(['success' => false, 'message' => 'Ekleme işlemi başarısız!']);
         }
