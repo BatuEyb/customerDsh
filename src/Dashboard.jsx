@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Modal, Button, Form } from 'react-bootstrap';
 import Add_customer from "./Add_customer";
 import CustomerList from "./CustomerList";
 import { FaRegUser, FaBars, FaTimes, FaChartBar, FaUsers, FaUserPlus, FaClipboardList, FaPlusCircle, FaPlusSquare ,FaBox } from "react-icons/fa";
 import ChartData from "./charts.jsx";
 import StockManagement from "./StockManagement.jsx";
 import StockAndCategoryManagement from "./AddStock.jsx";
+import AddCustomer from "./AddCustomer.jsx";
+import CustomerList2 from "./CustomerList2.jsx";
+import CreateQuote from "./CreateQuote.jsx";
 
 const Dashboard = () => {
     const location = useLocation();
@@ -29,6 +33,27 @@ const Dashboard = () => {
         localStorage.removeItem("username");
         navigate("/");
     };
+
+    const [showLogModal, setShowLogModal] = useState(false);
+    const [activityLog, setActivityLog] = useState('');
+
+    const fetchActivityLog = async () => {
+        try {
+            const response = await fetch('http://localhost/customerDsh/src/api/get_activity_log.php', {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            if (data.success) {
+                setActivityLog(data.log);
+                setShowLogModal(true);
+            } else {
+                alert(data.message);
+            }
+        } catch (err) {
+            alert('Loglar yüklenemedi!');
+        }
+    };
+
 
     return (
         <div className="d-flex">
@@ -67,7 +92,27 @@ const Dashboard = () => {
                     </a>
                     <a className={`nav-link text-white ${activePage === "addStock" ? "active" : ""}`} 
                         onClick={() => handlePageChange("addStock")}>
-                        <FaPlusSquare  className="me-2" /> Stok Ekle
+                        <FaPlusSquare  className="me-2" /> Stok Oluştur
+                    </a>
+
+                    <h6 className="text-white mt-3 fw-bold">Cari Yönetimi</h6>
+                    <a className={`nav-link text-white ${activePage === "listCustomer2" ? "active" : ""}`} 
+                        onClick={() => handlePageChange("listCustomer2")}>
+                        <FaBox  className="me-2" /> Cari Listesi
+                    </a>
+                    <a className={`nav-link text-white ${activePage === "addCustomer2" ? "active" : ""}`} 
+                        onClick={() => handlePageChange("addCustomer2")}>
+                        <FaPlusSquare  className="me-2" /> Cari Oluştur
+                    </a>
+
+                    <h6 className="text-white mt-3 fw-bold">Teklif Yönetimi</h6>
+                    <a className={`nav-link text-white ${activePage === "listCustomer2" ? "active" : ""}`} 
+                        onClick={() => handlePageChange("listCustomer2")}>
+                        <FaBox  className="me-2" /> Teklif Listesi
+                    </a>
+                    <a className={`nav-link text-white ${activePage === "addQuote" ? "active" : ""}`} 
+                        onClick={() => handlePageChange("addQuote")}>
+                        <FaPlusSquare  className="me-2" /> Teklif Oluştur
                     </a>
                 </nav>
             </nav>
@@ -86,6 +131,7 @@ const Dashboard = () => {
                         <ul className="dropdown-menu dropdown-menu-end">
                             <li><span className="dropdown-item-text fw-bold">Merhaba, {localStorage.getItem("name") || "Misafir"}</span></li>
                             <li><button className="dropdown-item text-danger" onClick={handleLogout}>Çıkış Yap</button></li>
+                            <li><button className="dropdown-item" variant="info" onClick={fetchActivityLog}>Logları Görüntüle</button></li>
                         </ul>
                     </div>
                 </nav>
@@ -98,8 +144,24 @@ const Dashboard = () => {
                         {activePage === "addCustomer" && <Add_customer />}
                         {activePage === "stockManagement" && <StockManagement />}
                         {activePage === "addStock" && <StockAndCategoryManagement />}
+                        {activePage === "listCustomer2" && <CustomerList2 />}
+                        {activePage === "addCustomer2" && <AddCustomer />}
+                        {activePage === "addQuote" && <CreateQuote />}
                     </div>
                 </main>
+                <Modal show={showLogModal} onHide={() => setShowLogModal(false)} size="lg">
+                    <Modal.Header closeButton>
+                        <Modal.Title>Aktivite Logları</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <pre style={{ whiteSpace: 'pre-wrap', maxHeight: '400px', overflowY: 'auto' }}>
+                            {activityLog}
+                        </pre>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => setShowLogModal(false)}>Kapat</Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
         </div>
     );

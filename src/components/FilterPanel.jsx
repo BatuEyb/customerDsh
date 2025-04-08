@@ -53,7 +53,7 @@ const FilterPanel = ({ filter, setFilter, categories, stocks }) => {
                 <strong>Filtreleme Seçenekleri</strong>
             </div>
             <div className="card-body">
-                <div className="mb-3 row g-2 align-items-end">
+                <div className="row g-2 align-items-end">
                     <div className="col-md-4">
                         <label>Ürün Adı / Stok Kodu</label>
                         <input
@@ -125,10 +125,12 @@ const FilterPanel = ({ filter, setFilter, categories, stocks }) => {
                             ))}
                         </select>
                     </div>
-                    <div className="col-md-12 text-end mt-3">
-                        <a href="#" onClick={resetFilters} className="btn btn-link text-decoration-none">
-                            Filtreleri Sıfırla
-                        </a>
+                    <div className="mt-3 text-end">
+                        <button
+                            className="btn btn-outline-secondary"
+                            onClick={resetFilters}>
+                            Filtreleri Temizle
+                        </button>
                     </div>
                 </div>
             </div>    

@@ -139,6 +139,7 @@ const StockManagement = () => {
 
         const response = await fetch('http://localhost/customerDsh/src/api/stock_management.php', {
             method: 'DELETE',
+            credentials: "include",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id }),
         });
