@@ -118,7 +118,7 @@ const CreateQuote = () => {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="mt-3">
       <h3>Teklif Oluştur</h3>
 
       {loading && <div className="alert alert-info">Yükleniyor...</div>}

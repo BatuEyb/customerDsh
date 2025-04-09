@@ -618,3 +618,8 @@ Fiyat: 123000.00 → 45000
 [2025-04-08 23:25:34] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün güncellendi: , Stock Code: 
 [2025-04-08 23:28:18] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün Silindi: 
 [2025-04-08 23:43:07] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 1
+[2025-04-09 09:03:11] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Müşteri Eklendi: Aytekin Demir
+[2025-04-09 09:03:59] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 2
+[2025-04-09 09:20:37] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif silindi: 2
+[2025-04-09 13:29:40] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Müşteri Eklendi: İsmail Eyüboğlu
+[2025-04-09 13:30:04] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 3

@@ -10,6 +10,7 @@ import StockAndCategoryManagement from "./AddStock.jsx";
 import AddCustomer from "./AddCustomer.jsx";
 import CustomerList2 from "./CustomerList2.jsx";
 import CreateQuote from "./CreateQuote.jsx";
+import ListQuotes from "./ListQuotes.jsx";
 
 const Dashboard = () => {
     const location = useLocation();
@@ -106,8 +107,8 @@ const Dashboard = () => {
                     </a>
 
                     <h6 className="text-white mt-3 fw-bold">Teklif Yönetimi</h6>
-                    <a className={`nav-link text-white ${activePage === "listCustomer2" ? "active" : ""}`} 
-                        onClick={() => handlePageChange("listCustomer2")}>
+                    <a className={`nav-link text-white ${activePage === "listQuotes" ? "active" : ""}`} 
+                        onClick={() => handlePageChange("listQuotes")}>
                         <FaBox  className="me-2" /> Teklif Listesi
                     </a>
                     <a className={`nav-link text-white ${activePage === "addQuote" ? "active" : ""}`} 
@@ -146,6 +147,7 @@ const Dashboard = () => {
                         {activePage === "addStock" && <StockAndCategoryManagement />}
                         {activePage === "listCustomer2" && <CustomerList2 />}
                         {activePage === "addCustomer2" && <AddCustomer />}
+                        {activePage === "listQuotes" && <ListQuotes />}
                         {activePage === "addQuote" && <CreateQuote />}
                     </div>
                 </main>

@@ -25,6 +25,7 @@ root.render(
         <Route path="addStock" element={<Dashboard />} />
         <Route path="listCustomer2" element={<Dashboard />} />
         <Route path="addCustomer2" element={<Dashboard />} />
+        <Route path="listQuotes" element={<Dashboard />} />
         <Route path="addQuote" element={<Dashboard />} />
       </Route>
     </Routes>
