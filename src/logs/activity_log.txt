@@ -623,3 +623,19 @@ Fiyat: 123000.00 → 45000
 [2025-04-09 09:20:37] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif silindi: 2
 [2025-04-09 13:29:40] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Müşteri Eklendi: İsmail Eyüboğlu
 [2025-04-09 13:30:04] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 3
+[2025-04-10 09:44:56] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif silindi: 1
+[2025-04-10 09:44:59] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif silindi: 3
+[2025-04-10 09:57:30] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 10
+[2025-04-10 14:51:03] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 11
+[2025-04-10 23:03:58] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif silindi: 10
+[2025-04-10 23:21:22] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif silindi: 11
+[2025-04-11 08:50:44] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 12
+[2025-04-11 10:22:32] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif silindi: 12
+[2025-04-11 10:26:47] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 13
+[2025-04-11 10:26:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 14
+[2025-04-11 10:27:07] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 15
+[2025-04-11 10:27:40] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif silindi: 13
+[2025-04-11 10:29:01] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 16
+[2025-04-11 10:29:09] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif silindi: 16
+[2025-04-11 12:10:10] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 17
+[2025-04-11 13:23:03] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif silindi: 14

@@ -26,19 +26,22 @@ try {
     $quote_id = $conn->insert_id;
 
     // 2. Ürünleri quote_items tablosuna ekle
-    $itemStmt = $conn->prepare("INSERT INTO quote_items (quote_id, stock_id, quantity, unit_price, total_price, created_at, updated_at) 
-                                VALUES (?, ?, ?, ?, ?, NOW(), NOW())");
+    $itemStmt = $conn->prepare("INSERT INTO quote_items 
+    (quote_id, stock_id, quantity, unit_price, total_price, discount, discounted_unit_price, created_at, updated_at) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())");
 
     // Her bir item için verileri ekle
     foreach ($quote_items as $item) {
-        $stock_id = $item['stock_id'];
-        $quantity = $item['quantity'];
-        $unit_price = $item['unit_price'];
-        $total_price = $item['total_price'];
+    $stock_id = $item['stock_id'];
+    $quantity = $item['quantity'];
+    $unit_price = $item['unit_price'];
+    $total_price = $item['total_price'];
+    $discount = isset($item['discount']) ? $item['discount'] : 0;
+    $discounted_unit_price = $item['discounted_unit_price']; // İskontolu fiyat
 
-        // quote_items tablosuna ekleme
-        $itemStmt->bind_param("iiddd", $quote_id, $stock_id, $quantity, $unit_price, $total_price);
-        $itemStmt->execute();
+    // quote_items tablosuna ekleme
+    $itemStmt->bind_param("iiddddd", $quote_id, $stock_id, $quantity, $unit_price, $total_price, $discount, $discounted_unit_price);
+    $itemStmt->execute();
     }
 
     // İşlemleri commit et

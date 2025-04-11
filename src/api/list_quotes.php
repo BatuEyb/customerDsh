@@ -7,7 +7,7 @@ $response = [];
 try {
     $stmt = $conn->prepare("
         SELECT 
-        q.id AS quote_id,
+        q.id AS id,
         q.customer_id,
         c.name AS customer_name,
         c.address AS customer_address,
@@ -29,7 +29,7 @@ try {
     $quotes = [];
 
     while ($row = $quoteResult->fetch_assoc()) {
-        $quote_id = $row['quote_id'];
+        $quote_id = $row['id'];
 
         // Teklif ürünlerini getir
         $itemsStmt = $conn->prepare("
@@ -38,6 +38,8 @@ try {
                 s.product_name,
                 qi.quantity,
                 qi.unit_price,
+                qi.discount,  -- İskonto oranı
+                qi.discounted_unit_price,  -- İskontolu birim fiyat
                 qi.total_price
             FROM quote_items qi
             JOIN stocks s ON qi.stock_id = s.id

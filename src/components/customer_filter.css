@@ -1,4 +1,11 @@
 @media (min-width: 768px) {
+    nav.offset-md-3 {
+        margin-left: 250px!important;
+    }
+    nav.col-md-9 {
+        flex: 0 0 auto;
+        width: calc(100% - 250px);
+    }
     main.offset-md-3 {
         margin-left: 250px!important;
     }

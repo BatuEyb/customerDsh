@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Modal, Button, Form } from 'react-bootstrap';
 import Add_customer from "./Add_customer";
 import CustomerList from "./CustomerList";
-import { FaRegUser, FaBars, FaTimes, FaChartBar, FaUsers, FaUserPlus, FaClipboardList, FaPlusCircle, FaPlusSquare ,FaBox } from "react-icons/fa";
+import { FaRegUser, FaBars, FaTimes, FaChartBar, FaUsers, FaUserPlus, FaClipboardList, FaPlusCircle, FaPlusSquare ,FaBox, FaDollarSign  } from "react-icons/fa";
 import ChartData from "./charts.jsx";
 import StockManagement from "./StockManagement.jsx";
 import StockAndCategoryManagement from "./AddStock.jsx";
@@ -71,6 +71,7 @@ const Dashboard = () => {
                 </h4>
 
                 <nav className="nav flex-column w-100">
+                    {/* Yönetim Paneli (Veriler) */}
                     <a className={`nav-link text-white ${activePage === "chartData" ? "active" : ""}`} 
                         onClick={() => handlePageChange("chartData")}>
                         <FaChartBar className="me-2" /> Yönetim Paneli (Veriler)
@@ -89,31 +90,31 @@ const Dashboard = () => {
                     <h6 className="text-white mt-3 fw-bold">Stok Yönetimi</h6>
                     <a className={`nav-link text-white ${activePage === "stockManagement" ? "active" : ""}`} 
                         onClick={() => handlePageChange("stockManagement")}>
-                        <FaBox  className="me-2" /> Stok Takibi
+                        <FaBox className="me-2" /> Stok Takibi
                     </a>
                     <a className={`nav-link text-white ${activePage === "addStock" ? "active" : ""}`} 
                         onClick={() => handlePageChange("addStock")}>
-                        <FaPlusSquare  className="me-2" /> Stok Oluştur
+                        <FaPlusSquare className="me-2" /> Stok Oluştur
                     </a>
 
                     <h6 className="text-white mt-3 fw-bold">Cari Yönetimi</h6>
                     <a className={`nav-link text-white ${activePage === "listCustomer2" ? "active" : ""}`} 
                         onClick={() => handlePageChange("listCustomer2")}>
-                        <FaBox  className="me-2" /> Cari Listesi
+                        <FaDollarSign className="me-2" /> Cari Listesi
                     </a>
                     <a className={`nav-link text-white ${activePage === "addCustomer2" ? "active" : ""}`} 
                         onClick={() => handlePageChange("addCustomer2")}>
-                        <FaPlusSquare  className="me-2" /> Cari Oluştur
+                        <FaPlusSquare className="me-2" /> Cari Oluştur
                     </a>
 
                     <h6 className="text-white mt-3 fw-bold">Teklif Yönetimi</h6>
                     <a className={`nav-link text-white ${activePage === "listQuotes" ? "active" : ""}`} 
                         onClick={() => handlePageChange("listQuotes")}>
-                        <FaBox  className="me-2" /> Teklif Listesi
+                        <FaClipboardList className="me-2" /> Teklif Listesi
                     </a>
                     <a className={`nav-link text-white ${activePage === "addQuote" ? "active" : ""}`} 
                         onClick={() => handlePageChange("addQuote")}>
-                        <FaPlusSquare  className="me-2" /> Teklif Oluştur
+                        <FaPlusSquare className="me-2" /> Teklif Oluştur
                     </a>
                 </nav>
             </nav>
@@ -121,7 +122,7 @@ const Dashboard = () => {
             {/* Ana İçerik */}
             <div className="main-content w-100">
                 {/* Navbar */}
-                <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm p-2">
+                <nav className="navbar col-md-9 offset-md-3 navbar-expand-lg navbar-light bg-white shadow-sm p-2">
                     <button className="btn btn-primary d-md-none" onClick={() => setIsSidebarOpen(true)}>
                         <FaBars />
                     </button>

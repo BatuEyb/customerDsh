@@ -220,3 +220,12 @@ a{
     flex-grow: 1;
     padding: 20px;
 }
+.quote_items_table tr{
+    border-radius: 15px;
+}
+.quote_items_table td{
+    padding: 2px 5px;
+}
+.cursor-pointer{
+    cursor: pointer;
+}
