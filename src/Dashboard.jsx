@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Modal, Button, Form } from 'react-bootstrap';
+import { FaRegUser, FaBars, FaTimes, FaChartBar, FaUsers, FaUserPlus, FaClipboardList, FaPlusCircle, FaPlusSquare ,FaBox, FaDollarSign  } from "react-icons/fa";
+import Tooltip from '@mui/material/Tooltip';
 import Add_customer from "./Add_customer";
 import CustomerList from "./CustomerList";
-import { FaRegUser, FaBars, FaTimes, FaChartBar, FaUsers, FaUserPlus, FaClipboardList, FaPlusCircle, FaPlusSquare ,FaBox, FaDollarSign  } from "react-icons/fa";
 import ChartData from "./charts.jsx";
 import StockManagement from "./StockManagement.jsx";
 import StockAndCategoryManagement from "./AddStock.jsx";
@@ -59,70 +60,84 @@ const Dashboard = () => {
     return (
         <div className="d-flex">
             {/* Sidebar */}
-            <nav className={`sidebar bg-dark text-white vh-100 d-flex flex-column align-items-start p-2 shadow-lg 
+            <nav className={`sidebar bg-white text-white vh-100 d-flex flex-column align-items-start p-0 shadow-sm 
                 ${isSidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
 
                 <button className="btn btn-danger close-btn d-md-none" onClick={() => setIsSidebarOpen(false)}>
                     <FaTimes />
                 </button>
 
-                <h4 className="text-center w-100 mb-3">
-                    Admin Paneli
-                </h4>
-
                 <nav className="nav flex-column w-100">
                     {/* Yönetim Paneli (Veriler) */}
+                    <Tooltip title="Yönetim Planı" placement="right">
                     <a className={`nav-link text-white ${activePage === "chartData" ? "active" : ""}`} 
-                        onClick={() => handlePageChange("chartData")}>
-                        <FaChartBar className="me-2" /> Yönetim Paneli (Veriler)
+                        onClick={() => handlePageChange("chartData")}
+                        >
+                        <FaChartBar className="me-2" /> <span className="sidebarLabel">Yönetim Paneli (Veriler)</span>
                     </a>
-
-                    <h6 className="text-white mt-3 fw-bold">Bireysel Müşteriler</h6>
+                    </Tooltip>
+                    <hr/>
+                    <Tooltip title="Müşteri Listesi" placement="right">
                     <a className={`nav-link text-white ${activePage === "customerList" ? "active" : ""}`} 
                         onClick={() => handlePageChange("customerList")}>
-                        <FaUsers className="me-2" /> Müşteri Listesi
+                        <FaUsers className="me-2" /> <span className="sidebarLabel">Müşteri Listesi</span>
                     </a>
+                    </Tooltip>
+                    <Tooltip title="Müşteri Ekle" placement="right">
                     <a className={`nav-link text-white ${activePage === "addCustomer" ? "active" : ""}`} 
                         onClick={() => handlePageChange("addCustomer")}>
-                        <FaUserPlus className="me-2" /> Müşteri Ekle
+                        <FaUserPlus className="me-2" /> <span className="sidebarLabel">Müşteri Ekle</span>
                     </a>
+                    </Tooltip>
 
-                    <h6 className="text-white mt-3 fw-bold">Stok Yönetimi</h6>
+                    <hr/>
+                    <Tooltip title="Stok Takibi" placement="right">
                     <a className={`nav-link text-white ${activePage === "stockManagement" ? "active" : ""}`} 
                         onClick={() => handlePageChange("stockManagement")}>
-                        <FaBox className="me-2" /> Stok Takibi
+                        <FaBox className="me-2" /> <span className="sidebarLabel">Stok Takibi</span>
                     </a>
+                    </Tooltip>
+                    <Tooltip title="Stok Oluştur" placement="right">
                     <a className={`nav-link text-white ${activePage === "addStock" ? "active" : ""}`} 
                         onClick={() => handlePageChange("addStock")}>
-                        <FaPlusSquare className="me-2" /> Stok Oluştur
+                        <FaPlusSquare className="me-2" /> <span className="sidebarLabel">Stok Oluştur</span>
                     </a>
+                    </Tooltip>
 
-                    <h6 className="text-white mt-3 fw-bold">Cari Yönetimi</h6>
+                    <hr/>
+                    <Tooltip title="Cari Listesi" placement="right">
                     <a className={`nav-link text-white ${activePage === "listCustomer2" ? "active" : ""}`} 
                         onClick={() => handlePageChange("listCustomer2")}>
-                        <FaDollarSign className="me-2" /> Cari Listesi
+                        <FaDollarSign className="me-2" /> <span className="sidebarLabel">Cari Listesi</span>
                     </a>
+                    </Tooltip>
+                    <Tooltip title="Cari Oluştur" placement="right">
                     <a className={`nav-link text-white ${activePage === "addCustomer2" ? "active" : ""}`} 
                         onClick={() => handlePageChange("addCustomer2")}>
-                        <FaPlusSquare className="me-2" /> Cari Oluştur
+                        <FaPlusSquare className="me-2" /> <span className="sidebarLabel">Cari Oluştur</span>
                     </a>
+                    </Tooltip>
 
-                    <h6 className="text-white mt-3 fw-bold">Teklif Yönetimi</h6>
+                    <hr/>
+                    <Tooltip title="Teklif Listesi" placement="right">
                     <a className={`nav-link text-white ${activePage === "listQuotes" ? "active" : ""}`} 
                         onClick={() => handlePageChange("listQuotes")}>
-                        <FaClipboardList className="me-2" /> Teklif Listesi
+                        <FaClipboardList className="me-2" /> <span className="sidebarLabel">Teklif Listesi</span>
                     </a>
+                    </Tooltip>
+                    <Tooltip title="Teklif Oluştur" placement="right">
                     <a className={`nav-link text-white ${activePage === "addQuote" ? "active" : ""}`} 
                         onClick={() => handlePageChange("addQuote")}>
-                        <FaPlusSquare className="me-2" /> Teklif Oluştur
+                        <FaPlusSquare className="me-2" /> <span className="sidebarLabel">Teklif Oluştur</span>
                     </a>
+                    </Tooltip>
                 </nav>
             </nav>
 
             {/* Ana İçerik */}
             <div className="main-content w-100">
                 {/* Navbar */}
-                <nav className="navbar col-md-9 offset-md-3 navbar-expand-lg navbar-light bg-white shadow-sm p-2">
+                <nav className="navbar navbar-expand-lg navbar-light bg-primary shadow-sm p-2">
                     <button className="btn btn-primary d-md-none" onClick={() => setIsSidebarOpen(true)}>
                         <FaBars />
                     </button>

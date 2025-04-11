@@ -1,21 +1,35 @@
 @media (min-width: 768px) {
-    nav.offset-md-3 {
-        margin-left: 250px!important;
+    nav.nav{
+        margin-top: 0px!important;
     }
-    nav.col-md-9 {
-        flex: 0 0 auto;
-        width: calc(100% - 250px);
+    .sidebarLabel{
+        display: none;
+    }
+    nav.navbar{
+        position: fixed;
+        width: 100%;
+        z-index: 111;
+    }
+    nav.sidebar{
+        margin-top: 60px;
+        width: 50px;
+    }
+    nav.sidebar .nav a svg{
+        height: 24px;
+        width: 24px;
+        color: #727272;
     }
     main.offset-md-3 {
-        margin-left: 250px!important;
+        margin-left: 50px!important;
     }
     main.col-md-9 {
         flex: 0 0 auto;
-        width: calc(100% - 250px);
+        width: calc(100% - 50px);
+        margin-top: 70px;
     }
 }
 .active{
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: #e8ecef;
 }
 
 .sidebar {
