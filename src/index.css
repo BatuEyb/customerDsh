@@ -223,11 +223,12 @@ nav.sidebar .nav a svg{
     margin: 5px 0;
 }
 .sidebar a {
-    color: white;
-    text-decoration: none;
     display: block;
     padding: 10px;
     cursor: pointer;
+    margin: auto;
+    width: 100%;
+    text-align: center;
 }
 .sidebar a:hover {
     background: #dee1e6;

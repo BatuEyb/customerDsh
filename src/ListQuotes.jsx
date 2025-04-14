@@ -159,81 +159,67 @@ const ListQuotes = () => {
       </div>
 
       {/* Hata veya Yükleniyor */}
-      {loading && (
+      {loading ? (
         <div className="text-center my-5">
           <Spinner animation="border" variant="primary" />
           <p>Teklifler yükleniyor...</p>
         </div>
-      )}
-      {error && <div className="alert alert-danger">{error}</div>}
+      ) : error ? (
+        <div className="alert alert-danger">{error}</div>
+      ) : filteredQuotes.length === 0 ? (
+        <div className="alert alert-info">Bu müşteriye ait teklif bulunamadı.</div>
+      ) : (
+        filteredQuotes.map((quote) => (
+          <div key={quote.id} className="card mb-4 shadow-sm">
+            <div className="card-body">
+              <div className="d-flex justify-content-between">
+                <h5>{quote.customer_name}</h5>
+                <div>
+                  <span className="badge bg-secondary">#{quote.id}</span><br />
+                  <span className={`badge ${quote.status === 'Onaylandı' ? 'bg-success' : quote.status === 'Reddedildi' ? 'bg-warning' : 'bg-secondary'}`}>
+                    {quote.status}
+                  </span>
+                </div>
+              </div>
+              <p className="text-muted mt-2">Oluşturulma: {new Date(quote.created_at).toLocaleDateString()}</p>
+              <p><strong>Toplam:</strong> {Number(quote.total_amount).toFixed(2)} ₺</p>
 
-      {/* Teklif Listesi */}
-      {filteredQuotes.length === 0 && !loading && !error && (
-        <div className="alert alert-info">Gösterilecek teklif bulunamadı.</div>
-      )}
+              <table className="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Ürün</th>
+                    <th>Adet</th>
+                    <th>Fiyat</th>
+                    <th>İskonto</th>
+                    <th>Net Fiyat</th>
+                    <th>Toplam</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {quote.items.map((item, idx) => (
+                    <tr key={idx}>
+                      <td>{item.product_name}</td>
+                      <td>{item.quantity}</td>
+                      <td>{Number(item.unit_price).toFixed(2)} ₺</td>
+                      <td>{Number(item.discount).toFixed(2)}%</td>
+                      <td>{Number(item.discounted_unit_price).toFixed(2)} ₺</td>
+                      <td>{Number(item.total_price).toFixed(2)} ₺</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-      {filteredQuotes.map((quote) => (
-        <div key={quote.id} className="card mb-4 shadow-sm">
-          <div className="card-body">
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <h5 className="mb-0">{quote.customer_name}</h5>
-              <span>
-                <span className="badge bg-secondary">Teklif No: #{quote.id}</span>
-                <br />
-                <span className={`badge ${quote.status === 'Onaylandı' ? 'bg-success' : quote.status === 'Reddedildi' ? 'bg-warning' : 'bg-secondary'}`}>
-                  {quote.status}
-                </span>
-              </span>
-            </div>
-            <p className="text-muted mb-2">
-              Oluşturulma Tarihi: {new Date(quote.created_at).toLocaleDateString()}
-            </p>
-            <h6 className="mb-3">💰 Toplam: <strong>{Number(quote.total_amount).toFixed(2)} ₺</strong></h6>
-
-            {/* Ürünler */}
-            <table className="table table-sm table-bordered table-hover">
-              <thead className="table-light">
-                <tr>
-                  <th>Ürün</th>
-                  <th>Adet</th>
-                  <th>Birim Fiyat</th>
-                  <th>İskonto Oranı</th>
-                  <th>İskontolu Birim Fiyat</th>
-                  <th>Toplam</th>
-                </tr>
-              </thead>
-              <tbody>
-              {quote.items.map((item, idx) => (
-                <tr key={idx}>
-                  <td>{item.product_name}</td>
-                  <td>{item.quantity}</td>
-                  <td>{Number(item.unit_price).toFixed(2)} ₺</td>
-                  <td>{Number(item.discount).toFixed(2)}%</td>
-                  <td>{Number(item.discounted_unit_price).toFixed(2)} ₺</td>
-                  <td>{Number(item.total_price).toFixed(2)} ₺</td>
-                </tr>
-              ))}
-              </tbody>
-            </table>
-
-            {/* Aksiyonlar */}
-            <div className="d-flex justify-content-end mt-3">
-              <button
-                className="btn btn-outline-primary btn-sm me-2"
-                onClick={() => {
-                  setSelectedQuote(quote);
-                  setEditedQuote(quote);
-                  setShowEditModal(true);
-                }}
-              >
-                Düzenle
-              </button>
-              <button className="btn btn-outline-danger btn-sm" onClick={() => deleteQuote(quote.id)}>Sil</button>
-              <button className="btn btn-outline-success btn-sm ms-2" onClick={() => generatePDF(quote)}>PDF Olarak İndir</button>
+              <div className="d-flex justify-content-end">
+                <button className="btn btn-outline-primary btn-sm me-2" onClick={() => { setSelectedQuote(quote); setEditedQuote(quote); setShowEditModal(true); }}>
+                  Düzenle
+                </button>
+                <button className="btn btn-outline-danger btn-sm me-2" onClick={() => deleteQuote(quote.id)}>Sil</button>
+                <button className="btn btn-outline-success btn-sm" onClick={() => generatePDF(quote)}>PDF</button>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))
+      )}
 
       {/* Teklif Düzenleme Modalı */}
       <EditQuoteModal

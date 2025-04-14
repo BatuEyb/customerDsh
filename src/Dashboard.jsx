@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams  } from "react-router-dom";
 import { Modal, Button, Form } from 'react-bootstrap';
-import { FaRegUser, FaBars, FaTimes, FaChartBar, FaUsers, FaUserPlus, FaClipboardList, FaPlusCircle, FaPlusSquare ,FaBox, FaDollarSign  } from "react-icons/fa";
+import { FaUserCircle, FaBars, FaTimes, FaChartBar, FaUsers, FaUserPlus, FaClipboardList, FaPlusCircle, FaPlusSquare ,FaBox, FaDollarSign  } from "react-icons/fa";
 import Tooltip from '@mui/material/Tooltip';
-import Add_customer from "./Add_customer";
+import QuickCustomer from "./add_customer";
 import CustomerList from "./CustomerList";
 import ChartData from "./charts.jsx";
 import StockManagement from "./StockManagement.jsx";
@@ -12,6 +12,9 @@ import AddCustomer from "./AddCustomer.jsx";
 import CustomerList2 from "./CustomerList2.jsx";
 import CreateQuote from "./CreateQuote.jsx";
 import ListQuotes from "./ListQuotes.jsx";
+import CustomerDetail from "./CustomerDetail.jsx";
+import CreateOrder from "./CreateOrder.jsx";
+import ListOrders from "./ListOrders.jsx";
 
 const Dashboard = () => {
     const location = useLocation();
@@ -84,8 +87,8 @@ const Dashboard = () => {
                     </a>
                     </Tooltip>
                     <Tooltip title="Müşteri Ekle" placement="right">
-                    <a className={`nav-link text-white ${activePage === "addCustomer" ? "active" : ""}`} 
-                        onClick={() => handlePageChange("addCustomer")}>
+                    <a className={`nav-link text-white ${activePage === "quickCustomer" ? "active" : ""}`} 
+                        onClick={() => handlePageChange("quickCustomer")}>
                         <FaUserPlus className="me-2" /> <span className="sidebarLabel">Müşteri Ekle</span>
                     </a>
                     </Tooltip>
@@ -106,8 +109,8 @@ const Dashboard = () => {
 
                     <hr/>
                     <Tooltip title="Cari Listesi" placement="right">
-                    <a className={`nav-link text-white ${activePage === "listCustomer2" ? "active" : ""}`} 
-                        onClick={() => handlePageChange("listCustomer2")}>
+                    <a className={`nav-link text-white ${activePage === "listCustomer" ? "active" : ""}`} 
+                        onClick={() => handlePageChange("listCustomer")}>
                         <FaDollarSign className="me-2" /> <span className="sidebarLabel">Cari Listesi</span>
                     </a>
                     </Tooltip>
@@ -131,19 +134,32 @@ const Dashboard = () => {
                         <FaPlusSquare className="me-2" /> <span className="sidebarLabel">Teklif Oluştur</span>
                     </a>
                     </Tooltip>
+                    <hr/>
+                    <Tooltip title="Sipariş Listele" placement="right">
+                    <a className={`nav-link text-white ${activePage === "listOrder" ? "active" : ""}`} 
+                        onClick={() => handlePageChange("listOrder")}>
+                        <FaPlusSquare className="me-2" /> <span className="sidebarLabel">Sipariş Listesi</span>
+                    </a>
+                    </Tooltip>
+                    <Tooltip title="Sipariş Oluştur" placement="right">
+                    <a className={`nav-link text-white ${activePage === "addOrder" ? "active" : ""}`} 
+                        onClick={() => handlePageChange("addOrder")}>
+                        <FaPlusSquare className="me-2" /> <span className="sidebarLabel">Sipariş Oluştur</span>
+                    </a>
+                    </Tooltip>
                 </nav>
             </nav>
 
             {/* Ana İçerik */}
             <div className="main-content w-100">
                 {/* Navbar */}
-                <nav className="navbar navbar-expand-lg navbar-light bg-primary shadow-sm p-2">
+                <nav className="navbar navbar-expand-lg navbar-light bg-primary shadow-sm px-4">
                     <button className="btn btn-primary d-md-none" onClick={() => setIsSidebarOpen(true)}>
                         <FaBars />
                     </button>
                     <div className="dropdown ms-auto">
-                        <button className="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <FaRegUser />
+                        <button className="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <FaUserCircle size={24} color='white'/>
                         </button>
                         <ul className="dropdown-menu dropdown-menu-end">
                             <li><span className="dropdown-item-text fw-bold">Merhaba, {localStorage.getItem("name") || "Misafir"}</span></li>
@@ -156,15 +172,18 @@ const Dashboard = () => {
                 {/* Dinamik İçerik */}
                 <main className="col-md-9 offset-md-3 px-4 bg-light">
                     <div className="mt-3">
-                        {activePage === "chartData" && <ChartData />}
-                        {activePage === "customerList" && <CustomerList />}
-                        {activePage === "addCustomer" && <Add_customer />}
-                        {activePage === "stockManagement" && <StockManagement />}
-                        {activePage === "addStock" && <StockAndCategoryManagement />}
-                        {activePage === "listCustomer2" && <CustomerList2 />}
-                        {activePage === "addCustomer2" && <AddCustomer />}
-                        {activePage === "listQuotes" && <ListQuotes />}
-                        {activePage === "addQuote" && <CreateQuote />}
+                    {location.pathname.includes("chartData") && <ChartData />}
+                    {location.pathname.includes("customerList") && <CustomerList />}
+                    {location.pathname.includes("quickCustomer") && <QuickCustomer />}
+                    {location.pathname.includes("stockManagement") && <StockManagement />}
+                    {location.pathname.includes("addStock") && <StockAndCategoryManagement />}
+                    {location.pathname.includes("listCustomer") && !location.pathname.includes("listCustomer/") && <CustomerList2 />}
+                    {location.pathname.includes("addCustomer2") && <AddCustomer />}
+                    {location.pathname.includes("listQuotes") && <ListQuotes />}
+                    {location.pathname.includes("addQuote") && <CreateQuote />}
+                    {location.pathname.includes("listCustomer/") && <CustomerDetail />}
+                    {location.pathname.includes("listOrder") && <ListOrders />}
+                    {location.pathname.includes("addOrder") && <CreateOrder />}
                     </div>
                 </main>
                 <Modal show={showLogModal} onHide={() => setShowLogModal(false)} size="lg">

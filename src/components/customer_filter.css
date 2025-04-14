@@ -18,6 +18,7 @@
         height: 24px;
         width: 24px;
         color: #727272;
+        margin: auto !important;
     }
     main.offset-md-3 {
         margin-left: 50px!important;
@@ -28,7 +29,7 @@
         margin-top: 70px;
     }
 }
-.active{
+.sidebar .active{
     background-color: #e8ecef;
 }
 

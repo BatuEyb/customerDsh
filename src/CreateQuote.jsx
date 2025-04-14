@@ -288,7 +288,14 @@ const CreateQuote = () => {
         <tbody>
           {selectedItems.map((item, idx) => (
             <tr key={idx}>
-              <td>{item.product_name}</td>
+              <td>
+                <input
+                  type="text"
+                  value={item.product_name}
+                  className="form-control"
+                  disabled
+                />
+              </td>
 
               {/* Quantity Input */}
               <td>
@@ -302,7 +309,14 @@ const CreateQuote = () => {
               </td>
 
               {/* Unit Price */}
-              <td>{item.unit_price.toFixed(2)}</td>
+              <td>
+                <input
+                  type="number"
+                  value={item.unit_price}
+                  className="form-control"
+                  disabled
+                />
+              </td>
 
               {/* Discount Input */}
               <td>
@@ -335,7 +349,14 @@ const CreateQuote = () => {
               </td>
 
               {/* Total Price */}
-              <td>{item.total_price.toFixed(2)} ₺</td>
+              <td>
+              <input
+                type="number"
+                value={item.total_price.toFixed(2)}
+                className="form-control"
+                disabled
+              />
+              </td>
 
               {/* Remove Button */}
               <td>

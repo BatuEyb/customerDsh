@@ -20,13 +20,16 @@ root.render(
         <Route path="/dashboard/*" element={<PrivateRoute />}>
           <Route path="chartData" element={<Dashboard />} />
           <Route path="customerList" element={<Dashboard />} />
-          <Route path="addCustomer" element={<Dashboard />} />
+          <Route path="quickCustomer" element={<Dashboard />} />
           <Route path="stockManagement" element={<Dashboard />} />
           <Route path="addStock" element={<Dashboard />} />
-          <Route path="listCustomer2" element={<Dashboard />} />
+          <Route path="listCustomer" element={<Dashboard />} />
+          <Route path="listCustomer/:id" element={<Dashboard />} />
           <Route path="addCustomer2" element={<Dashboard />} />
           <Route path="listQuotes" element={<Dashboard />} />
           <Route path="addQuote" element={<Dashboard />} />
+          <Route path="listOrder" element={<Dashboard />} />
+          <Route path="addOrder" element={<Dashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>

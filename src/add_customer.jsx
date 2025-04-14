@@ -1,7 +1,7 @@
 import { useState } from "react";
 import './add_customer.css';
 
-function Add_customer() {
+function QuickCustomer() {
     // Form verilerini tutacak state'ler
     const [tuketimNo, setTuketimNo] = useState('');
     const [adSoyad, setAdSoyad] = useState('');
@@ -468,4 +468,4 @@ function Add_customer() {
   )
 }
 
-export default Add_customer
+export default QuickCustomer

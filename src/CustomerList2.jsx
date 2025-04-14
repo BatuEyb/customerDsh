@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// CustomerCard bileşeni her bir müşteri kartını gösterecek
 const CustomerCard = ({ customer }) => {
+    const navigate = useNavigate();
+
+    const handleClick = (id) => {
+        navigate(`/dashboard/listCustomer/${id}`);
+    };
+
     return (
-        <div className="col-md-3">
+        <div className="col-md-3" onClick={() => handleClick(customer.id)} style={{ cursor: 'pointer' }}>
             <div className="customer-card card mb-3">
                 <h5 className="card-header bg-primary text-white ad_soyad">
                     {customer.name}<br />
