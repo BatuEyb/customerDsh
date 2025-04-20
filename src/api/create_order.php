@@ -84,7 +84,43 @@ try {
         $itemStmt->execute();
     }
     
+    // 3. Sipariş sonrası otomatik borç kaydı transactions tablosuna ekleniyor
+    $description = "Sipariş #{$order_id} için borç eklendi";
+    $transSql = "
+        INSERT INTO transactions (
+            customer_id,
+            order_id,
+            type,
+            amount,
+            description,
+            created_by,
+            updated_by,
+            created_at,
+            updated_at
+        ) VALUES (
+            ?, ?, 'Borç', ?, ?, ?, ?, NOW(), NOW()
+        )
+    ";
+    $transStmt = $conn->prepare($transSql);
+    if ( ! $transStmt ) {
+        throw new Exception("transactions hazırlama hatası: " . $conn->error);
+    }
 
+    // Tip dizisi: i (customer_id), i (order_id), d (amount), s (description), s (created_by), s (updated_by)
+    $transStmt->bind_param(
+        "iidsss",
+        $customer_id,
+        $order_id,
+        $total_amount,
+        $description,
+        $created_by,
+        $updated_by
+    );
+
+    if ( ! $transStmt->execute() ) {
+        throw new Exception("transactions ekleme hatası: " . $transStmt->error);
+    }
+    
     // İşlemi commit et
     $conn->commit();
 

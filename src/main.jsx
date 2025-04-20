@@ -30,6 +30,7 @@ root.render(
           <Route path="addQuote" element={<Dashboard />} />
           <Route path="listOrder" element={<Dashboard />} />
           <Route path="addOrder" element={<Dashboard />} />
+          <Route path="listBalances" element={<Dashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>

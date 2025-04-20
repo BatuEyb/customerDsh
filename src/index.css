@@ -1,5 +1,20 @@
+.bg-primary, .btn-primary{
+    background-color: #3F75D7!important;	
+}
+.bg-warning, .btn-warning{
+    background-color: #FF8552!important;	
+}
+.border-primary{
+    border-color: #3F75D7!important;
+}
+
+.bg-light{
+    background-color: #F2F4F7!important;
+}
+
 body{
-    background: rgba(248,249,250,1) !important;
+    background: #F2F4F7 !important;
+    font-family: 'Poppins';
 }
 .users-div {
     display: block;
@@ -32,7 +47,7 @@ body{
     top: 50%;
     transform: translateY(-50%);
     right: 10px;
-    z-index: 11111;
+    z-index: 1;
 }
 .customer-edit-drp span::after{
     display: none;
@@ -122,12 +137,12 @@ a{
 
 /* Başarı Mesajı */
 .alert-success {
+    border: 1px solid #c3e6cb;
     padding: 1rem;
     margin-top: 1rem;
-    border-radius: 0.5rem;
-    text-align: center;
+    text-align: left;
     font-size: 1rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: #155724;
 }
 
 .btn-filter:hover {
@@ -160,6 +175,7 @@ a{
 .alert {
     margin: 10px 0px 0px 0px!important;
     padding: 5px 10px!important;
+    border-radius: 5px;
 }
 /* Etiketler (Interests) */
 .badge-interest {
@@ -188,10 +204,8 @@ a{
     padding: 0 5px;
 }
 .interests_item.is_tipi {
-    background-color: #26d367;
-}
-.interests_item.inItem {
-    background-color: #85b6fd;
+    background-color: #FF8552;
+    color: #ffffff;
 }
 
 .largeSpan{
@@ -228,10 +242,13 @@ nav.sidebar .nav a svg{
     cursor: pointer;
     margin: auto;
     width: 100%;
-    text-align: center;
+    text-align: left;
 }
 .sidebar a:hover {
-    background: #dee1e6;
+    background: rgba(255, 133, 82, 0.5);
+}
+.sidebar a.active svg {
+    color: #ffffff!important;
 }
 .content {
     flex-grow: 1;

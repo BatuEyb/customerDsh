@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import CustomerOwnQuotes from './components/CustomerOwnQuotes';
 import CustomerOwnOrders from './components/CustomerOwnOrders';
+import AllCustomerBalances from './CustomerBalances';
+import AddPaymentForm from './components/AddPaymentForm';
+import CustomerOwnBalance from './components/CustomerOwnBalances';
 
 const CustomerDetail = () => {
     const { id } = useParams();
@@ -78,6 +81,11 @@ const CustomerDetail = () => {
                         Müşteri Siparişleri
                     </button>
                 </li>
+                <li className="nav-item">
+                    <button className={`nav-link ${activeTab === "balance" ? "active" : ""}`} onClick={() => setActiveTab("balance")}>
+                        Müşteri Bakiyesi
+                    </button>
+                </li>
             </ul>
 
             <div className="tab-content mt-3">
@@ -114,6 +122,16 @@ const CustomerDetail = () => {
                     <div className="tab-pane active">
                         <CustomerOwnOrders customer_id={parseInt(id)} />
                     </div>
+                )}
+
+                {activeTab === "balance" && (
+                    <>
+                    
+                    <div className="tab-pane active">
+                        <AddPaymentForm customerId={parseInt(id)}/>
+                        <CustomerOwnBalance customer_id={parseInt(id)} />
+                    </div>
+                    </>
                 )}
             </div>
         </div>

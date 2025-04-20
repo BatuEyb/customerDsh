@@ -1,4 +1,7 @@
 @media (min-width: 768px) {
+    .sidebar a {
+        text-align: center!important;
+    }
     nav.nav{
         margin-top: 0px!important;
     }
@@ -9,9 +12,10 @@
         position: fixed;
         width: 100%;
         z-index: 111;
+        border-bottom: 4px solid #FF8552;
     }
     nav.sidebar{
-        margin-top: 60px;
+        margin-top: 64px;
         width: 50px;
     }
     nav.sidebar .nav a svg{
@@ -26,11 +30,12 @@
     main.col-md-9 {
         flex: 0 0 auto;
         width: calc(100% - 50px);
-        margin-top: 70px;
+        margin-top: 74px;
     }
 }
 .sidebar .active{
-    background-color: #e8ecef;
+    background-color: #FF8552	;
+    color: #ffffff;
 }
 
 .sidebar {

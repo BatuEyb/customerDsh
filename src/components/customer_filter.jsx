@@ -92,10 +92,10 @@ const CustomerFilter = ({ onSearchChange, onFilterChange }) => {
             <div className="row">
                 <div className="button-group d-flex flex-wrap mb-2">
                     <div className="col-md-2 col-sm-12 p-1">
-                       <button className="btn btn-info w-100" onClick={() => handleQuickFilter("montajBekleyen")}>Montaj Bekleyen</button>
+                       <button className="btn btn-info w-100 text-white" onClick={() => handleQuickFilter("montajBekleyen")}>Montaj Bekleyen</button>
                     </div>
                     <div className="col-md-2 col-sm-6 p-1">
-                        <button className="btn btn-warning w-100" onClick={() => handleQuickFilter("projeBekleyen")}>Proje Bekleyen</button>
+                        <button className="btn btn-warning w-100 text-white" onClick={() => handleQuickFilter("projeBekleyen")}>Proje Bekleyen</button>
                     </div>
                     <div className="col-md-2 col-sm-6 p-1">
                         <button className="btn btn-primary w-100" onClick={() => handleQuickFilter("randevuBekleyen")}>Randevu Bekleyen</button>

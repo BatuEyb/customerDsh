@@ -122,8 +122,8 @@ const ListOrders = () => {
               <div className="d-flex justify-content-between">
                 <h5>{order.customer_name}</h5>
                 <div>
-                  <span className="badge bg-secondary">#{order.id}</span><br />
-                  <span className="badge bg-info">{order.status}</span>
+                  <span className="badge bg-warning">#{order.id}</span><br />
+                  <span className="badge bg-primary">{order.status}</span>
                 </div>
               </div>
               <p className="text-muted mt-2">Oluşturulma: {new Date(order.created_at).toLocaleDateString()}</p>

@@ -183,8 +183,8 @@ Eykom Teknik Servis`
                     >
                         {customer.hata_sebebi ? customer.hata_sebebi : 'Hata Yoktur'}
                     </div>
-                    <span className="interests_item cihaz_turu inItem mt-2">{customer.is_durumu}</span>
-                    <span className="interests_item cihaz_turu inItem mt-2">Randevu Tarihi : {formatDate(customer.randevu_tarihi)}</span>
+                    <span className="interests_item bg-primary text-white cihaz_turu inItem mt-2">{customer.is_durumu}</span>
+                    <span className="interests_item bg-primary text-white cihaz_turu inItem mt-2">Randevu Tarihi : {formatDate(customer.randevu_tarihi)}</span>
                 </div>
                 <div className="card-footer">
                     <div className="interests">

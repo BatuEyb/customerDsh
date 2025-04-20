@@ -15,6 +15,7 @@ import ListQuotes from "./ListQuotes.jsx";
 import CustomerDetail from "./CustomerDetail.jsx";
 import CreateOrder from "./CreateOrder.jsx";
 import ListOrders from "./ListOrders.jsx";
+import CustomerBalances from "./CustomerBalances.jsx";
 
 const Dashboard = () => {
     const location = useLocation();
@@ -147,6 +148,13 @@ const Dashboard = () => {
                         <FaPlusSquare className="me-2" /> <span className="sidebarLabel">Sipariş Oluştur</span>
                     </a>
                     </Tooltip>
+                    <hr/>
+                    <Tooltip title="Bakiye Listesi" placement="right">
+                    <a className={`nav-link text-white ${activePage === "listBalances" ? "active" : ""}`} 
+                        onClick={() => handlePageChange("listBalances")}>
+                        <FaPlusSquare className="me-2" /> <span className="sidebarLabel">Bakiye Listesi</span>
+                    </a>
+                    </Tooltip>
                 </nav>
             </nav>
 
@@ -157,6 +165,7 @@ const Dashboard = () => {
                     <button className="btn btn-primary d-md-none" onClick={() => setIsSidebarOpen(true)}>
                         <FaBars />
                     </button>
+                    <img src="../src/assets/kobiGo-logo-w.png" alt="" srcset="" width="149px"/>
                     <div className="dropdown ms-auto">
                         <button className="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <FaUserCircle size={24} color='white'/>
@@ -170,7 +179,7 @@ const Dashboard = () => {
                 </nav>
 
                 {/* Dinamik İçerik */}
-                <main className="col-md-9 offset-md-3 px-4 bg-light">
+                <main className="col-md-9 offset-md-3 px-4">
                     <div className="mt-3">
                     {location.pathname.includes("chartData") && <ChartData />}
                     {location.pathname.includes("customerList") && <CustomerList />}
@@ -184,6 +193,7 @@ const Dashboard = () => {
                     {location.pathname.includes("listCustomer/") && <CustomerDetail />}
                     {location.pathname.includes("listOrder") && <ListOrders />}
                     {location.pathname.includes("addOrder") && <CreateOrder />}
+                    {location.pathname.includes("listBalances") && <CustomerBalances />}
                     </div>
                 </main>
                 <Modal show={showLogModal} onHide={() => setShowLogModal(false)} size="lg">
