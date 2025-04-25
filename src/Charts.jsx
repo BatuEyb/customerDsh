@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaAward } from "react-icons/fa";
+import dayjs from "dayjs";
 import { BarChart, Bar,LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend} from "recharts";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -17,6 +18,8 @@ export default function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedRange, setSelectedRange] = useState("all");
+  
 
   useEffect(() => {
     fetch("http://localhost/customerDsh/src/api/dashboard_data.php")
@@ -39,6 +42,17 @@ export default function Dashboard() {
   for (let i = 0; i < data.device_counts.length; i += 3) {
     chunkedDevices.push(data.device_counts.slice(i, i + 3));
   }
+
+ 
+
+  const filteredData = data?.daily_orders?.filter((item) => {
+    const date = dayjs(item.tarih);
+    const now = dayjs();
+    if (selectedRange === "7g") return date.isAfter(now.subtract(7, "day"));
+    if (selectedRange === "30g") return date.isAfter(now.subtract(30, "day"));
+    if (selectedRange === "90g") return date.isAfter(now.subtract(90, "day"));
+    return true;
+  }) || [];
   
   return (
     <>
@@ -127,16 +141,29 @@ export default function Dashboard() {
 
         {/* 📌 Günlük Sipariş Sayısı Grafiği */}
         <div className="col-md-12">
-          <Card>
-            <h2 className="h5">Günlük Sipariş Sayısı</h2>
-            {data.daily_orders.length > 0 ? (
+          <Card className="p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="h5 float-start">Günlük Sipariş Sayısı</h2>
+              <select
+                value={selectedRange}
+                onChange={(e) => setSelectedRange(e.target.value)}
+                className="border-0 rounded text-sm float-end"
+              >
+                <option value="all">Tümü</option>
+                <option value="7g">Son 7 Gün</option>
+                <option value="30g">Son 1 Ay</option>
+                <option value="90g">Son 3 Ay</option>
+              </select>
+            </div>
+
+            {filteredData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={data.daily_orders}>
+                <LineChart data={filteredData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="tarih" />
                   <YAxis allowDecimals={false} />
                   <Tooltip />
-                  <Line type="monotone" dataKey="siparis_sayisi" stroke="#8884d8" strokeWidth={2} />
+                  <Line type="monotone" dataKey="siparis_sayisi" stroke="#3f75d7" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             ) : (

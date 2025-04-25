@@ -5,7 +5,8 @@ include 'session.php';
 $response = [];
 
 try {
-    $stmt = $conn->prepare("
+    // Siparişleri ve müşteri bilgilerini çek
+    $ordersSql = "
         SELECT 
             o.id AS id,
             o.customer_id,
@@ -21,8 +22,9 @@ try {
         FROM orders o
         JOIN customers c ON o.customer_id = c.id
         LEFT JOIN users u ON o.created_by = u.id
-        ORDER BY o.created_at DESC;
-    ");
+        ORDER BY o.created_at DESC
+    ";
+    $stmt = $conn->prepare($ordersSql);
     $stmt->execute();
     $orderResult = $stmt->get_result();
 
@@ -31,43 +33,36 @@ try {
     while ($row = $orderResult->fetch_assoc()) {
         $order_id = $row['id'];
 
-        // Sipariş ürünlerini getir
-        $itemsStmt = $conn->prepare("
+        // Bu siparişe ait ürünleri çek
+        $itemsSql = "
             SELECT 
                 oi.stock_id,
                 s.product_name,
-                oi.quantity,
                 oi.unit_price,
-                oi.discount, 
+                oi.discount,
                 oi.discounted_unit_price,
                 oi.total_amount,
-                oi.serial_number,
-                oi.address,
-                oi.service_name,
-                oi.phone_number,
-                oi.job_status
+                oi.serial_number
             FROM order_items oi
             JOIN stocks s ON oi.stock_id = s.id
             WHERE oi.order_id = ?
-        ");
+        ";
+        $itemsStmt = $conn->prepare($itemsSql);
         $itemsStmt->bind_param("i", $order_id);
         $itemsStmt->execute();
         $itemsResult = $itemsStmt->get_result();
 
         $items = [];
         while ($item = $itemsResult->fetch_assoc()) {
-            // serial_number virgül ile ayrılmışsa, diziye çevir
-            $service_name= array_filter(array_map('trim', explode(',', $item['service_name'])));
-            $phone_number= array_filter(array_map('trim', explode(',', $item['phone_number'])));
-            $job_status= array_filter(array_map('trim', explode(',', $item['job_status'])));
-            $address= array_filter(array_map('trim', explode(',', $item['address'])));
-            $serials = array_filter(array_map('trim', explode(',', $item['serial_number'])));
-            $item['serial_number'] = $serials;
-            $item['address'] = $address;
-            $item['service_name'] = $service_name;
-            $item['phone_number'] = $phone_number;
-            $item['job_status'] = $job_status;
-            $items[] = $item;
+            $items[] = [
+                'stock_id' => (int)$item['stock_id'],
+                'product_name' => $item['product_name'],
+                'unit_price' => (float)$item['unit_price'],
+                'discount' => (float)$item['discount'],
+                'discounted_unit_price' => isset($item['discounted_unit_price']) ? (float)$item['discounted_unit_price'] : null,
+                'total_amount' => (float)$item['total_amount'],
+                'serial_number' => $item['serial_number'],
+            ];
         }
 
         $row['items'] = $items;

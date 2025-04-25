@@ -33,13 +33,14 @@ const ListOrders = () => {
       });
   }, []);
 
+  // Arama filtreleme
   useEffect(() => {
+    const searchLower = search.toLowerCase();
     const filtered = orders.filter(order => {
       const name = order.customer_name?.toLowerCase() || '';
-      const id = order.id?.toString() || '';
-      const searchLower = search.toLowerCase();
-  
-      // order.items içinde service_name array ise her bir elemanı kontrol et
+      const idStr = order.id?.toString() || '';
+
+      // service_name içinde kontrol edelim
       const serviceMatch = order.items?.some(item => {
         if (Array.isArray(item.service_name)) {
           return item.service_name.some(s => s?.toLowerCase().includes(searchLower));
@@ -48,46 +49,50 @@ const ListOrders = () => {
         }
         return false;
       });
-  
-      return name.includes(searchLower) || id.includes(search) || serviceMatch;
+
+      return (
+        name.includes(searchLower) ||
+        idStr.includes(searchLower) ||
+        serviceMatch
+      );
     });
-  
+
     setFilteredOrders(filtered);
   }, [search, orders]);
 
   // Sipariş silme işlemi
-  const deleteOrder = (order_id) => {
-    if (!window.confirm("Bu siparişi silmek istediğinizden emin misiniz?")) return;
+  const deleteOrder = order_id => {
+    if (!window.confirm('Bu siparişi silmek istediğinizden emin misiniz?')) return;
 
     fetch('http://localhost/customerDsh/src/api/delete_order.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ order_id })
+      body: JSON.stringify({ order_id }),
     })
       .then(res => res.json())
       .then(data => {
         if (data.success) {
           setOrders(prev => prev.filter(o => o.id !== order_id));
           setFilteredOrders(prev => prev.filter(o => o.id !== order_id));
-          alert("Sipariş silindi.");
+          alert('Sipariş silindi.');
         } else {
-          alert("Silme başarısız: " + data.message);
+          alert('Silme başarısız: ' + data.message);
         }
       })
       .catch(err => {
         console.error(err);
-        alert("Hata oluştu");
+        alert('Hata oluştu');
       });
   };
 
   // Satır tıklama ile açma / kapama işlemi
   const toggleRow = (orderId, itemIdx) => {
-    setOpenRows((prevState) => ({
-      ...prevState,
+    setOpenRows(prev => ({
+      ...prev,
       [orderId]: {
-        ...prevState[orderId],
-        [itemIdx]: !prevState[orderId]?.[itemIdx],
+        ...prev[orderId],
+        [itemIdx]: !prev[orderId]?.[itemIdx],
       },
     }));
   };
@@ -102,7 +107,7 @@ const ListOrders = () => {
           placeholder="Müşteri adı veya sipariş no ile ara..."
           className="form-control"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={e => setSearch(e.target.value)}
         />
       </div>
 
@@ -126,15 +131,19 @@ const ListOrders = () => {
                   <span className="badge bg-primary">{order.status}</span>
                 </div>
               </div>
-              <p className="text-muted mt-2">Oluşturulma: {new Date(order.created_at).toLocaleDateString()}</p>
-              <p><strong>Toplam:</strong> {Number(order.total_amount).toFixed(2)} ₺</p>
+              <p className="text-muted mt-2">
+                Oluşturulma: {new Date(order.created_at).toLocaleDateString()}
+              </p>
+              <p>
+                <strong>Toplam:</strong> {Number(order.total_amount).toFixed(2)} ₺
+              </p>
 
               {/* Ürün Tablosu */}
               <table className="table table-sm">
                 <thead>
                   <tr>
                     <th>Ürün</th>
-                    <th>Adet</th>
+                    <th>Seri Numarası</th>
                     <th>Birim Fiyat</th>
                     <th>İskonto</th>
                     <th>İskontolu Fiyat</th>
@@ -144,16 +153,19 @@ const ListOrders = () => {
                 <tbody>
                   {order.items.map((item, idx) => (
                     <React.Fragment key={idx}>
-                      <tr onClick={() => toggleRow(order.id, idx)} style={{ cursor: 'pointer' }}>
+                      <tr
+                        onClick={() => toggleRow(order.id, idx)}
+                        style={{ cursor: 'pointer' }}
+                      >
                         <td>{item.product_name}</td>
-                        <td>{item.quantity}</td>
+                        <td>{item.serial_number || '-'}</td>
                         <td>{Number(item.unit_price).toFixed(2)} ₺</td>
                         <td>{Number(item.discount).toFixed(2)}%</td>
                         <td>{Number(item.discounted_unit_price).toFixed(2)} ₺</td>
                         <td>{Number(item.total_amount).toFixed(2)} ₺</td>
                       </tr>
 
-                      {/* Alt Tablolar */}
+                      {/* Detay Satırı */}
                       {openRows[order.id]?.[idx] && (
                         <tr>
                           <td colSpan="6">
@@ -165,22 +177,20 @@ const ListOrders = () => {
                                     <th>#</th>
                                     <th>Seri No</th>
                                     <th>Adres</th>
-                                    <th>İsim</th>
-                                    <th>Telefon No:</th>
+                                    <th>Servis Adı</th>
+                                    <th>Telefon No</th>
                                     <th>İş Durumu</th>
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {Array.from({ length: item.serial_number.length || item.address.length || item.service_name.length || item.phone_number.length || item.job_status.length}).map((_, i) => (
-                                    <tr key={i}>
-                                      <td>{i + 1}</td>
-                                      <td>{item.serial_number[i] || '-'}</td>
-                                      <td>{item.address[i] || '-'}</td>
-                                      <td>{item.service_name[i] || '-'}</td>
-                                      <td>{item.phone_number[i] || '-'}</td>
-                                      <td>{item.job_status[i] || '-'}</td>
-                                    </tr>
-                                  ))}
+                                  <tr>
+                                    <td>1</td>
+                                    <td>{item.serial_number || '-'}</td>
+                                    <td>{item.address || '-'}</td>
+                                    <td>{item.service_name || '-'}</td>
+                                    <td>{item.phone_number || '-'}</td>
+                                    <td>{item.job_status || '-'}</td>
+                                  </tr>
                                 </tbody>
                               </table>
                             </div>
@@ -194,8 +204,18 @@ const ListOrders = () => {
 
               {/* Silme ve PDF Oluşturma Butonları */}
               <div className="d-flex justify-content-end">
-                <button className="btn btn-outline-danger btn-sm me-2" onClick={() => deleteOrder(order.id)}>Sil</button>
-                <button className="btn btn-outline-success btn-sm" onClick={() => generateOrderPDF(order)}>PDF</button>
+                <button
+                  className="btn btn-outline-danger btn-sm me-2"
+                  onClick={() => deleteOrder(order.id)}
+                >
+                  Sil
+                </button>
+                <button
+                  className="btn btn-outline-success btn-sm"
+                  onClick={() => generateOrderPDF(order)}
+                >
+                  PDF
+                </button>
               </div>
             </div>
           </div>

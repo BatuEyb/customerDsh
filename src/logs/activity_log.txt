@@ -683,3 +683,29 @@ Fiyat: 123000.00 → 45000
 [2025-04-17 15:06:30] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün Güncellendi: Buderus GB062 24 kW Yoğuşmalı Kombi ->-> Stok Miktarı: 20 → 3
 
 [2025-04-18 16:32:00] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 54
+[2025-04-21 16:42:30] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - order_items id=39 güncellendi: detail_index=0
+[2025-04-21 16:50:25] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - order_items id=35 güncellendi: detail_index=2
+[2025-04-21 17:09:14] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 55
+[2025-04-21 17:14:16] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün Güncellendi: Buderus GB062 20 kW Yoğuşmalı Kombi ->-> Stok Miktarı: 0 → 25
+
+[2025-04-22 08:34:32] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 56
+[2025-04-22 08:35:15] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 56
+[2025-04-23 12:32:22] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 57
+[2025-04-23 14:08:37] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 58
+[2025-04-23 16:17:35] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 63
+[2025-04-23 16:25:52] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 65
+[2025-04-23 16:53:46] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 65
+[2025-04-23 16:53:49] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 63
+[2025-04-23 16:53:51] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 58
+[2025-04-23 16:53:54] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 57
+[2025-04-24 12:25:55] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 66
+[2025-04-24 15:10:59] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 70
+[2025-04-24 15:37:58] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 71
+[2025-04-24 15:39:07] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 66
+[2025-04-24 20:29:42] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 72
+[2025-04-24 21:11:34] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 73
+[2025-04-24 21:23:11] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 74
+[2025-04-24 22:09:20] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Müşteri Eklendi: Gülten Eyüboğlu
+[2025-04-24 22:14:35] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 75
+[2025-04-24 22:19:00] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 75
+[2025-04-24 22:19:09] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 76

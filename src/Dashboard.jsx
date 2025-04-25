@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation, useParams  } from "react-router-dom";
 import { Modal, Button, Form } from 'react-bootstrap';
 import { FaUserCircle, FaBars, FaTimes, FaChartBar, FaUsers, FaUserPlus, FaClipboardList, FaPlusCircle, FaPlusSquare ,FaBox, FaDollarSign  } from "react-icons/fa";
+import { AsyncTypeahead } from 'react-bootstrap-typeahead';
+import 'react-bootstrap-typeahead/css/Typeahead.css';
 import Tooltip from '@mui/material/Tooltip';
 import QuickCustomer from "./add_customer";
 import CustomerList from "./CustomerList";
@@ -23,6 +25,51 @@ const Dashboard = () => {
     
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [activePage, setActivePage] = useState("chartData"); // State'i burada tanımlıyoruz
+
+  const [query, setQuery] = useState("");
+  const [options, setOptions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSearch = (q) => {
+    setQuery(q);
+    if (q.length < 2) {
+      setOptions([]);
+      return;
+    }
+    setIsLoading(true);
+    fetch(`http://localhost/customerDsh/src/api/searchCustomer.php?search=${encodeURIComponent(q)}`, {
+        credentials: 'include'
+      })
+      .then(async (r) => {
+        const text = await r.text();
+        console.log("Ham dönen veri:", text);
+        try {
+          const json = JSON.parse(text);
+          if (json.success) {
+            console.log("Gelen müşteri listesi:", json.customers);
+            const normalized = json.customers.map(c => ({
+              ...c,
+              name: c.name || c.company_name || c.full_name || "İsimsiz"
+            }));
+            setOptions(normalized);
+          } else {
+            console.warn("Başarısız json:", json);
+          }
+        } catch (e) {
+          console.error("JSON parse hatası:", e, text);
+        }
+      })
+      .catch(error => {
+        console.error("API HATASI:", error);
+      })
+      .finally(() => setIsLoading(false));
+  };
+
+  const handleSelect = (selected) => {
+    if (selected.length > 0) {
+      navigate(`/dashboard/listCustomer/${selected[0].id}`);
+    }
+  };
 
     useEffect(() => {
         const path = location.pathname.replace("/dashboard/", "") || "chartData";
@@ -166,6 +213,29 @@ const Dashboard = () => {
                         <FaBars />
                     </button>
                     <img src="../src/assets/kobiGo-logo-w.png" alt="" srcset="" width="149px"/>
+                    
+                    {/* ————— Arama Çubuğu ————— */}
+                    <div className="mx-auto" style={{ width: 1200 }}>
+                    <AsyncTypeahead
+                        id="customer-search"
+                        isLoading={isLoading}
+                        labelKey="name"
+                        minLength={2}
+                        onSearch={handleSearch}
+                        options={options}
+                        onChange={handleSelect}
+                        placeholder="🔍 Müşteri ara..."
+                        className="custom-typeahead"
+                        renderMenuItemChildren={(opt, props) => (
+                        <div className="p-3 border-bottom">
+                            <strong className="d-block">{opt.name}</strong>
+                            <small className="text-muted">Telefon : {opt.phone}</small><br />
+                            <small className="text-muted">TC : {opt.tc_identity_number} / VN : {opt.tax_number}</small>
+                        </div>
+                        )}
+                    />
+                    </div>
+
                     <div className="dropdown ms-auto">
                         <button className="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <FaUserCircle size={24} color='white'/>

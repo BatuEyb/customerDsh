@@ -185,7 +185,7 @@ export default function AllCustomerBalances({ customerId = null }) {
                   </tr>
                   {expandedRows[c.customer_id] && (
                     <tr>
-                      <td colSpan="7" className="bg-light">
+                      <td colSpan="7" className="bg-white">
                         {loadingMap[c.customer_id] ? (
                           <div>İşlemler yükleniyor...</div>
                         ) : (

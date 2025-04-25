@@ -16,8 +16,8 @@ const handleTelefonChange = (e, setTelefon) => {
 
 // Telefon numarasını +90 (XXX) XXX XX XX formatında maskeleme fonksiyonu
 const maskPhoneNumber = (value) => {
-    const cleaned = value.replace(/\D/g, '');  // Yalnızca rakamları al
-
+    if (!value) return "+90 "; // veya boş string dön
+    const cleaned = value.replace(/\D/g, '');
     if (cleaned.length <= 3) {
         return `+90 (${cleaned}`;
     } else if (cleaned.length <= 6) {

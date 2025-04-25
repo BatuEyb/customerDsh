@@ -1,3 +1,41 @@
+.custom-typeahead .rbt-input-main {
+    padding: 10px 12px;
+    font-size: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 10px;
+    box-shadow: 0 0 4px rgba(0,0,0,0.05);
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .custom-typeahead .rbt-input-main:focus {
+    border-color: #3f75d7;
+    box-shadow: 0 0 6px rgba(63, 117, 215, 0.5);
+  }
+  
+  .custom-typeahead .dropdown-menu {
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    margin-top: 8px;
+    font-size: 0.95rem;
+    padding: 0;
+  }
+  
+  .custom-typeahead .dropdown-item {
+    padding: 0px 0px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .custom-typeahead .dropdown-item:hover {
+    background-color: #f0f4ff;
+  }
+  
+  .custom-typeahead .rbt-loader {
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
 .bg-primary, .btn-primary{
     background-color: #3F75D7!important;	
 }

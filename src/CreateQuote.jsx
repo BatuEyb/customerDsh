@@ -16,6 +16,10 @@ const CreateQuote = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const [customerType,       setCustomerType]       = useState('');   // '' | 'Bireysel' | 'Kurumsal'
+  const [searchTermCustomer,         setSearchTermCustomer]         = useState('');   // arama input’u
+
   const productsPerPage = 10;
 
   // Veri çekme
@@ -175,53 +179,95 @@ const CreateQuote = () => {
 
   <div className="row">
         {/* Kategori ve Marka Filtreleri */}
+          {/* — Tip Filtrelemesi — */}
         <div className="col-md-3">
-          <div className="form-group mt-4">
-            <h5>Filtre Seçenekleri</h5>
-            <label>Müşteri Seç</label>
-            <select className="form-control" value={selectedCustomer} onChange={e => setSelectedCustomer(e.target.value)}>
-              <option value="">Seçiniz</option>
-              {customers.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-group mt-3">
-            <label>Kategori Seç</label>
-            <select className="form-control" value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)}>
-              <option value="">Tümü</option>
-              {categories.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-group mt-3">
-            <label>Marka Seç</label>
-            <select className="form-control" value={selectedBrand} onChange={e => setSelectedBrand(e.target.value)}>
-              <option value="">Tümü</option>
-              {brands.map((brand, index) => (
-                <option key={index} value={brand}>{brand}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-group mt-3">
-            <label>Ürün Ara</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              value={searchTerm} 
-              onChange={e => setSearchTerm(e.target.value)} 
-              placeholder="Ürün ismiyle ara" 
-            />
-          </div>
+          <label>Müşteri Tipi</label>
+          <select
+            className="form-control"
+            value={customerType}
+            onChange={e => {
+              setCustomerType(e.target.value);
+              setSelectedCustomerId('');   // tipi değişince seçimi sıfırla
+            }}
+          >
+            <option value="">Tümü</option>
+            <option value="Bireysel">Bireysel</option>
+            <option value="Kurumsal">Kurumsal</option>
+          </select>
         </div>
 
-        <div className='col-md-9'>
+        {/* — İsimle Ara — */}
+        <div className="col-md-3">
+          <label>İsimle Ara</label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="En az 2 harf"
+            value={searchTermCustomer}
+            onChange={e => setSearchTermCustomer(e.target.value)}
+          />
+        </div>
+
+        {/* — Filtrelenmiş Select — */}
+        <div className="col-md-6">
+          <label>Müşteri Seç</label>
+          <select
+            className="form-control"
+            value={selectedCustomer}
+            onChange={e => setSelectedCustomer(e.target.value)}
+          >
+            <option value="">Seçiniz</option>
+            {customers
+              // önce tipe göre filtrele
+              .filter(c => customerType ? c.customer_type === customerType : true)
+              // sonra ada göre filtrele (en az 2 harf girildiğinde)
+              .filter(c => {
+                if (searchTermCustomer.length < 2) return true;
+                return c.name.toLowerCase().includes(searchTermCustomer.toLowerCase());
+              })
+              .map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.name} / TC: {c.tc_identity_number} / TEL: ({c.phone})
+                </option>
+              ))
+            }
+          </select>
+        </div>
+
+
+        <div className='col-md-12'>
           <div className="mt-4">
             <h5>Ürünler</h5>
+            <div className='row mb-2'>
+              <div className='col-md-4'>
+                <label>Ürün Ara</label>
+                <input 
+                  type="text" 
+                  className="form-control" 
+                  value={searchTerm} 
+                  onChange={e => setSearchTerm(e.target.value)} 
+                  placeholder="Ürün ismiyle ara" 
+                />
+              </div>
+              <div className='col-md-4'>
+                <label>Kategori Seç</label>
+                <select className="form-control" value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)}>
+                  <option value="">Tümü</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className='col-md-4'>
+                <label>Marka Seç</label>
+                <select className="form-control" value={selectedBrand} onChange={e => setSelectedBrand(e.target.value)}>
+                  <option value="">Tümü</option>
+                  {brands.map((brand, index) => (
+                    <option key={index} value={brand}>{brand}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
             <table className="table table-bordered table-hover table-responsive-sm quote_items_table ">
               <caption>
                 <a 

@@ -30,14 +30,21 @@ try {
     // Her bir item için verileri ekle
     // 2. Sipariş ürünlerini order_items tablosuna ekle
     $itemStmt = $conn->prepare("INSERT INTO order_items (
-        order_id, stock_id, quantity, unit_price, discounted_unit_price, 
-        total_amount, serial_number, address, discount, 
-        service_name, phone_number, job_status, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())");
+        order_id, stock_id, unit_price, discounted_unit_price, 
+        total_amount, serial_number, discount, 
+        created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())");
+
+    $detailStmt = $conn->prepare("
+    INSERT INTO installations (
+        order_item_id, tuketim_no, igdas_adi, ad_soyad, 
+        telefon1, telefon2, il, ilce, mahalle, sokak_adi, bina_no, daire_no,
+        created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+    ");
     
     foreach ($order_items as $item) {
         $stock_id = $item['stock_id'];
-        $quantity = $item['quantity'];
         $unit_price = $item['unit_price'];
         $discounted_unit_price = isset($item['discounted_unit_price']) ? $item['discounted_unit_price'] : null;
         $total_amount = $item['total_amount'];
@@ -46,42 +53,41 @@ try {
             ? (is_array($item['serial_number']) ? implode(', ', $item['serial_number']) : $item['serial_number']) 
             : '';
     
-        $address = isset($item['address']) 
-            ? (is_array($item['address']) ? implode(', ', $item['address']) : $item['address']) 
-            : '';
-    
         $discount = isset($item['discount']) ? $item['discount'] : 0.0;
     
-        $service_name = isset($item['service_name']) 
-            ? (is_array($item['service_name']) ? implode(', ', $item['service_name']) : $item['service_name']) 
-            : '';
-    
-        $phone_number = isset($item['phone_number']) 
-            ? (is_array($item['phone_number']) ? implode(', ', $item['phone_number']) : $item['phone_number']) 
-            : '';
-    
-        // job_status dizisini al ve tüm iş durumlarını virgülle ayırarak al
-        $job_status = isset($item['job_status'])
-        ? (is_array($item['job_status']) ? implode(', ', $item['job_status']) : $item['job_status']) 
-            : '';
-
         // Doğru bind_param sıralaması
-        $itemStmt->bind_param("iiidddssdsss", 
+        $itemStmt->bind_param("iidddsd", 
             $order_id, 
             $stock_id, 
-            $quantity, 
             $unit_price, 
             $discounted_unit_price, 
             $total_amount, 
-            $serial_number, 
-            $address, 
+            $serial_number,  
             $discount, 
-            $service_name, 
-            $phone_number, 
-            $job_status
         );
     
         $itemStmt->execute();
+
+        // just inserted order_item_id
+        $orderItemId = $conn->insert_id;
+
+        // --- installations tablosuna ekle ---
+        $detailStmt->bind_param(
+            "isssssssssss",
+            $orderItemId,
+            $item['tuketimNo'],
+            $item['igdasSozlesme'],
+            $item['adSoyad'],
+            $item['telefon1'],
+            $item['telefon2'],
+            $item['il'],
+            $item['ilce'],
+            $item['mahalle'],
+            $item['sokakAdi'],
+            $item['binaNo'],
+            $item['daireNo']
+        );
+        $detailStmt->execute();
     }
     
     // 3. Sipariş sonrası otomatik borç kaydı transactions tablosuna ekleniyor
