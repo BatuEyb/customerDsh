@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import React from "react";  // Import StrictMode from 'react'
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -6,10 +7,30 @@ import Dashboard from "./Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import "./index.css";
 
+// === Başlığı ayarlayan küçük component ===
+function TitleSetter() {
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    const parts = hostname.split('.');
+    let subdomain = parts.length > 2 ? parts[0] : 'Panel'; // Subdomain veya Panel
+
+    // Eğer subdomain tire (-) içeriyorsa, her kelimenin ilk harfi büyük yapılacak
+    subdomain = subdomain
+      .split('-')                               // '-' işaretine göre ayır
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Her kelimeyi düzenle
+      .join(' ');                               // Tekrar boşlukla birleştir
+
+    document.title = `KOBİ Go - ${subdomain}`;
+  }, []);
+
+  return null;
+}
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
     <BrowserRouter>
+      <TitleSetter />  {/* Başlığı burada set ediyoruz */}
       <Routes>
         <Route path="/" element={<Login />} />
 

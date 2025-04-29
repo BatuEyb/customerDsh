@@ -25,6 +25,11 @@
     cursor: pointer;
     transition: background 0.2s ease;
   }
+  .custom-typeahead .dropdown-item.disabled {
+    background: #f7d7da;
+    padding: 10px;
+    color: #58151c;
+}
   
   .custom-typeahead .dropdown-item:hover {
     background-color: #f0f4ff;
@@ -35,6 +40,33 @@
     top: 50%;
     transform: translateY(-50%);
   }
+
+.kobiGoTitle{
+    color:#FF8552 ;
+}
+
+.clickable-row td {
+cursor: pointer;
+transition: background-color 0.3s;
+}
+
+.clickable-row:hover td{
+background-color: #f2f2f2;
+}
+
+.expand-icon {
+position: absolute;
+right: 10px;
+top: 50%;
+transform: translateY(-50%);
+font-size: 1rem;
+color: #6c757d; /* Açık gri renk */
+background: none!important;
+pointer-events: none; /* İkona tıklayınca event tetiklenmesin */
+}
+.clickable-row:hover .expand-icon {
+color: #0d6efd; /* Bootstrap mavi tonu */
+}
 
 .bg-primary, .btn-primary{
     background-color: #3F75D7!important;	

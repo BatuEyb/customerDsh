@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { generateOrderPDF } from './utils/generateOrderPDF';  // './utils' doğru yol
+import { FaAngleUp, FaAngleDown } from "react-icons/fa";
+import OrderInstallationModal from './components/InstallationModal';
 
 const ListOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -9,6 +11,9 @@ const ListOrders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openRows, setOpenRows] = useState({}); // Satırların açılıp kapanmasını kontrol etmek için
+  const [modalOrder, setModalOrder] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  
 
   // Siparişleri API'den çekme
   useEffect(() => {
@@ -97,6 +102,31 @@ const ListOrders = () => {
     }));
   };
 
+  const loadOrders = () => {
+    setLoading(true);
+    fetch('http://localhost/customerDsh/src/api/list_orders.php', {
+      method: 'GET',
+      credentials: 'include',
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          setOrders(data.orders);
+          setFilteredOrders(data.orders);
+        } else {
+          setError(data.message || 'Siparişler alınamadı');
+        }
+      })
+      .catch(() => setError('Sunucu hatası'))
+      .finally(() => setLoading(false));
+  };
+
+  const handleInstallationSaved = (orderId, updatedItems) => {
+    // Kaydetme sonrası yapılacaklar
+    setShowModal(false); // Modalı kapat
+    loadOrders();   // Sayfayı yeniden render et (güncel veri çek)
+  };
+
   return (
     <div className="mt-3">
       <h3 className="mb-4">Sipariş Listesi</h3>
@@ -127,8 +157,10 @@ const ListOrders = () => {
               <div className="d-flex justify-content-between">
                 <h5>{order.customer_name}</h5>
                 <div>
-                  <span className="badge bg-warning">#{order.id}</span><br />
-                  <span className="badge bg-primary">{order.status}</span>
+                  <span className="badge bg-warning me-1">#{order.id}</span>
+                  <span className="badge bg-primary me-1">{order.status}</span>
+                  <span className="badge bg-primary">{order.order_type}</span><br />
+                  <span className="badge bg-success w-100">{order.created_by_name}</span><br />
                 </div>
               </div>
               <p className="text-muted mt-2">
@@ -139,11 +171,12 @@ const ListOrders = () => {
               </p>
 
               {/* Ürün Tablosu */}
+              <div className='table-responsive'>
               <table className="table table-sm">
                 <thead>
                   <tr>
                     <th>Ürün</th>
-                    <th>Seri Numarası</th>
+                    <th>Seri No</th>
                     <th>Birim Fiyat</th>
                     <th>İskonto</th>
                     <th>İskontolu Fiyat</th>
@@ -154,45 +187,98 @@ const ListOrders = () => {
                   {order.items.map((item, idx) => (
                     <React.Fragment key={idx}>
                       <tr
-                        onClick={() => toggleRow(order.id, idx)}
-                        style={{ cursor: 'pointer' }}
+                        onClick={() => item.installation && toggleRow(order.id, idx)}
+                        className={item.installation ? 'clickable-row position-relative' : ''}
                       >
                         <td>{item.product_name}</td>
-                        <td>{item.serial_number || '-'}</td>
+                        <td>{item.serial_number}</td>
                         <td>{Number(item.unit_price).toFixed(2)} ₺</td>
                         <td>{Number(item.discount).toFixed(2)}%</td>
                         <td>{Number(item.discounted_unit_price).toFixed(2)} ₺</td>
                         <td>{Number(item.total_amount).toFixed(2)} ₺</td>
+
+                        {/* İkonu TD yerine bağımsız koyuyoruz */}
+                        {item.installation && (
+                          <div className="expand-icon">
+                            {openRows[order.id]?.[idx] ? <FaAngleUp /> : <FaAngleDown />}
+                          </div>
+                        )}
                       </tr>
 
                       {/* Detay Satırı */}
-                      {openRows[order.id]?.[idx] && (
+                      {openRows[order.id]?.[idx] && item.installation && (
                         <tr>
                           <td colSpan="6">
-                            <div className="border p-2 bg-light rounded">
-                              <strong>Seri No ve Adres Bilgileri:</strong>
-                              <table className="table table-bordered table-sm mt-2 mb-0">
-                                <thead className="table-secondary">
-                                  <tr>
-                                    <th>#</th>
-                                    <th>Seri No</th>
-                                    <th>Adres</th>
-                                    <th>Servis Adı</th>
-                                    <th>Telefon No</th>
-                                    <th>İş Durumu</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td>1</td>
-                                    <td>{item.serial_number || '-'}</td>
-                                    <td>{item.address || '-'}</td>
-                                    <td>{item.service_name || '-'}</td>
-                                    <td>{item.phone_number || '-'}</td>
-                                    <td>{item.job_status || '-'}</td>
-                                  </tr>
-                                </tbody>
-                              </table>
+                            <div className="border py-2 px-3 bg-light rounded">
+                              <div className='row'>
+                              <div className='col-md-12'>
+                                <strong className='kobiGoTitle'>İGDAŞ Bilgileri</strong>
+                                  <div className='row'>
+                                    <div className='col-md-4 mb-2'>
+                                      <strong><small>İGDAŞ Abone Adı</small></strong><br />
+                                      {item.installation?.service_name || '-'}
+                                    </div>
+                                    <div className='col-md-4 mb-2'>
+                                      <strong><small>İGDAŞ Tüketim Numarası</small></strong><br />
+                                      {item.installation?.tuketim_no || '-'}
+                                    </div>
+                                    <div className='col-md-4 mb-2'>
+                                      <strong><small>Randevu Tarihi</small></strong><br />
+                                      {item.installation?.randevu_tarihi || '-'}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className='col-md-12 mt-2'>
+                                  <strong className='kobiGoTitle'>İletişim Bilgileri</strong>
+                                  <div className='row'>
+                                    <div className='col-md-4 mb-2'>
+                                      <strong><small>İsim Soyisim</small></strong><br />
+                                      {item.installation?.ad_soyad || '-'}
+                                    </div>
+                                    <div className='col-md-4 mb-2'>
+                                      <strong><small>Telefon Numarası</small></strong><br />
+                                      {item.installation?.phone_number || '-'}
+                                    </div>
+                                    <div className='col-md-4 mb-2'>
+                                      <strong><small>2. Telefon Numarası</small></strong><br />
+                                      {item.installation?.phone_number2 || '-'}
+                                    </div>
+                                    <div className='col-md-12 mb-2'>
+                                      <strong><small>Montaj Adresi</small></strong><br />
+                                      {item.installation?.address || '-'}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className='col-md-6 mt-2'>
+                                  <strong className='kobiGoTitle'>Hata Bilgisi</strong>
+                                  <div className='row'>
+                                    <div className='col-md-12'>
+                                      {item.installation && (
+                                        item.installation.hata_durumu === 0 ? (
+                                          <div className="alert alert-success" role="alert">
+                                            Ürüne İle Alakalı Hata Kaydı Yoktur.
+                                          </div>
+                                        ) : (
+                                          <div className="alert alert-danger" role="alert">
+                                            {item.installation.hata_sebebi || '-'}
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className='col-md-6 mt-2'>
+                                  <strong className='kobiGoTitle'>Not Bilgisi</strong>
+                                  <div className='row'>
+                                    <div className='col-md-12'>
+                                      <div class="alert alert-info" role="alert">
+                                        {item.installation?.not_text || '-'}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           </td>
                         </tr>
@@ -201,9 +287,15 @@ const ListOrders = () => {
                   ))}
                 </tbody>
               </table>
-
+              </div>
               {/* Silme ve PDF Oluşturma Butonları */}
               <div className="d-flex justify-content-end">
+              <button 
+                className="btn btn-outline-primary btn-sm me-2"
+                onClick={() => { setModalOrder(order); setShowModal(true); }}
+              >
+                Montaj Bilgilerini Düzenle
+              </button>
                 <button
                   className="btn btn-outline-danger btn-sm me-2"
                   onClick={() => deleteOrder(order.id)}
@@ -221,6 +313,15 @@ const ListOrders = () => {
           </div>
         ))
       )}
+
+{modalOrder && (
+  <OrderInstallationModal
+    show={showModal}
+    onHide={() => setShowModal(false)}
+    order={modalOrder}
+    onSaved={handleInstallationSaved}
+  />
+)}
     </div>
   );
 };

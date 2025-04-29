@@ -1,3 +1,13 @@
+::-webkit-scrollbar {
+    width: 3px;
+    background: #dbdbdb;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #ff9000;
+    border-radius: 8px;
+  }
+
 @media (min-width: 768px) {
     .sidebar a {
         text-align: center!important;
@@ -17,6 +27,8 @@
     nav.sidebar{
         margin-top: 64px;
         width: 50px;
+        overflow: scroll;
+        height: 100% !important;
     }
     nav.sidebar .nav a svg{
         height: 24px;

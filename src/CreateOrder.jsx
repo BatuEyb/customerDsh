@@ -13,6 +13,7 @@ const CreateOrder = () => {
   const [filteredStocks, setFilteredStocks] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [orderType, setOrderType] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -139,6 +140,7 @@ const CreateOrder = () => {
       telefon2: '',
       il: '', ilce: '', mahalle: '', sokakAdi: '', binaNo: '', daireNo: '',
       igdasSozlesme: '', tuketimNo: '',
+      isInstallation: false,
       collapsed: false
     }]);
   };
@@ -209,17 +211,21 @@ const CreateOrder = () => {
         discounted_unit_price: it.discounted_unit_price,
         total_amount: it.total_price,
         serial_number: it.serial_number,
-        adSoyad: it.adSoyad,
-        telefon1: it.telefon1,
-        telefon2: it.telefon2,
-        il: it.il,
-        ilce: it.ilce,
-        mahalle: it.mahalle,
-        sokakAdi: it.sokakAdi,
-        binaNo: it.binaNo,
-        daireNo: it.daireNo,
-        igdasSozlesme: it.igdasSozlesme,
-        tuketimNo: it.tuketimNo
+        is_installation_required: it.isInstallation,
+        // sadece işaretliyse montaj bilgileri:
+        ...(it.isInstallation && {
+          adSoyad: it.adSoyad,
+          telefon1: it.telefon1,
+          telefon2: it.telefon2,
+          il: it.il,
+          ilce: it.ilce,
+          mahalle: it.mahalle,
+          sokakAdi: it.sokakAdi,
+          binaNo: it.binaNo,
+          daireNo: it.daireNo,
+          igdasSozlesme: it.igdasSozlesme,
+          tuketimNo: it.tuketimNo
+        })
       }))
     };
     console.log('Payload:', payload);
@@ -281,7 +287,7 @@ const CreateOrder = () => {
         </div>
 
         {/* — Filtrelenmiş Select — */}
-        <div className="col-md-6">
+        <div className="col-md-3">
           <label>Müşteri Seç</label>
           <select
             className="form-control"
@@ -303,6 +309,15 @@ const CreateOrder = () => {
                 </option>
               ))
             }
+          </select>
+        </div>
+
+        <div className="col-md-3">
+          <label>İş Tipi Seç</label>
+          <select className="form-control" name="order_type" value={orderType} onChange={(e) => setOrderType(e.target.value)}>
+            <option value="Tekli Satış">Tekli Satış</option>
+            <option value="Cihaz Değişimi">Cihaz Değişimi</option>
+            <option value="Yeni Proje">Yeni Proje</option>
           </select>
         </div>
 
@@ -368,7 +383,7 @@ const CreateOrder = () => {
               <th>İskonto Fiyatı</th>
               <th>Toplam</th>
               <th>Seri No</th>
-              <th>Detay</th>
+              <th>Montaj Yapılacak mı?</th>
               <th>Sil</th>
             </tr>
           </thead>
@@ -404,16 +419,22 @@ const CreateOrder = () => {
                       onChange={e => updateField(i, 'serial_number', e.target.value)}
                     />
                   </td>
-                  <td>
-                    <button className="btn btn-sm btn-secondary" onClick={() => toggleCollapse(i)}>
-                      {it.collapsed ? 'Detay Göster' : 'Detay Gizle'}
-                    </button>
+                  <td className="text-center">
+                    <input
+                      type="checkbox"
+                      checked={it.isInstallation}
+                      onChange={e => {
+                        const items = [...selectedItems];
+                        items[i].isInstallation = e.target.checked;
+                        setSelectedItems(items);
+                      }}
+                    />
                   </td>
                   <td>
                     <FaTrash className="text-danger cursor-pointer" onClick={() => removeItem(i)} />
                   </td>
                 </tr>
-                {!it.collapsed && (
+                {it.isInstallation  && (
                   <tr>
                     <td colSpan="9" className='px-4 py-3'>
                       <div className="row">

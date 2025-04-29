@@ -86,7 +86,7 @@ const CustomerEditModal = ({ customer, onClose, onUpdate }) => {
         };
     
         try {
-            const response = await fetch("http://localhost/reactDashboard/src/api/update-customer.php", {
+            const response = await fetch("http://localhost/customerDsh/src/api/update-customer.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedFormData),
@@ -108,7 +108,7 @@ const CustomerEditModal = ({ customer, onClose, onUpdate }) => {
         if (!window.confirm("Bu müşteriyi silmek istediğinizden emin misiniz?")) return;
 
         try {
-            const response = await fetch(`http://localhost/reactDashboard/src/api/delete-customer.php?id=${customer.id}`, {
+            const response = await fetch(`http://localhost/customerDsh/src/api/delete-customer.php?id=${customer.id}`, {
                 method: "DELETE",
             });
 

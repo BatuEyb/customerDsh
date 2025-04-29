@@ -709,3 +709,8 @@ Fiyat: 123000.00 → 45000
 [2025-04-24 22:14:35] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 75
 [2025-04-24 22:19:00] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 75
 [2025-04-24 22:19:09] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 76
+[2025-04-28 11:49:54] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Kategori Eklendi: Uzatma Baca
+[2025-04-28 11:50:18] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: Baymak 1 Metre Uzatma Baca, Stock Code: BYMK-1MT
+[2025-04-28 11:50:52] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Kategori Eklendi: Kombi Dolabı
+[2025-04-28 11:50:54] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: Gebze Tipi Kombi Dolabı, Stock Code: KD-GBZ
+[2025-04-28 12:05:27] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 79

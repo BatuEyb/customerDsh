@@ -13,15 +13,16 @@ $data = json_decode(file_get_contents("php://input"), true);
 $customer_id = $data['customer_id'];
 $total_amount = $data['total_amount'];
 $order_items = $data['order_items']; // order_items bir dizi olacak
+$order_type = $_POST['order_type'] ?? 'Tekli Satış'; // Varsayılan 'Tekli Satış' olarak belirlenmiş
 
 // Veritabanı işlemleri için başlat
 $conn->begin_transaction();
 
 try {
     // 1. Siparişi orders tablosuna ekle
-    $stmt = $conn->prepare("INSERT INTO orders (customer_id, total_amount, created_by, updated_by, created_at, updated_at) 
-                            VALUES (?, ?, ?, ?, NOW(), NOW())");
-    $stmt->bind_param("idss", $customer_id, $total_amount, $created_by, $updated_by);
+    $stmt = $conn->prepare("INSERT INTO orders (customer_id, total_amount, created_by, updated_by, created_at, updated_at, order_type) 
+                        VALUES (?, ?, ?, ?, NOW(), NOW(), ?)");
+    $stmt->bind_param("idsss", $customer_id, $total_amount, $created_by, $updated_by, $order_type);
     $stmt->execute();
 
     // Yeni eklenen siparişin id'sini al
@@ -43,11 +44,13 @@ try {
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
     ");
     
+    $total_order_amount = 0.0; // toplam sipariş tutarı
+
     foreach ($order_items as $item) {
         $stock_id = $item['stock_id'];
         $unit_price = $item['unit_price'];
         $discounted_unit_price = isset($item['discounted_unit_price']) ? $item['discounted_unit_price'] : null;
-        $total_amount = $item['total_amount'];
+        $item_total_amount = $item['total_amount']; // buraya lokal isim veriyoruz
     
         $serial_number = isset($item['serial_number']) 
             ? (is_array($item['serial_number']) ? implode(', ', $item['serial_number']) : $item['serial_number']) 
@@ -61,7 +64,7 @@ try {
             $stock_id, 
             $unit_price, 
             $discounted_unit_price, 
-            $total_amount, 
+            $item_total_amount,  
             $serial_number,  
             $discount, 
         );
@@ -70,6 +73,21 @@ try {
 
         // just inserted order_item_id
         $orderItemId = $conn->insert_id;
+
+        // Montaj kaydı gerekiyor diyelim
+        if (isset($item['is_installation_required']) && $item['is_installation_required']) {
+        // Boş gelme durumunda boş string ata
+        $tuketimNo     = isset($item['tuketimNo'])     && $item['tuketimNo']     !== '' ? $item['tuketimNo']     : '';
+        $igdasSozlesme = isset($item['igdasSozlesme']) && $item['igdasSozlesme'] !== '' ? $item['igdasSozlesme'] : '';
+        $adSoyad       = $item['adSoyad']       ?? '';
+        $telefon1      = $item['telefon1']      ?? '';
+        $telefon2      = $item['telefon2']      ?? '';
+        $il            = $item['il']            ?? '';
+        $ilce          = $item['ilce']          ?? '';
+        $mahalle       = $item['mahalle']       ?? '';
+        $sokakAdi      = $item['sokakAdi']      ?? '';
+        $binaNo        = $item['binaNo']        ?? '';
+        $daireNo       = $item['daireNo']       ?? '';
 
         // --- installations tablosuna ekle ---
         $detailStmt->bind_param(
@@ -88,6 +106,9 @@ try {
             $item['daireNo']
         );
         $detailStmt->execute();
+        }
+
+        $total_order_amount += $item_total_amount;
     }
     
     // 3. Sipariş sonrası otomatik borç kaydı transactions tablosuna ekleniyor
@@ -117,7 +138,7 @@ try {
         "iidsss",
         $customer_id,
         $order_id,
-        $total_amount,
+        $total_order_amount,  // <-- düzeltilmiş toplam değer
         $description,
         $created_by,
         $updated_by
