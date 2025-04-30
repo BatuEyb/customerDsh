@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { apiFetch } from '../api';
 
 const OrderInstallationModal = ({ show, onHide, order, onSaved }) => {
   const [items, setItems] = useState([]);
@@ -37,7 +38,7 @@ const OrderInstallationModal = ({ show, onHide, order, onSaved }) => {
   const handleSave = () => {
     const order_id = order.id;  // <<< Burada değişken tanımlıyoruz
   
-    fetch('http://localhost/customerDsh/src/api/update_order_installations.php', {
+    apiFetch('update_order_installations.php', {
         method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { FaEllipsisV } from "react-icons/fa";
+import { apiFetch } from './api';
 import FilterPanel from './components/FilterPanel';
 
 const StockManagement = () => {
@@ -60,7 +61,7 @@ const StockManagement = () => {
     const fetchStocks = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost/customerDsh/src/api/stock_management.php', {
+            const response = await apiFetch('stock_management.php', {
                 credentials: 'include'
             });
     
@@ -86,7 +87,7 @@ const StockManagement = () => {
     // Kategorileri yükleme
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost/customerDsh/src/api/categories.php', {
+            const response = await apiFetch('categories.php', {
                 credentials: 'include', // Bunu da eklemelisin session için
             });
             const data = await response.json();
@@ -116,7 +117,7 @@ const StockManagement = () => {
     const handleSave = async () => {
         if (!selectedProduct) return;
         
-        const response = await fetch('http://localhost/customerDsh/src/api/stock_management.php', {
+        const response = await apiFetch('stock_management.php', {
             method: 'POST',
             credentials: "include",
             headers: { 'Content-Type': 'application/json' },
@@ -137,7 +138,7 @@ const StockManagement = () => {
         const confirmDelete = window.confirm('Silmek istediğinizden emin misiniz?');
         if (!confirmDelete) return;
 
-        const response = await fetch('http://localhost/customerDsh/src/api/stock_management.php', {
+        const response = await apiFetch('stock_management.php', {
             method: 'DELETE',
             credentials: "include",
             headers: { 'Content-Type': 'application/json' },

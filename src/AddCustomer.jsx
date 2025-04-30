@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiFetch } from './api';
 
 const AddCustomer = () => {
     const [name, setName] = useState('');
@@ -28,7 +29,7 @@ const AddCustomer = () => {
         console.log("Gönderilen Veriler:", customerData); // Bu, gönderilen veriyi konsolda gösterecektir.
     
         try {
-            const response = await fetch('http://localhost/customerDsh/src/api/add_customer.php', {
+            const response = await apiFetch('add_customer.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

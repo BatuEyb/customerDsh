@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { apiFetch } from "../api";
 
 const AddPaymentForm = ({ customerId, onPaymentAdded }) => {
   const [amount, setAmount] = useState("");
@@ -12,7 +13,7 @@ const AddPaymentForm = ({ customerId, onPaymentAdded }) => {
     setMessage(null);
 
     try {
-      const res = await fetch("http://localhost/customerDsh/src/api/add_payment.php", {
+      const res = await apiFetch("add_payment.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

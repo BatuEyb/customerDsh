@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { apiFetch } from './api';
 import { useParams, useNavigate } from 'react-router-dom';
 import CustomerOwnQuotes from './components/CustomerOwnQuotes';
 import CustomerOwnOrders from './components/CustomerOwnOrders';
@@ -21,7 +22,7 @@ const CustomerDetail = () => {
 
     useEffect(() => {
         const fetchCustomer = async () => {
-            const res = await fetch(`http://localhost/customerDsh/src/api/get_customer.php?id=${id}`);
+            const res = await apiFetch(`get_customer.php?id=${id}`);
             const data = await res.json();
             setCustomer(data);
             setFormData(data);
@@ -38,7 +39,7 @@ const CustomerDetail = () => {
     };
 
     const handleSave = async () => {
-        const res = await fetch(`http://localhost/customerDsh/src/api/update_customer.php`, {
+        const res = await apiFetch(`update_customer.php`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id, ...formData })
@@ -51,7 +52,7 @@ const CustomerDetail = () => {
         const confirmed = window.confirm("Bu müşteriyi silmek istediğinize emin misiniz?");
         if (!confirmed) return;
 
-        const res = await fetch(`http://localhost/customerDsh/src/api/delete_customer.php`, {
+        const res = await apiFetch(`delete_customer.php`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id })

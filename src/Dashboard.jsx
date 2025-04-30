@@ -3,11 +3,10 @@ import { useNavigate, useLocation, useParams  } from "react-router-dom";
 import { Modal, Button, Form } from 'react-bootstrap';
 import { FaUserCircle, FaBars, FaTimes, FaChartBar, FaUsers, FaUserPlus, FaClipboardList, FaPlusCircle, FaPlusSquare ,FaBox, FaDollarSign  } from "react-icons/fa";
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
+import { apiFetch } from "./api.js";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import Tooltip from '@mui/material/Tooltip';
-import QuickCustomer from "./add_customer";
-import CustomerList from "./CustomerList";
-import ChartData from "./charts.jsx";
+import ChartData from "./Charts.jsx";
 import StockManagement from "./StockManagement.jsx";
 import StockAndCategoryManagement from "./AddStock.jsx";
 import AddCustomer from "./AddCustomer.jsx";
@@ -37,7 +36,7 @@ const Dashboard = () => {
       return;
     }
     setIsLoading(true);
-    fetch(`http://localhost/customerDsh/src/api/searchCustomer.php?search=${encodeURIComponent(q)}`, {
+    apiFetch(`searchCustomer.php?search=${encodeURIComponent(q)}`, {
         credentials: 'include'
       })
       .then(async (r) => {
@@ -92,7 +91,7 @@ const Dashboard = () => {
 
     const fetchActivityLog = async () => {
         try {
-            const response = await fetch('http://localhost/customerDsh/src/api/get_activity_log.php', {
+            const response = await apiFetch('get_activity_log.php', {
                 credentials: 'include'
             });
             const data = await response.json();
@@ -127,20 +126,6 @@ const Dashboard = () => {
                         <FaChartBar className="me-2" /> <span className="sidebarLabel">Yönetim Paneli (Veriler)</span>
                     </a>
                     </Tooltip>
-                    <hr/>
-                    <Tooltip title="Müşteri Listesi" placement="right">
-                    <a className={`nav-link text-white ${activePage === "customerList" ? "active" : ""}`} 
-                        onClick={() => handlePageChange("customerList")}>
-                        <FaUsers className="me-2" /> <span className="sidebarLabel">Müşteri Listesi</span>
-                    </a>
-                    </Tooltip>
-                    <Tooltip title="Müşteri Ekle" placement="right">
-                    <a className={`nav-link text-white ${activePage === "quickCustomer" ? "active" : ""}`} 
-                        onClick={() => handlePageChange("quickCustomer")}>
-                        <FaUserPlus className="me-2" /> <span className="sidebarLabel">Müşteri Ekle</span>
-                    </a>
-                    </Tooltip>
-
                     <hr/>
                     <Tooltip title="Stok Takibi" placement="right">
                     <a className={`nav-link text-white ${activePage === "stockManagement" ? "active" : ""}`} 
@@ -252,8 +237,6 @@ const Dashboard = () => {
                 <main className="col-md-9 offset-md-3 px-4">
                     <div className="mt-3">
                     {location.pathname.includes("chartData") && <ChartData />}
-                    {location.pathname.includes("customerList") && <CustomerList />}
-                    {location.pathname.includes("quickCustomer") && <QuickCustomer />}
                     {location.pathname.includes("stockManagement") && <StockManagement />}
                     {location.pathname.includes("addStock") && <StockAndCategoryManagement />}
                     {location.pathname.includes("listCustomer") && !location.pathname.includes("listCustomer/") && <CustomerList2 />}

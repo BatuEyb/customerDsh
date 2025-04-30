@@ -6,6 +6,7 @@ import Login from "./Login";
 import Dashboard from "./Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import "./index.css";
+import "./components/customer_filter.css";
 
 // === Başlığı ayarlayan küçük component ===
 function TitleSetter() {
@@ -40,8 +41,6 @@ root.render(
         {/* PrivateRoute içinde tüm dashboard sekmelerini tanımla */}
         <Route path="/dashboard/*" element={<PrivateRoute />}>
           <Route path="chartData" element={<Dashboard />} />
-          <Route path="customerList" element={<Dashboard />} />
-          <Route path="quickCustomer" element={<Dashboard />} />
           <Route path="stockManagement" element={<Dashboard />} />
           <Route path="addStock" element={<Dashboard />} />
           <Route path="listCustomer" element={<Dashboard />} />

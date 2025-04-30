@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { apiFetch } from './api';
 import { FaPlusSquare,FaChevronLeft,FaChevronRight,FaTrash  } from "react-icons/fa";
 
 const CreateQuote = () => {
@@ -26,9 +27,9 @@ const CreateQuote = () => {
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      fetch('http://localhost/customerDsh/src/api/list_customer.php', { method: 'GET', credentials: 'include' }),
-      fetch('http://localhost/customerDsh/src/api/categories.php', { method: 'GET', credentials: 'include' }),
-      fetch('http://localhost/customerDsh/src/api/stock_management.php', { method: 'GET', credentials: 'include' })
+      apiFetch('list_customer.php', { method: 'GET', credentials: 'include' }),
+      apiFetch('categories.php', { method: 'GET', credentials: 'include' }),
+      apiFetch('stock_management.php', { method: 'GET', credentials: 'include' })
     ])
       .then(([customerRes, categoryRes, stockRes]) => 
         Promise.all([customerRes.json(), categoryRes.json(), stockRes.json()])
@@ -137,7 +138,7 @@ const CreateQuote = () => {
       quote_items: selectedItems
     };
 
-    fetch('http://localhost/customerDsh/src/api/create_quote.php', {
+    apiFetch('create_quote.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

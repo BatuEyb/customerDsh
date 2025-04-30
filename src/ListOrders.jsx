@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { apiFetch } from './api';
 import { Spinner } from 'react-bootstrap';
 import { generateOrderPDF } from './utils/generateOrderPDF';  // './utils' doğru yol
 import { FaAngleUp, FaAngleDown } from "react-icons/fa";
@@ -17,7 +18,7 @@ const ListOrders = () => {
 
   // Siparişleri API'den çekme
   useEffect(() => {
-    fetch('http://localhost/customerDsh/src/api/list_orders.php', {
+    apiFetch('list_orders.php', {
       method: 'GET',
       credentials: 'include',
     })
@@ -69,7 +70,7 @@ const ListOrders = () => {
   const deleteOrder = order_id => {
     if (!window.confirm('Bu siparişi silmek istediğinizden emin misiniz?')) return;
 
-    fetch('http://localhost/customerDsh/src/api/delete_order.php', {
+    apiFetch('delete_order.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -104,7 +105,7 @@ const ListOrders = () => {
 
   const loadOrders = () => {
     setLoading(true);
-    fetch('http://localhost/customerDsh/src/api/list_orders.php', {
+    apiFetch('list_orders.php', {
       method: 'GET',
       credentials: 'include',
     })
@@ -159,7 +160,7 @@ const ListOrders = () => {
                 <div>
                   <span className="badge bg-warning me-1">#{order.id}</span>
                   <span className="badge bg-primary me-1">{order.status}</span>
-                  <span className="badge bg-primary">{order.order_type}</span><br />
+                  <span className="badge bg-danger">{order.order_type}</span><br />
                   <span className="badge bg-success w-100">{order.created_by_name}</span><br />
                 </div>
               </div>

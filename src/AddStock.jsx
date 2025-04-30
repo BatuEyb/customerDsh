@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { apiFetch } from './api';
 import { Form, Button, Alert } from 'react-bootstrap';
 
 const StockAndCategoryManagement = () => {
@@ -27,7 +28,7 @@ const StockAndCategoryManagement = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost/customerDsh/src/api/categories.php', {
+            const response = await apiFetch('categories.php', {
                 credentials: 'include', // session varsa bunu da ekle
             });
             const data = await response.json();
@@ -58,10 +59,10 @@ const StockAndCategoryManagement = () => {
         try {
             // Eğer stockData.id varsa, güncelleme işlemi yapılacak
             const url = stockData.id
-                ? 'http://localhost/customerDsh/src/api/stock_management.php' // Güncelleme
-                : 'http://localhost/customerDsh/src/api/stock_management.php';  // Ekleme (aynı endpoint)
+                ? 'stock_management.php' // Güncelleme
+                : 'stock_management.php';  // Ekleme (aynı endpoint)
             
-            const response = await fetch(url, {
+            const response = await apiFetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -97,7 +98,7 @@ const StockAndCategoryManagement = () => {
             return;
         }
         try {
-            const response = await fetch('http://localhost/customerDsh/src/api/categories.php', {
+            const response = await apiFetch('categories.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -134,7 +135,7 @@ const StockAndCategoryManagement = () => {
         formData.append("file", file);
 
         try {
-            const response = await fetch('http://localhost/customerDsh/src/api/upload_excel.php', {
+            const response = await apiFetch('upload_excel.php', {
                 method: 'POST',
                 credentials: "include",
                 body: formData,

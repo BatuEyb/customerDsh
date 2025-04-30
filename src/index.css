@@ -44,7 +44,30 @@
 .kobiGoTitle{
     color:#FF8552 ;
 }
-
+.markaSatis .carousel-control-prev {
+    right: 45px;
+    left: auto;
+}
+.markaSatis .carousel-control-next {
+    right: 0px;
+}
+.markaSatis .carousel-control-next, .markaSatis .carousel-control-prev {
+    align-items: flex-start;
+    top: -30px;
+}
+.markaSatis .carousel-item{
+    padding: 0 4px;
+}
+.markaSatis .carousel-control-next-icon, .markaSatis .carousel-control-prev-icon{
+    width: 24px;
+    filter: brightness(0);
+}
+.shortcut-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+  }
+  
 .clickable-row td {
 cursor: pointer;
 transition: background-color 0.3s;
@@ -73,6 +96,12 @@ color: #0d6efd; /* Bootstrap mavi tonu */
 }
 .bg-warning, .btn-warning{
     background-color: #FF8552!important;	
+}
+.border-warning{
+    border-color: #FF8552!important;	
+}
+.text-warning{
+    color: #FF8552!important;
 }
 .border-primary{
     border-color: #3F75D7!important;
@@ -257,13 +286,14 @@ a{
 }
 
 .interests_item {
-    padding: 0 15px;
+    padding: 0 10px;
     margin-right: 5px;
     margin-bottom:5px;
-    line-height: 35px;
+    line-height: 30px;
     background-color: #e6e6e6;
     border-radius: 5px;
     display: inline-block;
+    font-size: 14px;
 }
 .interests_item.guncelleme_taihi {
     background-color: #fff999;

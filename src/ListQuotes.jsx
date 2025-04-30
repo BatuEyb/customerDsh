@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { apiFetch } from './api';
 import { Spinner } from 'react-bootstrap';
 import { generatePDF } from './utils/generatePDF';  // './utils' doğru yol
 import EditQuoteModal from './components/EditQuoteModal';
@@ -22,7 +23,7 @@ const ListQuotes = () => {
 
   // Teklifleri çekme
   useEffect(() => {
-    fetch('http://localhost/customerDsh/src/api/list_quotes.php', {
+    apiFetch('list_quotes.php', {
       method: 'GET',
       credentials: 'include',
     })
@@ -47,7 +48,7 @@ const ListQuotes = () => {
     const confirmDelete = window.confirm("Bu teklifi silmek istediğinizden emin misiniz?");
     if (!confirmDelete) return;
   
-    fetch('http://localhost/customerDsh/src/api/delete_quote.php', {
+    apiFetch('delete_quote.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -113,7 +114,7 @@ const ListQuotes = () => {
       }))
     };
 
-    fetch('http://localhost/customerDsh/src/api/update_quote.php', {
+    apiFetch('update_quote.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

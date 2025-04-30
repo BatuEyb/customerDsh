@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "./api";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Login = () => {
@@ -11,7 +12,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const response = await fetch('http://localhost/customerDsh/src/api/login.php', {
+    const response = await apiFetch('login.php', {
         method: 'POST',
         credentials: "include",
         headers: {

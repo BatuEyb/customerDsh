@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { generatePDF } from '../utils/generatePDF';
 import EditQuoteModal from '../components/EditQuoteModal';
+import { apiFetch } from '../api';
 
 const CustomerOwnQuotes = ({ customer_id }) => {
   const [quotes, setQuotes] = useState([]);
@@ -21,7 +22,7 @@ const CustomerOwnQuotes = ({ customer_id }) => {
   });
 
   useEffect(() => {
-    fetch('http://localhost/customerDsh/src/api/list_quotes.php', {
+    apiFetch('list_quotes.php', {
       method: 'GET',
       credentials: 'include',
     })
@@ -55,7 +56,7 @@ const CustomerOwnQuotes = ({ customer_id }) => {
   const deleteQuote = (quote_id) => {
     if (!window.confirm("Bu teklifi silmek istediğinizden emin misiniz?")) return;
 
-    fetch('http://localhost/customerDsh/src/api/delete_quote.php', {
+    apiFetch('delete_quote.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -104,7 +105,7 @@ const CustomerOwnQuotes = ({ customer_id }) => {
       }))
     };
 
-    fetch('http://localhost/customerDsh/src/api/update_quote.php', {
+    apiFetch('update_quote.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

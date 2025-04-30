@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { apiFetch } from './api';
 import { useNavigate } from 'react-router-dom';
 
 const CustomerCard = ({ customer }) => {
@@ -50,7 +51,7 @@ const CustomerList2 = () => {
     useEffect(() => {
         const fetchCustomers = async () => {
             try {
-                const response = await fetch('http://localhost/customerDsh/src/api/list_customer.php', {
+                const response = await apiFetch('list_customer.php', {
                     method: 'GET',
                     credentials: 'include',  // Çerezlerin ve kimlik doğrulama bilgilerin dahil edilmesi için
                 });

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { apiFetch } from './api';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function AllCustomerBalances({ customerId = null }) {
@@ -13,7 +14,7 @@ export default function AllCustomerBalances({ customerId = null }) {
   const [loadingMap, setLoadingMap] = useState({});
 
   useEffect(() => {
-    fetch('http://localhost/customerDsh/src/api/get_balances.php', {
+    apiFetch('get_balances.php', {
       credentials: 'include',
     })
       .then(res => {
@@ -73,7 +74,7 @@ export default function AllCustomerBalances({ customerId = null }) {
       setExpandedRows(prev => ({ ...prev, [id]: true }));
       if (!transactionsMap[id]) {
         setLoadingMap(prev => ({ ...prev, [id]: true }));
-        fetch(`http://localhost/customerDsh/src/api/get_transactions.php?customer_id=${id}`, {
+        apiFetch(`get_transactions.php?customer_id=${id}`, {
           credentials: 'include',
         })
           .then(res => res.json())

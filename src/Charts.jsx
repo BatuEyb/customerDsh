@@ -1,10 +1,17 @@
-import { useEffect, useState } from "react";
-import { FaAward } from "react-icons/fa";
-import dayjs from "dayjs";
-import { BarChart, Bar,LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend} from "recharts";
+import React, { useEffect, useState } from "react";
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { FaCrown } from "react-icons/fa";
+import { Carousel } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import dayjs from 'dayjs';
+import { DataGrid } from '@mui/x-data-grid';
+import { Box } from '@mui/material';
+import { apiFetch } from "./api";
+import DashboardShortcuts from "./components/DashboardShortcuts";
 
-function Card({ children, className }) {
+
+// Kart bileşeni
+function Card({ children, className = '' }) {
   return (
     <div className={`card shadow-sm mb-3 ${className}`}>
       <div className="card-body">{children}</div>
@@ -12,300 +19,456 @@ function Card({ children, className }) {
   );
 }
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28FFF", "#FF5733"];
+// Renkler
+const PRIMARY = "#3f75d7";
+const SECONDARY = "#FF8552";
 
 export default function Dashboard() {
-  const [data, setData] = useState(null);
+  const [totalCustomers, setTotalCustomers] = useState(0);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [balance, setBalance] = useState({ total_debt: 0, total_payment: 0, total_balance: 0 });
+  const [movements, setMovements] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const [recentCustomers, setRecentCustomers] = useState([]);
+  const [salesByRep, setSalesByRep] = useState([]);
+  const [kombiSalesByRep, setKombiSalesByRep] = useState([]);
+  const [kombiSalesSummary, setKombiSalesSummary] = useState([]);
+  const [quotes, setQuotes] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [ordersList, setOrdersList] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [brandDistribution, setBrandDistribution] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedRange, setSelectedRange] = useState("all");
-  
+
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
 
   useEffect(() => {
-    fetch("http://localhost/customerDsh/src/api/dashboard_data.php")
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
+    async function fetchAll() {
+      try {
+        const endpoints = [
+          ["total_customers", data => setTotalCustomers(data.total_customers)],
+          ["total_orders", data => setTotalOrders(data.total_orders)],
+          ["balance", data => setBalance(data)],
+          ["recent_movements", data => setMovements(data)],
+          ["upcoming_appointments", data => setAppointments(data)],
+          ["recent_customers", data => setRecentCustomers(data)],
+          ["sales_by_rep", data => setSalesByRep(data)],
+          ["brand_sales_distribution", data => setBrandDistribution(
+            // Dönüş verisini sayısal değere çevir
+            data.map(item => ({ brand: item.brand, quantity_sold: Number(item.quantity_sold) }))
+          )],
+          ["kombi_sales_by_rep", data => setKombiSalesByRep(data)],
+          ["quotes_overview", data => setQuotes(
+            data.map(q => ({
+              ...q,
+              total_amount: Number(q.total_amount),
+              items: q.items.map(i => ({
+                ...i,
+                quantity: Number(i.quantity),
+                total_price: Number(i.total_price)
+              }))
+            }))
+          )],
+          ["orders_overview", data => setOrders(
+            data.map(o => ({
+              ...o,
+              total_amount: Number(o.total_amount),
+              items: o.items.map(i => ({
+                ...i,
+                quantity: Number(i.quantity),
+                total_amount: Number(i.total_amount)
+              }))
+            }))
+          )],
+          ["today_payments", data => setPayments(
+            data.map(p => ({
+              ...p,
+              amount: Number(p.amount) || 0
+            }))
+          )],
+          ["kombi_sales_by_brand", data => setKombiSalesSummary(
+            data.map(item => ({
+              brand: item.brand,
+              total_sold: Number(item.total_sold),
+              completed: Number(item.completed),
+              pending: Number(item.pending)
+            }))
+          )],
+          ["orders_list", data => setOrdersList(
+            data.map(o => ({
+              id: o.id,
+              customerId: o.customer_id,
+              customerName: o.customer_name,
+              category: o.has_error
+                ? 'Hatalı İşler'
+                : ({
+                    'Sipariş Alındı':   'Montaj Bekleyenler',
+                    'Montaj Yapıldı':   'Proje Bekleyenler',
+                    'Randevu Bekliyor': 'Randevu Bekleyenler',
+                    'Gaz Açıldı':       'Servis Bekleyenler',
+                    'İş Tamamlandı':    'Tamamlanan Siparişler'
+                  }[o.status] || o.status),
+              totalAmount: Number(o.total_amount),
+              createdAt: dayjs(o.created_at).format('DD.MM.YYYY'),
+              // İşte yeni sütunlar:
+              installerName: o.ad_soyad,
+              igdasName:     o.igdas_adi,
+              tuketimNo:     o.tuketim_no,
+              phone:         o.telefon1,
+              street:        o.sokak_adi,
+              building:      o.bina_no,
+              flat:          o.daire_no
+            }))
+          )]
+        ];
+        await Promise.all(endpoints.map(async ([action, setter]) => {
+          const res = await apiFetch(`dashboard_data.php?action=${action}`, { credentials: 'include' });
+          const json = await res.json();
+          setter(json);
+        }));
         setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         setError(err);
         setLoading(false);
-      });
+      }
+    }
+    fetchAll();
   }, []);
 
   if (loading) return <p>Yükleniyor...</p>;
   if (error) return <p>Hata: {error.message}</p>;
 
-  // Her 3 cihazı bir grup haline getirme
-  const chunkedDevices = [];
-  for (let i = 0; i < data.device_counts.length; i += 3) {
-    chunkedDevices.push(data.device_counts.slice(i, i + 3));
-  }
+  // Grafik için veri kontrolü
+  const hasBrandData = brandDistribution && brandDistribution.length > 0;
+  const todayQuotes = quotes.filter(q => dayjs(q.created_at).isSame(dayjs(), 'day'));
+  const todayOrders = orders.filter(o => dayjs(o.created_at).isSame(dayjs(), 'day'));
+  const maxSales = Math.max(...kombiSalesByRep.map(rep => rep.kombi_sold_count));
 
- 
+  // Helper: Diziyi 2'li gruplara ayırır
+  const chunkArray = (arr, size) => {
+    return Array.from({ length: Math.ceil(arr.length / size) }, (_, index) =>
+      arr.slice(index * size, index * size + size)
+    );
+  };
+  const groupedData = chunkArray(kombiSalesSummary, 3);
 
-  const filteredData = data?.daily_orders?.filter((item) => {
-    const date = dayjs(item.tarih);
-    const now = dayjs();
-    if (selectedRange === "7g") return date.isAfter(now.subtract(7, "day"));
-    if (selectedRange === "30g") return date.isAfter(now.subtract(30, "day"));
-    if (selectedRange === "90g") return date.isAfter(now.subtract(90, "day"));
-    return true;
-  }) || [];
-  
+  const columns = [
+    { field: 'id',            headerName: 'ID',       width: 50 },
+    { field: 'customerName',  headerName: 'Müşteri',  width: 180 },
+    { field: 'category',      headerName: 'Sipariş Durumu', width: 180 },
+    { field: 'installerName', headerName: 'Montaj Ad Soyad', width: 150 },
+    { field: 'igdasName',     headerName: 'İGDAŞ Adı', width: 150 },
+    { field: 'tuketimNo',     headerName: 'Tüketim No', width: 120 },
+    { field: 'phone',         headerName: 'Telefon',  width: 160 },
+    { field: 'street',        headerName: 'Sokak',    width: 150 },
+    { field: 'building',      headerName: 'Bina No',  width: 100 },
+    { field: 'flat',          headerName: 'Daire No', width: 100 },
+  ];
+
   return (
     <>
-    <h2>Yönetim Paneli</h2>
-    <div className="mt-4">
-      <div className="row">
-        <div className="col-md-4">
-          <Card className="border border-primary border-2">
-            <h2 className="h5">Toplam Müşteri</h2>
-            <p className="display-4">{data.total_customers}</p>
-            <span className="cardIcons">
-                <svg width="114px" height="114px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M15.5 7.5C15.5 9.433 13.933 11 12 11C10.067 11 8.5 9.433 8.5 7.5C8.5 5.567 10.067 4 12 4C13.933 4 15.5 5.567 15.5 7.5Z" fill="#0d6efd"></path> <path opacity="0.4" d="M19.5 7.5C19.5 8.88071 18.3807 10 17 10C15.6193 10 14.5 8.88071 14.5 7.5C14.5 6.11929 15.6193 5 17 5C18.3807 5 19.5 6.11929 19.5 7.5Z" fill="#0d6efd"></path> <path opacity="0.4" d="M4.5 7.5C4.5 8.88071 5.61929 10 7 10C8.38071 10 9.5 8.88071 9.5 7.5C9.5 6.11929 8.38071 5 7 5C5.61929 5 4.5 6.11929 4.5 7.5Z" fill="#0d6efd"></path> <path d="M18 16.5C18 18.433 15.3137 20 12 20C8.68629 20 6 18.433 6 16.5C6 14.567 8.68629 13 12 13C15.3137 13 18 14.567 18 16.5Z" fill="#0d6efd"></path> <path opacity="0.4" d="M22 16.5C22 17.8807 20.2091 19 18 19C15.7909 19 14 17.8807 14 16.5C14 15.1193 15.7909 14 18 14C20.2091 14 22 15.1193 22 16.5Z" fill="#0d6efd"></path> <path opacity="0.4" d="M2 16.5C2 17.8807 3.79086 19 6 19C8.20914 19 10 17.8807 10 16.5C10 15.1193 8.20914 14 6 14C3.79086 14 2 15.1193 2 16.5Z" fill="#0d6efd"></path> </g></svg>
-            </span>
-          </Card>
-        </div>
+    <div className="row">
 
-        <div className="col-md-4">
-          <Card className="border border-success border-2">
-            <h2 className="h5">Tamamlanan İşler</h2>
-            <p className="display-4">{data.completed_jobs_count}</p>
-            <span className="cardIcons">
-                <svg width="114px" height="114px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.5" d="M9.59236 3.20031C9.34886 3.40782 9.2271 3.51158 9.09706 3.59874C8.79896 3.79854 8.46417 3.93721 8.1121 4.00672C7.95851 4.03705 7.79903 4.04977 7.48008 4.07522L7.48007 4.07523C6.67869 4.13918 6.278 4.17115 5.94371 4.28923C5.17051 4.56233 4.56233 5.17051 4.28923 5.94371C4.17115 6.278 4.13918 6.67869 4.07523 7.48007L4.07522 7.48008C4.04977 7.79903 4.03705 7.95851 4.00672 8.1121C3.93721 8.46417 3.79854 8.79896 3.59874 9.09706C3.51158 9.2271 3.40781 9.34887 3.20028 9.59239L3.20027 9.5924C2.67883 10.2043 2.4181 10.5102 2.26522 10.8301C1.91159 11.57 1.91159 12.43 2.26522 13.1699C2.41811 13.4898 2.67883 13.7957 3.20027 14.4076L3.20031 14.4076C3.4078 14.6511 3.51159 14.7729 3.59874 14.9029C3.79854 15.201 3.93721 15.5358 4.00672 15.8879C4.03705 16.0415 4.04977 16.201 4.07522 16.5199L4.07523 16.5199C4.13918 17.3213 4.17115 17.722 4.28923 18.0563C4.56233 18.8295 5.17051 19.4377 5.94371 19.7108C6.27799 19.8288 6.67867 19.8608 7.48 19.9248L7.48008 19.9248C7.79903 19.9502 7.95851 19.963 8.1121 19.9933C8.46417 20.0628 8.79896 20.2015 9.09706 20.4013C9.22711 20.4884 9.34887 20.5922 9.5924 20.7997C10.2043 21.3212 10.5102 21.5819 10.8301 21.7348C11.57 22.0884 12.43 22.0884 13.1699 21.7348C13.4898 21.5819 13.7957 21.3212 14.4076 20.7997C14.6511 20.5922 14.7729 20.4884 14.9029 20.4013C15.201 20.2015 15.5358 20.0628 15.8879 19.9933C16.0415 19.963 16.201 19.9502 16.5199 19.9248L16.52 19.9248C17.3213 19.8608 17.722 19.8288 18.0563 19.7108C18.8295 19.4377 19.4377 18.8295 19.7108 18.0563C19.8288 17.722 19.8608 17.3213 19.9248 16.52L19.9248 16.5199C19.9502 16.201 19.963 16.0415 19.9933 15.8879C20.0628 15.5358 20.2015 15.201 20.4013 14.9029C20.4884 14.7729 20.5922 14.6511 20.7997 14.4076C21.3212 13.7957 21.5819 13.4898 21.7348 13.1699C22.0884 12.43 22.0884 11.57 21.7348 10.8301C21.5819 10.5102 21.3212 10.2043 20.7997 9.5924C20.5922 9.34887 20.4884 9.22711 20.4013 9.09706C20.2015 8.79896 20.0628 8.46417 19.9933 8.1121C19.963 7.95851 19.9502 7.79903 19.9248 7.48008L19.9248 7.48C19.8608 6.67867 19.8288 6.27799 19.7108 5.94371C19.4377 5.17051 18.8295 4.56233 18.0563 4.28923C17.722 4.17115 17.3213 4.13918 16.5199 4.07523L16.5199 4.07522C16.201 4.04977 16.0415 4.03705 15.8879 4.00672C15.5358 3.93721 15.201 3.79854 14.9029 3.59874C14.7729 3.51158 14.6511 3.40781 14.4076 3.20027C13.7957 2.67883 13.4898 2.41811 13.1699 2.26522C12.43 1.91159 11.57 1.91159 10.8301 2.26522C10.5102 2.4181 10.2043 2.67883 9.5924 3.20027L9.59236 3.20031Z" fill="#198754"></path> <path d="M16.3736 9.86298C16.6914 9.54515 16.6914 9.02984 16.3736 8.71201C16.0557 8.39417 15.5404 8.39417 15.2226 8.71201L10.3723 13.5623L8.77753 11.9674C8.4597 11.6496 7.94439 11.6496 7.62656 11.9674C7.30873 12.2853 7.30873 12.8006 7.62656 13.1184L9.79685 15.2887C10.1147 15.6065 10.63 15.6065 10.9478 15.2887L16.3736 9.86298Z" fill="#198754"></path> </g></svg>
-            </span>
-          </Card>
-        </div>
-
-        {/* New Section for Total Faulty Jobs */}
-        <div className="col-md-4">
-          <Card className="border border-danger border-2">
-            <h2 className="h5">Toplam Hatalı İşler</h2>
-            <p className="display-4">{data.hasErrorWorks}</p>
-            <span className="cardIcons">
-            <svg width="114px" height="114px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.5" d="M12 3C9.68925 3 8.23007 5.58716 5.31171 10.7615L4.94805 11.4063C2.52291 15.7061 1.31034 17.856 2.40626 19.428C3.50217 21 6.21356 21 11.6363 21H12.3637C17.7864 21 20.4978 21 21.5937 19.428C22.6897 17.856 21.4771 15.7061 19.0519 11.4063L18.6883 10.7615C15.7699 5.58716 14.3107 3 12 3Z" fill="#dc3545"></path> <path d="M12 7.25C12.4142 7.25 12.75 7.58579 12.75 8V13C12.75 13.4142 12.4142 13.75 12 13.75C11.5858 13.75 11.25 13.4142 11.25 13V8C11.25 7.58579 11.5858 7.25 12 7.25Z" fill="#dc3545"></path> <path d="M12 17C12.5523 17 13 16.5523 13 16C13 15.4477 12.5523 15 12 15C11.4477 15 11 15.4477 11 16C11 16.5523 11.4477 17 12 17Z" fill="#dc3545"></path> </g></svg>
-            </span>
-          </Card>
-        </div>
-
-        {/* 📌 Carousel: Cihazlar */}
-        
-            <div id="deviceCarousel" className="carousel carousel-dark slide" data-bs-ride="carousel">
-              <div className="carousel-inner">
-                {chunkedDevices.map((deviceGroup, groupIndex) => (
-                  <div className={`carousel-item ${groupIndex === 0 ? 'active' : ''}`} key={groupIndex}>
-                    <div className="row">
-                      {deviceGroup.map((device, index) => (
-                        <div className="col-12 col-md-4" key={index}>
-                          <Card>
-                            <h2 className="h5">{device.brand}</h2>
-                            <span className="interests_item bg-primary text-white">Toplam: {device.total}</span>
-                            <span className="interests_item bg-success text-white">Tamamlanan: {device.completed}</span>
-                            <span className="interests_item bg-danger text-white">Hatalı: {device.faulty}</span>
-                          </Card>
-                        </div>
-                      ))}
-                    </div>
+    </div>
+    <div className="row"> 
+      <div className="col-md-9 my-4">
+        <div className="row g-3">
+          <h5 class="mb-0 mt-0">Genel Veriler</h5>
+            <div className="col-md-3">
+              <Card className="border-2 border-primary">
+                <h5>Toplam Müşteri</h5>
+                <p className="display-4">{totalCustomers}</p>
+              </Card>
+            </div>
+            <div className="col-md-3">
+              <Card className="border-2 border-primary">
+                <h5>Toplam Sipariş</h5>
+                <p className="display-4">{totalOrders}</p>
+              </Card>
+            </div>
+            <div className="col-md-6">
+              <Card className="border-2 border-warning">
+                <div className="row">
+                  <div className="col-md-6">
+                    <h5>Toplam Bakiye</h5>
+                    <p className="display-4">{balance.total_balance} TL</p>
                   </div>
-                ))}
-              </div>
-
-              {/* Carousel Indicators (Göstergeler) */}
-              <div className="carousel-indicators">
-                {chunkedDevices.map((_, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    data-bs-target="#deviceCarousel"
-                    data-bs-slide-to={index}
-                    className={index === 0 ? "active" : ""}
-                    aria-current={index === 0 ? "true" : "false"}
-                    aria-label={`Slide ${index + 1}`}
-                  ></button>
-                ))}
-              </div>
-
-              {/* Carousel Kontrolleri (Sol ve Sağ Butonlar) */}
-              <button className="carousel-control-prev" type="button" data-bs-target="#deviceCarousel" data-bs-slide="prev">
-                <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span className="visually-hidden">Previous</span>
-              </button>
-              <button className="carousel-control-next" type="button" data-bs-target="#deviceCarousel" data-bs-slide="next">
-                <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                <span className="visually-hidden">Next</span>
-              </button>
+                  <div className="col-md-6 mt-2">
+                    <p>Sipariş Tutarı: <span className="text-danger">{balance.total_debt} TL </span></p>
+                    <p>Gelen Ödeme: <span className="text-success">{balance.total_payment} TL</span></p>
+                  </div>
+                </div>
+              </Card>
             </div>
+      </div>
 
+        {/* KPI Kartlar */}
+        <div className="row g-3 mb-3">
+          <h5 className="mt-3">Tüm Siparişler</h5>
+          <Box sx={{ height: 267, width: '100%' }}>
+            <DataGrid className="border-2"
+              rows={ordersList}
+              columns={columns}
 
-        {/* 📌 Günlük Sipariş Sayısı Grafiği */}
-        <div className="col-md-12">
-          <Card className="p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="h5 float-start">Günlük Sipariş Sayısı</h2>
-              <select
-                value={selectedRange}
-                onChange={(e) => setSelectedRange(e.target.value)}
-                className="border-0 rounded text-sm float-end"
-              >
-                <option value="all">Tümü</option>
-                <option value="7g">Son 7 Gün</option>
-                <option value="30g">Son 1 Ay</option>
-                <option value="90g">Son 3 Ay</option>
-              </select>
+              // **v8 kontrollü pagination**
+              pagination
+              paginationModel={paginationModel}
+              onPaginationModelChange={(newModel) => setPaginationModel(newModel)}
+
+              // sayfa boyutu seçenekleri
+              pageSizeOptions={[5, 10, 20]}
+
+              
+            />
+          </Box>
+        </div>
+
+        <div className="row g-3">
+          <h5 class="mb-0 mt-4">Marka Bazlı Satış Özeti</h5>
+          { groupedData.length > 0 ? (
+          <div className="col-12 markaSatis mt-0">
+            <Carousel indicators={false} interval={5000} >
+              {groupedData.map((group, idx) => (
+                <Carousel.Item key={idx}>
+                  <div className="row">
+                    {group.map((brandData, subIdx) => (
+                      <div key={subIdx} className="col-md-4 ps-0 pe-0">
+                        <div className="card p-3 m-2 border-2">
+                          <div className="card-body p-0">
+                            <h5>{brandData.brand}</h5>
+                            <span className="interests_item bg-primary text-white">
+                              Toplam Satış: {brandData.total_sold}
+                            </span>
+                            <span className="interests_item bg-success text-white">
+                              Tamamlanan: {brandData.completed}
+                            </span>
+                            <span className="interests_item bg-danger text-white">
+                              Bekleyen: {brandData.pending}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Carousel.Item>
+              ))}
+            </Carousel>
+          </div>
+        ) : (
+          <div className="col-12">
+            <div className="card p-3">
+              <p>Marka bazlı kombi satış verisi bulunamadı.</p>
             </div>
+          </div>
+        )}
+        </div>
 
-            {filteredData.length > 0 ? (
+        {/* Temsilciye Göre Kombi Satışları - Kart Bazlı */}
+        <div className="row g-3">
+          <h5 className="mt-4">Müşteri Temsilcisi Satış Özeti</h5>
+          {kombiSalesByRep.map(rep => (
+            <div key={rep.user_id} className="col-md-3 mt-0">
+              <Card className="border-2">
+                <h5>
+                  {rep.representative}
+                  {rep.kombi_sold_count === maxSales && (
+                    <FaCrown className="text-warning ms-2 mb-2 " title="En çok satış yapan temsilci" />
+                  )}
+                </h5>
+                <p className="interests_item bg-warning text-white">
+                  Toplam Satış Adeti: {rep.kombi_sold_count}
+                </p>
+                <ul>
+                  {Object.entries(rep.brands).map(([brand, count]) => (
+                    <li key={brand}>{brand}: {count}</li>
+                  ))}
+                </ul>
+              </Card>
+            </div>
+          ))}
+        </div>
+
+        {/* Grafikler */}
+        <div className="row g-3">
+          <div className="col-md-6">
+            <Card className="border-2">
+              <h5>7 Günlük Sipariş Hareketleri</h5>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={filteredData}>
+                <LineChart data={movements}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="tarih" />
+                  <XAxis dataKey="date" />
                   <YAxis allowDecimals={false} />
                   <Tooltip />
-                  <Line type="monotone" dataKey="siparis_sayisi" stroke="#3f75d7" strokeWidth={2} />
+                  <Line type="monotone" dataKey="count" stroke={PRIMARY} strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
-            ) : (
-              <p>Günlük sipariş verisi bulunamadı.</p>
-            )}
-          </Card>
-        </div>
-
-        <div className="col-md-4">
-            <Card>
-            <h2 className="h5">Müşterilerin Cihaz Tercihleri</h2>
-            <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                <Pie
-                    data={data.device_percentages}
-                    dataKey="percentage"
-                    nameKey="brand"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    fill="#8884d8"
-                >
-                    {data.device_percentages.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                </Pie>
-                <Tooltip formatter={(value) => `${value}%`} />
-                <Legend />
-                </PieChart>
-            </ResponsiveContainer>
             </Card>
-        </div>
-
-       {/* 📌 Tablo: Müşteri Temsilcilerinin Satış Verileri */}
-        <div className="col-md-8">
-            <Card className="height-300">
-                <h2 className="h5 mb-3">Müşteri Temsilcileri Verileri</h2>
-                {data.sales_representative_top_brands && data.sales_representative_top_brands.length > 0 ? (
-                    <div id="salesRepresentativeCarousel" className="musteriTemsilcisi carousel carousel-dark slide" data-bs-ride="carousel">
-                        <div className="carousel-inner">
-                            {data.sales_representative_top_brands.reduce((chunks, item, index) => {
-                                if (index % 2 === 0) {
-                                    chunks.push([item]);  // Start a new chunk
-                                } else {
-                                    chunks[chunks.length - 1].push(item);  // Add to the current chunk
-                                }
-                                return chunks;
-                            }, []).map((chunk, chunkIndex) => (
-                                <div className={`carousel-item ${chunkIndex === 0 ? 'active' : ''}`} key={chunkIndex}>
-                                    <div className="row">
-                                        {chunk.map((item, index) => (
-                                            <div key={index} className="col-md-6">
-                                                <Card className="shadow-sm musteri_temsilcisi_item">
-                                                    <h5 className="mb-2">
-                                                        {index === 0 && chunkIndex === 0 && <FaAward className="text-warning me-2" />} 
-                                                        {item.representative}
-                                                    </h5>
-                                                    <p>En Çok Sattığı Marka: {item.top_brand}</p>
-                                                    <p>Toplam Satış: {item.total_sales}</p>
-                                                    {/* 📌 Marka Dağılımı */}
-                                                    <div>
-                                                        Marka Dağılımı:
-                                                        <div className="d-flex flex-wrap gap-2 mt-2">
-                                                            {Object.entries(item.brand_sales).map(([brand, count], i) => (
-                                                                <span key={i} className="badge bg-primary p-2">
-                                                                    {brand}: {count}
-                                                                </span>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </Card>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Carousel Controls */}
-                        <div className=" position-absolute">
-                            <button
-                                className="btn btn-sm me-2"
-                                type="button"
-                                data-bs-target="#salesRepresentativeCarousel"
-                                data-bs-slide="prev"
-                            >
-                                <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span className="visually-hidden">Previous</span>
-                            </button>
-                            <button
-                                className="btn btn-sm "
-                                type="button"
-                                data-bs-target="#salesRepresentativeCarousel"
-                                data-bs-slide="next"
-                            >
-                                <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span className="visually-hidden">Next</span>
-                            </button>
-                        </div>
-                    </div>
-                ) : (
-                    <p>Müşteri Temsilcisi Bulunamadı.</p>
-                )}
+          </div>
+          <div className="col-md-6">
+            <Card className="border-2">
+              <h5>Temsilci Bazlı Satış Cirosu</h5>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={salesByRep}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="representative" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="total_sales_revenue" fill={PRIMARY} />
+                </BarChart>
+              </ResponsiveContainer>
             </Card>
-        </div>
-
-        <div className="col-md-8">
-          <Card className="height-300">
-            <h2 className="h5">Önümüzdeki 7 Gün Randevular</h2>
-            {data.upcoming_appointments.length > 0 ? (
-              <ul className="list-group heightAuto">
-                {data.upcoming_appointments.map((appt, index) => (
-                  <li key={index} className="list-group-item">
-                    Müşteri Adı :{appt.ad_soyad}<br/>Telefon Numarası : {appt.telefon1} 
-                    <br/>
-                    Adres : {appt.il}, {appt.ilce}, {appt.mahalle}, {appt.sokak_adi}, {appt.bina_no}, {appt.daire_no}
-                    <br/>
-                    <span className="interests_item">Randevu Tarihi :{appt.randevu_tarihi}</span>
+          </div>
+          {/* Marka Dağılımı Kartı */}
+          <div className="col-md-6 mt-0">
+            <Card className="border-2">
+              <h5>Marka Dağılımı</h5>
+              {hasBrandData ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={brandDistribution}
+                      dataKey="quantity_sold"
+                      nameKey="brand"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      label
+                    >
+                      {brandDistribution.map((entry, idx) => (
+                        <Cell key={idx} fill={idx % 7 === 0 ? PRIMARY : SECONDARY} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => new Intl.NumberFormat().format(value)} />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <p>Marka verisi bulunamadı.</p>
+              )}
+            </Card>
+          </div>
+          <div className="col-md-6 mt-0">
+            <Card className="border-2"> 
+              <h5>Önümüzdeki 7 Gün Randevular</h5>
+              <ul className="list-group list-group-flush">
+                {appointments.map((apt, idx) => (
+                  <li key={idx} className="list-group-item">
+                    {dayjs(apt.randevu_tarihi).format('DD.MM.YYYY')} - {apt.ad_soyad}
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p>Önümüzdeki 7 gün içinde randevu yok.</p>
-            )}
-          </Card>
+            </Card>
+          </div>
         </div>
-        
-        <div className="col-md-4">
-          <Card className="height-300">
-            <h2 className="h5">Son Güncellenenler</h2>
-            {data.last_updated.length > 0 ? (
-              <ul className="list-group heightAuto">
-                {data.last_updated.map((appt, index) => (
-                  <li key={index} className="list-group-item">
-                    {appt.ad_soyad} - {appt.telefon1}
+
+        {/* Son Eklenen Müşteriler */}
+        <div className="row g-3">
+          <div className="col-md-6">
+            <Card className="border-2">
+              <h5>Son Eklenen 7 Müşteri</h5>
+              <ul className="list-group list-group-flush">
+                {recentCustomers.map(c => (
+                  <li key={c.id} className="list-group-item">
+                    {c.name} ({c.email})
                   </li>
                 ))}
               </ul>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+
+      <div className="col-md-3 my-4">
+      
+      <DashboardShortcuts/>
+
+      <div className="row g-3">
+        <h5 className="mb-0 mt-4">Ödemeler</h5>
+        {payments.length > 0 ? (
+          payments.map(pay => (
+            <div key={pay.id} className="col-md-12 col-lg-12">
+              <Card className="border-2 border-success">
+                <h5 className="interests_item bg-success text-white">Ödeme #{pay.id}</h5>
+                <p><strong>Müşteri:</strong> {pay.customer_name}</p>
+                <p><strong>Miktar:</strong> {pay.amount.toFixed(2)}</p>
+                <p><strong>İşlem Tarihi:</strong> {dayjs(pay.transaction_date).format('DD.MM.YYYY HH:mm')}</p>
+                {pay.description && <p><strong>Açıklama:</strong> {pay.description}</p>}
+                <p><strong>İşleyen:</strong> {pay.processed_by}</p>
+              </Card>
+            </div>
+          ))
+        ) : (
+          <div className="col-12">
+            <Card className="border-2 border-success"><p>Bugün ödeme bulunamadı.</p></Card>
+          </div>
+        )}
+      </div>
+
+
+        {/* Verilen Teklifler Kart Bazlı */}
+        <div className="row g-3">
+          <h5 className="mb-0">Teklifler</h5>
+          {todayQuotes.length > 0 ? (
+          todayQuotes.map(q => (
+            <div key={q.id} className="col-md-12 col-lg-12">
+              <Card className="border-2 border-primary">
+                <h5 className="interests_item bg-primary text-white">Teklif #{q.id}</h5>
+                <p><strong>Oluşturan:</strong> {q.creator_name}</p>
+                <p><strong>Durum:</strong> {q.status}</p>
+                <p><strong>Tutar:</strong> {q.total_amount.toFixed(2)}</p>
+                <p><strong>Tarih:</strong> {dayjs(q.created_at).format('DD.MM.YYYY')}</p>
+                <h6 className="mt-3">Ürünler:</h6>
+                <ul className="list-group list-group-flush">
+                  {q.items.map((item, idx) => (
+                    <li key={idx} className="list-group-item d-flex justify-content-between align-items-center">
+                      <span>{item.product_name} ({item.quantity} Adet)</span>
+                      <span>{item.total_price.toFixed(2)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            </div>
+          ))
+        ) : (
+          <div className="col-12">
+            <Card className="border-2 border-primary"><p>Bugün oluşturulmuş teklif bulunamadı.</p></Card>
+          </div>
+        )}
+        </div>
+
+        {/* Siparişler */}
+        <div className="row g-3">
+        <h5 className="mb-0">Siparişler</h5>
+          {todayOrders.length > 0 ? (
+              todayOrders.map(o => (
+                <div key={o.id} className="col-md-12 col-lg-12">
+                  <Card className="border-2 border-warning">
+                    <h5 className="interests_item bg-warning text-white">Sipariş #{o.id}</h5>
+                    <p><strong>Müşteri:</strong> {o.customer_name}</p>
+                    <p><strong>Durum:</strong> {o.status}</p>
+                    <p><strong>Tutar:</strong> {o.total_amount.toFixed(2)} TL</p>
+                    <p><strong>Tarih:</strong> {dayjs(o.created_at).format('DD.MM.YYYY')}</p>
+                    <h6 className="mt-3">Ürünler:</h6>
+                    <ul className="list-group list-group-flush">
+                      {o.items.map((item, idx) => (
+                        <li key={idx} className="list-group-item d-flex justify-content-between align-items-center">
+                          <span>{item.product_name} ({item.quantity} Adet)</span>
+                          <hr />
+                        </li>
+                      ))}
+                    </ul>
+                  </Card>
+                </div>
+              ))
             ) : (
-              <p>Gün İçerisinde Güncellenen İş Yok.</p>
-            )}
-          </Card>
+              <div className="col-12">
+                <Card><p>Bugün oluşturulan sipariş bulunamadı.</p></Card>
+              </div>
+          )}
         </div>
 
       </div>

@@ -9,6 +9,13 @@
   }
 
 @media (min-width: 768px) {
+    .markaSatis .carousel-control-prev {
+        right: -50px!important;
+        left: auto;
+    }
+    .markaSatis .carousel-control-next {
+        right: -85px!important;
+    }
     .sidebar a {
         text-align: center!important;
     }

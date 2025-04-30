@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { apiFetch } from './api';
 import { FaPlusSquare, FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const CreateOrder = () => {
@@ -95,9 +96,9 @@ const CreateOrder = () => {
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      fetch('http://localhost/customerDsh/src/api/list_customer.php', { credentials: 'include' }),
-      fetch('http://localhost/customerDsh/src/api/stock_management.php', { credentials: 'include' }),
-      fetch('http://localhost/customerDsh/src/api/categories.php', { credentials: 'include' })
+      apiFetch('list_customer.php', { credentials: 'include' }),
+      apiFetch('stock_management.php', { credentials: 'include' }),
+      apiFetch('categories.php', { credentials: 'include' })
     ])
       .then(([cRes, sRes, catRes]) => Promise.all([cRes.json(), sRes.json(), catRes.json()]))
       .then(([custData, stockData, catData]) => {
@@ -204,6 +205,7 @@ const CreateOrder = () => {
     const payload = {
       customer_id: selectedCustomer,
       total_amount: totalAmount,
+      order_type: orderType,
       order_items: selectedItems.map(it => ({
         stock_id: it.stock_id,
         unit_price: it.unit_price,
@@ -229,7 +231,7 @@ const CreateOrder = () => {
       }))
     };
     console.log('Payload:', payload);
-    fetch('http://localhost/customerDsh/src/api/create_order.php', {
+    apiFetch('create_order.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

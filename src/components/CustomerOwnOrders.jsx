@@ -3,6 +3,7 @@ import { Spinner } from 'react-bootstrap';
 import { generateOrderPDF } from '../utils/generateOrderPDF';
 import { FaAngleUp, FaAngleDown } from "react-icons/fa";
 import OrderInstallationModal from './InstallationModal';
+import { apiFetch } from '../api';
 
 export default function ListOrders ({ customer_id }) {
   const [orders, setOrders] = useState([]);
@@ -20,9 +21,9 @@ export default function ListOrders ({ customer_id }) {
     async function fetchOrders() {
       try {
         const url = customer_id
-          ? `http://localhost/customerDsh/src/api/list_orders.php?customer_id=${customer_id}`
-          : 'http://localhost/customerDsh/src/api/list_orders.php';
-        const res = await fetch(url, { credentials: 'include' });
+          ? `list_orders.php?customer_id=${customer_id}`
+          : 'list_orders.php';
+        const res = await apiFetch(url, { credentials: 'include' });
         if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
         const data = await res.json();
         if (!data.success) throw new Error(data.message || 'Siparişler alınamadı');
@@ -68,7 +69,7 @@ export default function ListOrders ({ customer_id }) {
   const deleteOrder = order_id => {
     if (!window.confirm('Bu siparişi silmek istediğinizden emin misiniz?')) return;
 
-    fetch('http://localhost/customerDsh/src/api/delete_order.php', {
+    apiFetch('delete_order.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -103,7 +104,7 @@ export default function ListOrders ({ customer_id }) {
 
   const loadOrders = () => {
     setLoading(true);
-    fetch('http://localhost/customerDsh/src/api/list_orders.php', {
+    apiFetch('list_orders.php', {
       method: 'GET',
       credentials: 'include',
     })

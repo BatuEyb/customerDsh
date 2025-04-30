@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { apiFetch } from "../api";
 
 // Telefon numarasını değiştirme fonksiyonu
 const handleTelefonChange = (e, setTelefon) => {
@@ -86,7 +87,7 @@ const CustomerEditModal = ({ customer, onClose, onUpdate }) => {
         };
     
         try {
-            const response = await fetch("http://localhost/customerDsh/src/api/update-customer.php", {
+            const response = await apiFetch("update-customer.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedFormData),
@@ -108,7 +109,7 @@ const CustomerEditModal = ({ customer, onClose, onUpdate }) => {
         if (!window.confirm("Bu müşteriyi silmek istediğinizden emin misiniz?")) return;
 
         try {
-            const response = await fetch(`http://localhost/customerDsh/src/api/delete-customer.php?id=${customer.id}`, {
+            const response = await apiFetch(`delete-customer.php?id=${customer.id}`, {
                 method: "DELETE",
             });
 

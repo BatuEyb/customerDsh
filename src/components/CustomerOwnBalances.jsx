@@ -3,6 +3,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import DejaVuSans from "../assets/DejaVuSans-normal.js"; // Dosya yolunu doğru şekilde düzelt
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { apiFetch } from '../api.js';
 
 export default function CustomerOwnBalance({ customer_id }) {
   const [summary, setSummary] = useState(null);
@@ -15,7 +16,7 @@ export default function CustomerOwnBalance({ customer_id }) {
   useEffect(() => {
     async function fetchSummary() {
       try {
-        const res = await fetch('http://localhost/customerDsh/src/api/get_balances.php', { credentials: 'include' });
+        const res = await apiFetch('get_balances.php', { credentials: 'include' });
         if (!res.ok) throw new Error(`Summary HTTP error! Status: ${res.status}`);
         const data = await res.json();
         if (data.success) {
@@ -37,7 +38,7 @@ export default function CustomerOwnBalance({ customer_id }) {
   useEffect(() => {
     if (!summary) return;
     setLoadingTrans(true);
-    fetch(`http://localhost/customerDsh/src/api/get_transactions.php?customer_id=${customer_id}`, { credentials: 'include' })
+    apiFetch(`get_transactions.php?customer_id=${customer_id}`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => setTransactions(data.success ? data.transactions : []))
       .catch(() => setTransactions([]))
