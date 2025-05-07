@@ -67,7 +67,14 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     transition: all 0.2s ease;
   }
-  
+.firstReps{
+    position: absolute;
+    top: -13px;
+    left: -16px;
+    width: 30px;
+    height: 24px;
+    transform: rotate(-45deg);
+}
 .clickable-row td {
 cursor: pointer;
 transition: background-color 0.3s;

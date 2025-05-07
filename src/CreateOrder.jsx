@@ -87,10 +87,10 @@ const CreateOrder = () => {
 
   const maskPhoneNumber = (value) => {
     const cleaned = value.replace(/\D/g, '');
-    if (cleaned.length <= 3) return `+90 (${cleaned}`;
-    if (cleaned.length <= 6) return `+90 (${cleaned.slice(0,3)}) ${cleaned.slice(3)}`;
-    if (cleaned.length <= 8) return `+90 (${cleaned.slice(0,3)}) ${cleaned.slice(3,6)} ${cleaned.slice(6)}`;
-    return `+90 (${cleaned.slice(0,3)}) ${cleaned.slice(3,6)} ${cleaned.slice(6,8)} ${cleaned.slice(8,10)}`;
+    if (cleaned.length <= 3) return `0 (${cleaned}`;
+    if (cleaned.length <= 6) return `0 (${cleaned.slice(0,3)}) ${cleaned.slice(3)}`;
+    if (cleaned.length <= 8) return `0 (${cleaned.slice(0,3)}) ${cleaned.slice(3,6)} ${cleaned.slice(6)}`;
+    return `0 (${cleaned.slice(0,3)}) ${cleaned.slice(3,6)} ${cleaned.slice(6,8)} ${cleaned.slice(8,10)}`;
   };
 
   useEffect(() => {
@@ -167,7 +167,7 @@ const CreateOrder = () => {
 
   const handleTelefonChangeItem = (e, index, field) => {
     const val = e.target.value;
-    const cleaned = val.startsWith('+90') ? val.slice(3) : val;
+    const cleaned = val.startsWith('0') ? val.slice(1) : val;
     updateField(index, field, maskPhoneNumber(cleaned));
   };
 

@@ -270,23 +270,25 @@ const CreateQuote = () => {
               </div>
             </div>
             <table className="table table-bordered table-hover table-responsive-sm quote_items_table ">
-              <caption>
-                <a 
-                  className="cursor-pointer" 
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                >
-                  <FaChevronLeft />
-                </a>
-                <span className="mx-2">Sayfa {currentPage} / {totalPages}</span>
-                <a 
-                  className="cursor-pointer" 
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                >
-                  <FaChevronRight />
-                </a>
-              </caption>
+            <caption>
+              <button
+                type="button"
+                className="btn btn-link p-0"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <FaChevronLeft />
+              </button>
+              <span className="mx-2">Sayfa {currentPage} / {totalPages}</span>
+              <button
+                type="button"
+                className="btn btn-link p-0"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                <FaChevronRight />
+              </button>
+            </caption>
               <thead>
                 <tr>
                   <th>Ürün Adı</th>
@@ -301,10 +303,7 @@ const CreateQuote = () => {
                       <td>{stock.product_name}</td>
                       <td>{stock.brand}</td> {/* Markayı buradan alıyoruz */}
                       <td>{stock.price} ₺</td>
-                      <td>
-                        <a className="cursor-pointer" onClick={() => addItem(stock)}><FaPlusSquare />
-                        </a>
-                      </td>
+                      <td><a className="cursor-pointer" onClick={() => addItem(stock)}><FaPlusSquare /></a></td>
                     </tr>
                   ))}
               </tbody>
@@ -343,7 +342,6 @@ const CreateQuote = () => {
                   disabled
                 />
               </td>
-
               {/* Quantity Input */}
               <td>
                 <input
@@ -354,7 +352,6 @@ const CreateQuote = () => {
                   onChange={(e) => updateQuantity(idx, parseInt(e.target.value) || 1)} // Varsayılan 1
                 />
               </td>
-
               {/* Unit Price */}
               <td>
                 <input
@@ -364,7 +361,6 @@ const CreateQuote = () => {
                   disabled
                 />
               </td>
-
               {/* Discount Input */}
               <td>
                 <input
@@ -379,7 +375,6 @@ const CreateQuote = () => {
                   }}
                 />
               </td>
-
               {/* Discounted Unit Price */}
               <td>
                 <input
@@ -394,7 +389,6 @@ const CreateQuote = () => {
                   }}
                 />
               </td>
-
               {/* Total Price */}
               <td>
               <input
@@ -404,7 +398,6 @@ const CreateQuote = () => {
                 disabled
               />
               </td>
-
               {/* Remove Button */}
               <td>
                 <button className="btn btn-danger btn-sm" onClick={() => removeItem(idx)}><FaTrash /></button>

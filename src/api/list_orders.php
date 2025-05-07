@@ -2,18 +2,49 @@
 include 'api.php'; // veritabanı bağlantısı
 include 'session.php';
 
-$customerId = isset($_GET['customer_id']) 
-    ? (int) $_GET['customer_id'] 
-    : 0;
+$customerId = isset($_GET['customer_id']) ? (int) $_GET['customer_id'] : 0;
+$status     = isset($_GET['status'])      ? $_GET['status']         : '';
+$dateFrom   = isset($_GET['date_from'])   ? $_GET['date_from']      : '';
+$dateTo     = isset($_GET['date_to'])     ? $_GET['date_to']        : '';
+$representative = isset($_GET['representative'])  ? (int)$_GET['representative'] : 0;
 
 $response = [];
 
 try {
-    // 1) SQL’i WHERE şartı ile birlikte kur
-    $whereClause = '';
+    // Dinamik WHERE parçalarını hazırlıyoruz
+    $whereParts = [];
+    $params     = [];
+    $types      = '';
+
     if ($customerId > 0) {
-        $whereClause = 'WHERE o.customer_id = ?';
+        $whereParts[] = 'o.customer_id = ?';
+        $params[]     = $customerId;
+        $types       .= 'i';
     }
+    if ($status !== '') {
+        $whereParts[] = 'o.status = ?';
+        $params[]     = $status;
+        $types       .= 's';
+    }
+    if ($dateFrom !== '') {
+        $whereParts[] = 'DATE(o.created_at) >= ?';
+        $params[]     = $dateFrom;
+        $types       .= 's';
+    }
+    if ($dateTo !== '') {
+        $whereParts[] = 'DATE(o.created_at) <= ?';
+        $params[]     = $dateTo;
+        $types       .= 's';
+    }
+    if ($representative > 0) {
+        $whereParts[] = 'o.created_by = ?';
+        $params[]     = $representative;
+        $types       .= 'i';
+    }
+
+    $whereClause = $whereParts
+        ? 'WHERE ' . implode(' AND ', $whereParts)
+        : '';
 
     // Siparişleri ve müşteri bilgilerini çek
     $ordersSql = "
@@ -36,18 +67,23 @@ try {
         {$whereClause}
         ORDER BY o.created_at DESC
     ";
-    // 2) Hazırlama ve parametre bind
+
     $stmt = $conn->prepare($ordersSql);
-    if ($customerId > 0) {
-        $stmt->bind_param("i", $customerId);
+    if (!empty($params)) {
+        // bind_param için referanslar gerekiyor
+        $bindNames[] = $types;
+        foreach ($params as $key => $val) {
+            // değişkene referans ataması
+            $bindNames[] = &$params[$key];
+        }
+        call_user_func_array([$stmt, 'bind_param'], $bindNames);
     }
     $stmt->execute();
     $orderResult = $stmt->get_result();
 
     $orders = [];
-
     while ($row = $orderResult->fetch_assoc()) {
-        $order_id = $row['id'];
+        $order_id = (int)$row['id'];
 
         // Bu siparişe ait ürünleri çek
         $itemsSql = "
@@ -60,7 +96,6 @@ try {
                 oi.discounted_unit_price,
                 oi.total_amount,
                 oi.serial_number,
-                -- installations tablosundan LEFT JOIN ile verileri alıyoruz
                 inst.tuketim_no,
                 inst.igdas_adi    AS service_name,
                 inst.ad_soyad,
@@ -100,7 +135,6 @@ try {
             $fullAddress = $addressParts ? implode(', ', $addressParts) : null;
 
             $installation = null;
-            // Eğer LEFT JOIN sonucu tuketim_no alanı doluysa kurulumu var demektir
             if ($item['tuketim_no'] !== null) {
                 $installation = [
                     'tuketim_no'    => $item['tuketim_no'],
@@ -108,37 +142,37 @@ try {
                     'ad_soyad'      => $item['ad_soyad'],
                     'phone_number'  => $item['phone_number'],
                     'phone_number2' => $item['phone_number2'],
-                    'randevu_tarihi' => $item['randevu_tarihi'],
-                    'hata_durumu' => $item['hata_durumu'],
-                    'hata_sebebi' => $item['hata_sebebi'],
-                    'not_text' => $item['not_text'],
+                    'randevu_tarihi'=> $item['randevu_tarihi'],
+                    'hata_durumu'   => $item['hata_durumu'],
+                    'hata_sebebi'   => $item['hata_sebebi'],
+                    'not_text'      => $item['not_text'],
                     'address'       => $fullAddress,
                 ];
             }
 
             $items[] = [
-                'order_item_id' => (int)$item['order_item_id'],
-                'stock_id' => (int)$item['stock_id'],
-                'product_name' => $item['product_name'],
-                'unit_price' => (float)$item['unit_price'],
-                'discount' => (float)$item['discount'],
-                'discounted_unit_price' => isset($item['discounted_unit_price']) ? (float)$item['discounted_unit_price'] : null,
-                'total_amount' => (float)$item['total_amount'],
-                'serial_number' => $item['serial_number'],
-                'installation'         => $installation,
+                'order_item_id'          => (int)$item['order_item_id'],
+                'stock_id'               => (int)$item['stock_id'],
+                'product_name'           => $item['product_name'],
+                'unit_price'             => (float)$item['unit_price'],
+                'discount'               => (float)$item['discount'],
+                'discounted_unit_price'  => isset($item['discounted_unit_price']) ? (float)$item['discounted_unit_price'] : null,
+                'total_amount'           => (float)$item['total_amount'],
+                'serial_number'          => $item['serial_number'],
+                'installation'           => $installation,
             ];
         }
 
         $row['items'] = $items;
-        $orders[] = $row;
+        $orders[]     = $row;
     }
 
     $response['success'] = true;
-    $response['orders'] = $orders;
+    $response['orders']  = $orders;
 
 } catch (Exception $e) {
     $response['success'] = false;
-    $response['error'] = $e->getMessage();
+    $response['error']   = $e->getMessage();
 }
 
 header('Content-Type: application/json');

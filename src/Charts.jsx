@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { FaCrown } from "react-icons/fa";
-import { Carousel } from "react-bootstrap";
+import { Carousel, OverlayTrigger, Tooltip as BSTooltip  } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import dayjs from 'dayjs';
 import { DataGrid } from '@mui/x-data-grid';
 import { Box } from '@mui/material';
 import { apiFetch } from "./api";
 import DashboardShortcuts from "./components/DashboardShortcuts";
+import { formatTurkishPhone } from "./utils/formatters";
 
 
 // Kart bileşeni
@@ -22,6 +23,21 @@ function Card({ children, className = '' }) {
 // Renkler
 const PRIMARY = "#3f75d7";
 const SECONDARY = "#FF8552";
+const COLORS = [
+  '#8884d8', // Marka 1
+  '#82ca9d', // Marka 2
+  '#ffc658', // Marka 3
+  '#ff8042', // Marka 4
+  '#8dd1e1', // Marka 5
+  '#a4de6c', // Marka 6
+  '#d0ed57', // Marka 7
+  '#d88884', // Marka 8
+  '#84d8c4', // Marka 9
+  '#c684d8', // Marka 10
+  '#e1e18d', // Marka 11
+  '#84a6d8', // Marka 12
+  '#d8a384', // Marka 13
+];
 
 export default function Dashboard() {
   const [totalCustomers, setTotalCustomers] = useState(0);
@@ -110,15 +126,15 @@ export default function Dashboard() {
                     'Montaj Yapıldı':   'Proje Bekleyenler',
                     'Randevu Bekliyor': 'Randevu Bekleyenler',
                     'Gaz Açıldı':       'Servis Bekleyenler',
-                    'İş Tamamlandı':    'Tamamlanan Siparişler'
                   }[o.status] || o.status),
+              orderType: o.order_type,       // yeni field
               totalAmount: Number(o.total_amount),
               createdAt: dayjs(o.created_at).format('DD.MM.YYYY'),
               // İşte yeni sütunlar:
               installerName: o.ad_soyad,
               igdasName:     o.igdas_adi,
               tuketimNo:     o.tuketim_no,
-              phone:         o.telefon1,
+              phone:         formatTurkishPhone(o.telefon1),
               street:        o.sokak_adi,
               building:      o.bina_no,
               flat:          o.daire_no
@@ -142,6 +158,11 @@ export default function Dashboard() {
   if (loading) return <p>Yükleniyor...</p>;
   if (error) return <p>Hata: {error.message}</p>;
 
+  const formattedData = salesByRep.map(rep => ({
+    ...rep,
+    total_sales_revenue: Number(rep.total_sales_revenue),  // veya +rep.total_sales_revenue
+  }));
+
   // Grafik için veri kontrolü
   const hasBrandData = brandDistribution && brandDistribution.length > 0;
   const todayQuotes = quotes.filter(q => dayjs(q.created_at).isSame(dayjs(), 'day'));
@@ -157,16 +178,16 @@ export default function Dashboard() {
   const groupedData = chunkArray(kombiSalesSummary, 3);
 
   const columns = [
-    { field: 'id',            headerName: 'ID',       width: 50 },
-    { field: 'customerName',  headerName: 'Müşteri',  width: 180 },
-    { field: 'category',      headerName: 'Sipariş Durumu', width: 180 },
+    { field: 'customerName',  headerName: 'Müşteri',  width: 161 },
+    { field: 'orderType',   headerName:'Sipariş Tipi', width: 116 },
+    { field: 'category',      headerName: 'İş Durumu', width: 170 },
     { field: 'installerName', headerName: 'Montaj Ad Soyad', width: 150 },
     { field: 'igdasName',     headerName: 'İGDAŞ Adı', width: 150 },
-    { field: 'tuketimNo',     headerName: 'Tüketim No', width: 120 },
-    { field: 'phone',         headerName: 'Telefon',  width: 160 },
+    { field: 'tuketimNo',     headerName: 'Tüketim No', width: 110 },
+    { field: 'phone',         headerName: 'Telefon',  width: 147 },
     { field: 'street',        headerName: 'Sokak',    width: 150 },
-    { field: 'building',      headerName: 'Bina No',  width: 100 },
-    { field: 'flat',          headerName: 'Daire No', width: 100 },
+    { field: 'building',      headerName: 'Bina',  width: 70 },
+    { field: 'flat',          headerName: 'Daire', width: 55 },
   ];
 
   return (
@@ -177,7 +198,7 @@ export default function Dashboard() {
     <div className="row"> 
       <div className="col-md-9 my-4">
         <div className="row g-3">
-          <h5 class="mb-0 mt-0">Genel Veriler</h5>
+          <h5 className="mb-0 mt-0">Genel Veriler</h5>
             <div className="col-md-3">
               <Card className="border-2 border-primary">
                 <h5>Toplam Müşteri</h5>
@@ -193,13 +214,13 @@ export default function Dashboard() {
             <div className="col-md-6">
               <Card className="border-2 border-warning">
                 <div className="row">
-                  <div className="col-md-6">
+                  <div className="col-md-8">
                     <h5>Toplam Bakiye</h5>
                     <p className="display-4">{balance.total_balance} TL</p>
                   </div>
-                  <div className="col-md-6 mt-2">
-                    <p>Sipariş Tutarı: <span className="text-danger">{balance.total_debt} TL </span></p>
-                    <p>Gelen Ödeme: <span className="text-success">{balance.total_payment} TL</span></p>
+                  <div className="col-md-4">
+                    <p>Sipariş Tutarı: <br /><span className="text-danger">{balance.total_debt} TL </span></p>
+                    <p>Gelen Ödeme: <br /><span className="text-success">{balance.total_payment} TL</span></p>
                   </div>
                 </div>
               </Card>
@@ -208,7 +229,7 @@ export default function Dashboard() {
 
         {/* KPI Kartlar */}
         <div className="row g-3 mb-3">
-          <h5 className="mt-3">Tüm Siparişler</h5>
+          <h5 className="mt-3">Aksiyon Bekleyen İşler</h5>
           <Box sx={{ height: 267, width: '100%' }}>
             <DataGrid className="border-2"
               rows={ordersList}
@@ -228,7 +249,7 @@ export default function Dashboard() {
         </div>
 
         <div className="row g-3">
-          <h5 class="mb-0 mt-4">Marka Bazlı Satış Özeti</h5>
+          <h5 className="mb-0 mt-4">Marka Bazlı Satış Özeti</h5>
           { groupedData.length > 0 ? (
           <div className="col-12 markaSatis mt-0">
             <Carousel indicators={false} interval={5000} >
@@ -270,26 +291,49 @@ export default function Dashboard() {
         {/* Temsilciye Göre Kombi Satışları - Kart Bazlı */}
         <div className="row g-3">
           <h5 className="mt-4">Müşteri Temsilcisi Satış Özeti</h5>
-          {kombiSalesByRep.map(rep => (
-            <div key={rep.user_id} className="col-md-3 mt-0">
-              <Card className="border-2">
-                <h5>
-                  {rep.representative}
-                  {rep.kombi_sold_count === maxSales && (
-                    <FaCrown className="text-warning ms-2 mb-2 " title="En çok satış yapan temsilci" />
-                  )}
-                </h5>
-                <p className="interests_item bg-warning text-white">
-                  Toplam Satış Adeti: {rep.kombi_sold_count}
-                </p>
-                <ul>
-                  {Object.entries(rep.brands).map(([brand, count]) => (
-                    <li key={brand}>{brand}: {count}</li>
-                  ))}
-                </ul>
-              </Card>
-            </div>
-          ))}
+          {kombiSalesByRep.map(rep => {
+            // Marka dağılımını tek bir string halinde hazırlıyoruz
+            const tooltipContent = Object
+              .entries(rep.brands)
+              .map(([brand, count]) => `${brand}: ${count}`)
+              .join('\n');
+
+            return (
+              <div key={rep.user_id} className="col-md-3 mt-0">
+                <Card className="border-2">
+                  <h5>
+                    {rep.representative}
+                    {rep.kombi_sold_count === maxSales && (
+                      <FaCrown
+                        className="text-warning firstReps"
+                        title="En çok satış yapan temsilci"
+                      />
+                    )}
+                  </h5>
+
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <BSTooltip id={`tooltip-${rep.user_id}`}>
+                        {/* Satır satır göstermek için <div> kullandık */}
+                        {Object.entries(rep.brands).map(([brand, count]) => (
+                          <div key={brand}>
+                            {brand}: {count}
+                          </div>
+                        ))}
+                      </BSTooltip>
+                    }
+                  >
+                    {/* Hover alanı */}
+                    <p className="interests_item bg-warning text-white mb-0" style={{ cursor: 'pointer' }}>
+                      Toplam Satış Adeti: {rep.kombi_sold_count}
+                    </p>
+                  </OverlayTrigger>
+
+                </Card>
+              </div>
+            );
+          })}
         </div>
 
         {/* Grafikler */}
@@ -300,10 +344,30 @@ export default function Dashboard() {
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={movements}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
+                  <XAxis
+                    dataKey="date"
+                    tickFormatter={dateString => {
+                      const d = new Date(dateString);
+                      const day   = String(d.getDate()).padStart(2, '0');
+                      const month = String(d.getMonth() + 1).padStart(2, '0');
+                      const year  = String(d.getFullYear()).slice(-2);
+                      return `${day}.${month}.${year}`;
+                    }}
+                  />
                   <YAxis allowDecimals={false} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="count" stroke={PRIMARY} strokeWidth={2} />
+                  <Tooltip
+                    // tooltip’ta label olarak gelen timestamp’i aynı fonksiyonla biçimlendiriyoruz
+                    labelFormatter={timestamp => {
+                      const d     = new Date(timestamp);
+                      const day   = String(d.getDate()).padStart(2, '0');
+                      const month = String(d.getMonth() + 1).padStart(2, '0');
+                      const year  = String(d.getFullYear()).slice(-2);
+                      return `${day}.${month}.${year}`;
+                    }}
+                    // eğer tooltip değerlerinin yanındaki etiket metnini de özelleştirmek isterseniz
+                    formatter={(value, name) => [value, name]} 
+                  />
+                  <Line type="monotone" dataKey="count" name="Sipariş Adeti" stroke={PRIMARY} strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </Card>
@@ -312,12 +376,16 @@ export default function Dashboard() {
             <Card className="border-2">
               <h5>Temsilci Bazlı Satış Cirosu</h5>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={salesByRep}>
+                <BarChart data={formattedData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="representative" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="total_sales_revenue" fill={PRIMARY} />
+                  <YAxis/>
+                  <Tooltip formatter={(value) => [`${value.toLocaleString()} TL`, 'Toplam Ciro']} />
+                  <Bar dataKey="total_sales_revenue" name="Toplam Ciro">
+                  {formattedData.map((entry, idx) => (
+                    <Cell key={`cell-${idx}`} fill={COLORS[idx % COLORS.length]} />
+                  ))}
+                </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </Card>
@@ -339,7 +407,7 @@ export default function Dashboard() {
                       label
                     >
                       {brandDistribution.map((entry, idx) => (
-                        <Cell key={idx} fill={idx % 7 === 0 ? PRIMARY : SECONDARY} />
+                        <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip formatter={(value) => new Intl.NumberFormat().format(value)} />
@@ -394,7 +462,7 @@ export default function Dashboard() {
               <Card className="border-2 border-success">
                 <h5 className="interests_item bg-success text-white">Ödeme #{pay.id}</h5>
                 <p><strong>Müşteri:</strong> {pay.customer_name}</p>
-                <p><strong>Miktar:</strong> {pay.amount.toFixed(2)}</p>
+                <p><strong>Miktar:</strong> {pay.amount.toFixed(2)} TL</p>
                 <p><strong>İşlem Tarihi:</strong> {dayjs(pay.transaction_date).format('DD.MM.YYYY HH:mm')}</p>
                 {pay.description && <p><strong>Açıklama:</strong> {pay.description}</p>}
                 <p><strong>İşleyen:</strong> {pay.processed_by}</p>
@@ -448,6 +516,7 @@ export default function Dashboard() {
                 <div key={o.id} className="col-md-12 col-lg-12">
                   <Card className="border-2 border-warning">
                     <h5 className="interests_item bg-warning text-white">Sipariş #{o.id}</h5>
+                    <p><strong>Sipariş Alan:</strong> {o.creator_name}</p>
                     <p><strong>Müşteri:</strong> {o.customer_name}</p>
                     <p><strong>Durum:</strong> {o.status}</p>
                     <p><strong>Tutar:</strong> {o.total_amount.toFixed(2)} TL</p>
@@ -456,7 +525,7 @@ export default function Dashboard() {
                     <ul className="list-group list-group-flush">
                       {o.items.map((item, idx) => (
                         <li key={idx} className="list-group-item d-flex justify-content-between align-items-center">
-                          <span>{item.product_name} ({item.quantity} Adet)</span>
+                          <span>{item.product_name} <br />({item.quantity} Adet)</span>
                           <hr />
                         </li>
                       ))}
@@ -466,7 +535,7 @@ export default function Dashboard() {
               ))
             ) : (
               <div className="col-12">
-                <Card><p>Bugün oluşturulan sipariş bulunamadı.</p></Card>
+                <Card className="border-2 border-warning"><p>Bugün oluşturulan sipariş bulunamadı.</p></Card>
               </div>
           )}
         </div>

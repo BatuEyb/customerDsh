@@ -87,7 +87,8 @@ switch ($action) {
                     SUM(o.total_amount) AS total_sales_revenue
                 FROM users u
                 LEFT JOIN orders o ON u.id = o.created_by
-                GROUP BY u.id, u.name";
+                GROUP BY u.id, u.name
+                ORDER BY total_sales_revenue DESC";
         $result = $conn->query($sql);
         $data = array();
         while ($row = $result->fetch_assoc()) {
@@ -150,6 +151,12 @@ switch ($action) {
         $temp[$uid]['brands'][$row['brand']] = (int)$row['sold_count'];
     }
     $data = array_values($temp);
+
+    // En çok satış yapan kullanıcıyı en üstte göstermek için sırala
+    usort($data, function($a, $b) {
+        return $b['kombi_sold_count'] <=> $a['kombi_sold_count'];
+    });
+
     echo json_encode($data);
     break;
 
@@ -272,36 +279,37 @@ switch ($action) {
     echo json_encode($data);
     break;
 
-    // 14. Tüm Siparişler Listesi
-    case 'orders_list':
+    // 14. Tüm Siparişler Listesi (sadece installation’ı olanlar + order_type eklendi)
+case 'orders_list':
     $orders = [];
     $sql = "
         SELECT
-        o.id,
-        o.customer_id,
-        c.name AS customer_name,
-        o.status,
-        o.total_amount,
-        o.created_at,
-        u.name AS creator_name,
-        MAX(inst.hata_durumu) AS has_error,
-        MAX(inst.ad_soyad)   AS ad_soyad,
-        MAX(inst.igdas_adi)  AS igdas_adi,
-        MAX(inst.tuketim_no)  AS tuketim_no,
-        MAX(inst.telefon1)   AS telefon1,
-        MAX(inst.sokak_adi)  AS sokak_adi,
-        MAX(inst.bina_no)    AS bina_no,
-        MAX(inst.daire_no)   AS daire_no
+          o.id,
+          o.customer_id,
+          c.name           AS customer_name,
+          o.status,
+          o.total_amount,
+          o.order_type,                    -- yeni alan
+          o.created_at,
+          u.name           AS creator_name,
+          MAX(inst.hata_durumu)  AS has_error,
+          MAX(inst.ad_soyad)    AS ad_soyad,
+          MAX(inst.igdas_adi)   AS igdas_adi,
+          MAX(inst.tuketim_no)  AS tuketim_no,
+          MAX(inst.telefon1)    AS telefon1,
+          MAX(inst.sokak_adi)   AS sokak_adi,
+          MAX(inst.bina_no)     AS bina_no,
+          MAX(inst.daire_no)    AS daire_no
         FROM orders o
-        LEFT JOIN customers c    ON o.customer_id   = c.id
-        LEFT JOIN users u        ON o.created_by    = u.id
-        LEFT JOIN order_items oi ON o.id            = oi.order_id
-        LEFT JOIN installations inst ON oi.id       = inst.order_item_id
+        INNER JOIN order_items oi      ON o.id = oi.order_id
+        INNER JOIN installations inst  ON oi.id = inst.order_item_id
+        LEFT JOIN customers c          ON o.customer_id = c.id
+        LEFT JOIN users u              ON o.created_by = u.id
+        WHERE o.status != 'İş Tamamlandı'  -- <<< filtre eklendi
         GROUP BY o.id
         ORDER BY o.created_at DESC
     ";
     if (!($res = $conn->query($sql))) {
-        // SQL hatasını JSON olarak döndür
         echo json_encode(['error' => $conn->error]);
         exit;
     }
@@ -311,17 +319,18 @@ switch ($action) {
             'customer_id'    => (int)  $row['customer_id'],
             'customer_name'  =>        $row['customer_name'],
             'status'         =>        $row['status'],
+            'order_type'     =>        $row['order_type'],    // yeni ekleme
             'total_amount'   => (float)$row['total_amount'],
             'created_at'     =>        $row['created_at'],
             'creator_name'   =>        $row['creator_name'],
             'ad_soyad'       =>        $row['ad_soyad'],
             'igdas_adi'      =>        $row['igdas_adi'],
+            'tuketim_no'     =>        $row['tuketim_no'],
             'telefon1'       =>        $row['telefon1'],
             'sokak_adi'      =>        $row['sokak_adi'],
             'bina_no'        =>        $row['bina_no'],
             'daire_no'       =>        $row['daire_no'],
             'has_error'      => (int)  $row['has_error'],
-            'tuketim_no'      => (int)  $row['tuketim_no'],
         ];
     }
     echo json_encode($orders);

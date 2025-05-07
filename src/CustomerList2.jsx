@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiFetch } from './api';
 import { useNavigate } from 'react-router-dom';
+import { formatTurkishPhone } from './utils/formatters';
 
 const CustomerCard = ({ customer }) => {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ const CustomerCard = ({ customer }) => {
             <div className="customer-card card mb-3">
                 <h5 className="card-header bg-primary text-white ad_soyad">
                     {customer.name}<br />
-                    <span className="largeSpan telefon1">{customer.phone}</span>
+                    <span className="largeSpan telefon1">{formatTurkishPhone(customer.phone)}</span>
                 </h5>
                 <div className="card-body">
                     <p className="card-text">Mail Adresi :

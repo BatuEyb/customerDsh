@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation, useParams  } from "react-router-dom";
-import { Modal, Button, Form } from 'react-bootstrap';
-import { FaUserCircle, FaBars, FaTimes, FaChartBar, FaUsers, FaUserPlus, FaClipboardList, FaPlusCircle, FaPlusSquare ,FaBox, FaDollarSign  } from "react-icons/fa";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Modal, Button } from 'react-bootstrap';
+import { FaUserCircle, FaBars, FaTimes, FaListAlt, FaUserPlus , FaUsers , FaPlusSquare , FaWarehouse , FaShoppingBasket , FaCartPlus , FaMoneyBillWave , FaBoxOpen , FaChartPie   } from "react-icons/fa";
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import { apiFetch } from "./api.js";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
@@ -17,13 +17,17 @@ import CustomerDetail from "./CustomerDetail.jsx";
 import CreateOrder from "./CreateOrder.jsx";
 import ListOrders from "./ListOrders.jsx";
 import CustomerBalances from "./CustomerBalances.jsx";
+import UserModal from "./components/UserModal.jsx";
 
 const Dashboard = () => {
-    const location = useLocation();
-    const navigate = useNavigate();
-    
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [activePage, setActivePage] = useState("chartData"); // State'i burada tanımlıyoruz
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activePage, setActivePage] = useState("chartData"); // State'i burada tanımlıyoruz
+
+  const [showModal, setShowModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
 
   const [query, setQuery] = useState("");
   const [options, setOptions] = useState([]);
@@ -106,6 +110,23 @@ const Dashboard = () => {
         }
     };
 
+    const handleSave = async (form) => {
+        const endpoint = editingUser
+          ? `user_api.php?action=update&id=${editingUser.id}`
+          : 'user_api.php?action=add';
+    
+        const res = await apiFetch(endpoint, {
+          credentials: 'include',
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form),
+        });
+    
+        const result = await res.json();
+        alert(result.message || result.error);
+        setShowModal(false);
+      };
+
 
     return (
         <div className="d-flex">
@@ -123,20 +144,20 @@ const Dashboard = () => {
                     <a className={`nav-link text-white ${activePage === "chartData" ? "active" : ""}`} 
                         onClick={() => handlePageChange("chartData")}
                         >
-                        <FaChartBar className="me-2" /> <span className="sidebarLabel">Yönetim Paneli (Veriler)</span>
+                        <FaChartPie  className="me-2" /> <span className="sidebarLabel">Yönetim Paneli (Veriler)</span>
                     </a>
                     </Tooltip>
                     <hr/>
                     <Tooltip title="Stok Takibi" placement="right">
                     <a className={`nav-link text-white ${activePage === "stockManagement" ? "active" : ""}`} 
                         onClick={() => handlePageChange("stockManagement")}>
-                        <FaBox className="me-2" /> <span className="sidebarLabel">Stok Takibi</span>
+                        <FaWarehouse  className="me-2" /> <span className="sidebarLabel">Stok Takibi</span>
                     </a>
                     </Tooltip>
                     <Tooltip title="Stok Oluştur" placement="right">
                     <a className={`nav-link text-white ${activePage === "addStock" ? "active" : ""}`} 
                         onClick={() => handlePageChange("addStock")}>
-                        <FaPlusSquare className="me-2" /> <span className="sidebarLabel">Stok Oluştur</span>
+                        <FaBoxOpen className="me-2" /> <span className="sidebarLabel">Stok Oluştur</span>
                     </a>
                     </Tooltip>
 
@@ -144,13 +165,13 @@ const Dashboard = () => {
                     <Tooltip title="Cari Listesi" placement="right">
                     <a className={`nav-link text-white ${activePage === "listCustomer" ? "active" : ""}`} 
                         onClick={() => handlePageChange("listCustomer")}>
-                        <FaDollarSign className="me-2" /> <span className="sidebarLabel">Cari Listesi</span>
+                        <FaUsers className="me-2" /> <span className="sidebarLabel">Cari Listesi</span>
                     </a>
                     </Tooltip>
                     <Tooltip title="Cari Oluştur" placement="right">
                     <a className={`nav-link text-white ${activePage === "addCustomer2" ? "active" : ""}`} 
                         onClick={() => handlePageChange("addCustomer2")}>
-                        <FaPlusSquare className="me-2" /> <span className="sidebarLabel">Cari Oluştur</span>
+                        <FaUserPlus  className="me-2" /> <span className="sidebarLabel">Cari Oluştur</span>
                     </a>
                     </Tooltip>
 
@@ -158,7 +179,7 @@ const Dashboard = () => {
                     <Tooltip title="Teklif Listesi" placement="right">
                     <a className={`nav-link text-white ${activePage === "listQuotes" ? "active" : ""}`} 
                         onClick={() => handlePageChange("listQuotes")}>
-                        <FaClipboardList className="me-2" /> <span className="sidebarLabel">Teklif Listesi</span>
+                        <FaListAlt className="me-2" /> <span className="sidebarLabel">Teklif Listesi</span>
                     </a>
                     </Tooltip>
                     <Tooltip title="Teklif Oluştur" placement="right">
@@ -171,20 +192,20 @@ const Dashboard = () => {
                     <Tooltip title="Sipariş Listele" placement="right">
                     <a className={`nav-link text-white ${activePage === "listOrder" ? "active" : ""}`} 
                         onClick={() => handlePageChange("listOrder")}>
-                        <FaPlusSquare className="me-2" /> <span className="sidebarLabel">Sipariş Listesi</span>
+                        <FaShoppingBasket className="me-2" /> <span className="sidebarLabel">Sipariş Listesi</span>
                     </a>
                     </Tooltip>
                     <Tooltip title="Sipariş Oluştur" placement="right">
                     <a className={`nav-link text-white ${activePage === "addOrder" ? "active" : ""}`} 
                         onClick={() => handlePageChange("addOrder")}>
-                        <FaPlusSquare className="me-2" /> <span className="sidebarLabel">Sipariş Oluştur</span>
+                        <FaCartPlus className="me-2" /> <span className="sidebarLabel">Sipariş Oluştur</span>
                     </a>
                     </Tooltip>
                     <hr/>
                     <Tooltip title="Bakiye Listesi" placement="right">
                     <a className={`nav-link text-white ${activePage === "listBalances" ? "active" : ""}`} 
                         onClick={() => handlePageChange("listBalances")}>
-                        <FaPlusSquare className="me-2" /> <span className="sidebarLabel">Bakiye Listesi</span>
+                        <FaMoneyBillWave className="me-2" /> <span className="sidebarLabel">Bakiye Listesi</span>
                     </a>
                     </Tooltip>
                 </nav>
@@ -197,7 +218,9 @@ const Dashboard = () => {
                     <button className="btn btn-primary d-md-none" onClick={() => setIsSidebarOpen(true)}>
                         <FaBars />
                     </button>
-                    <img src="../src/assets/kobiGo-logo-w.png" alt="" srcset="" width="149px"/>
+                    <a href="/dashboard">
+                        <img src="../src/assets/kobiGo-logo-w.png" alt="" srcSet="" width="149px"/>
+                    </a>
                     
                     {/* ————— Arama Çubuğu ————— */}
                     <div className="mx-auto" style={{ width: 1200 }}>
@@ -229,6 +252,7 @@ const Dashboard = () => {
                             <li><span className="dropdown-item-text fw-bold">Merhaba, {localStorage.getItem("name") || "Misafir"}</span></li>
                             <li><button className="dropdown-item text-danger" onClick={handleLogout}>Çıkış Yap</button></li>
                             <li><button className="dropdown-item" variant="info" onClick={fetchActivityLog}>Logları Görüntüle</button></li>
+                            <li><button className="dropdown-item" onClick={() => { setEditingUser(null); setShowModal(true); }}>Yeni Kullanıcı</button></li>
                         </ul>
                     </div>
                 </nav>
@@ -262,6 +286,13 @@ const Dashboard = () => {
                         <Button variant="secondary" onClick={() => setShowLogModal(false)}>Kapat</Button>
                     </Modal.Footer>
                 </Modal>
+                <UserModal
+                    show={showModal}
+                    onClose={() => setShowModal(false)}
+                    onSave={handleSave}
+                    user={editingUser}
+                />
+
             </div>
         </div>
     );

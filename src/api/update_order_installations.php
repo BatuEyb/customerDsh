@@ -1,6 +1,7 @@
 <?php
-ini_set('display_errors', 0);
-error_reporting(0);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 header('Content-Type: application/json; charset=UTF-8');
 
 include 'api.php';    // veritabanı bağlantısı
@@ -18,6 +19,7 @@ if (
 
 $order_id = (int)$data['order_id'];
 $items    = $data['items'];
+$status = isset($data['status']) ? $data['status'] : null;
 
 $response = [
     'inserted' => 0,
@@ -69,12 +71,21 @@ try {
             continue;
         }
 
+        // 1) Randevu tarihini normalize et
+        $randevu = isset($item['randevu_tarihi']) 
+        ? trim($item['randevu_tarihi']) 
+        : '';
+        if ($randevu === '') {
+        // boşsa NULL kullan
+        $randevu = null;
+        }
+
         // Buraya gelinirse kayıt ekleme/güncelleme yapılacak
         // Hazırla
         $fields = [
             $item['tuketim_no']      ?? '',
             $item['igdas_adi']       ?? '',
-            $item['randevu_tarihi']  ?? null,
+            $randevu,
             $hataDurumu,
             $item['hata_sebebi']     ?? '',
             $item['not_text']        ?? '',
@@ -115,19 +126,33 @@ try {
         } else {
             // Yeni kayıt
             $ins = $conn->prepare("
-                INSERT INTO installations (
-                  order_item_id, tuketim_no, igdas_adi, randevu_tarihi,
-                  hata_durumu, hata_sebebi, not_text, ad_soyad,
-                  telefon1, telefon2, il, ilce, mahalle,
-                  sokak_adi, bina_no, daire_no
-                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            INSERT INTO installations (
+                order_item_id, tuketim_no, igdas_adi, randevu_tarihi,
+                hata_durumu, hata_sebebi, not_text, ad_soyad,
+                telefon1, telefon2, il, ilce, mahalle,
+                sokak_adi, bina_no, daire_no
+            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             ");
+
+            // Artık 1 “i” + 15 “s” = 16 tip tanımı
             $ins->bind_param(
-                "ississsssssssss",
+                "ississssssssssss",
                 $order_item_id,
-                $fields[0], $fields[1], $fields[2], $fields[3], $fields[4],
-                $fields[5], $fields[6], $fields[7], $fields[8], $fields[9],
-                $fields[10], $fields[11], $fields[12], $fields[13]
+                $fields[0],  // tuketim_no
+                $fields[1],  // igdas_adi
+                $fields[2],  // randevu_tarihi
+                $fields[3],  // hata_durumu  (int)
+                $fields[4],  // hata_sebebi
+                $fields[5],  // not_text
+                $fields[6],  // ad_soyad
+                $fields[7],  // telefon1
+                $fields[8],  // telefon2
+                $fields[9],  // il
+                $fields[10], // ilce
+                $fields[11], // mahalle
+                $fields[12], // sokak_adi
+                $fields[13], // bina_no
+                $fields[14]  // daire_no    ← EKLENDİ
             );
             $ins->execute();
             $ins->close();
@@ -136,6 +161,14 @@ try {
     }
 
     $conn->commit();
+
+    // Sipariş tablosunda durumu güncelle
+    if ($status !== null) {
+        $updStatus = $conn->prepare("UPDATE orders SET status = ? WHERE id = ?");
+        $updStatus->bind_param("si", $status, $order_id);
+        $updStatus->execute();
+        $updStatus->close();
+    }
     echo json_encode([
         'success' => true,
         'message' => 'İşlem tamamlandı.',

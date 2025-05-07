@@ -4,9 +4,19 @@ import { Spinner } from 'react-bootstrap';
 import { generateOrderPDF } from './utils/generateOrderPDF';  // './utils' doğru yol
 import { FaAngleUp, FaAngleDown } from "react-icons/fa";
 import OrderInstallationModal from './components/InstallationModal';
+import { formatTurkishPhone } from './utils/formatters';
 
-const ListOrders = () => {
+const ListOrders = ({ customerId = 0 }) => {
+  
   const [orders, setOrders] = useState([]);
+  const [representatives, setRepresentatives] = useState([]);  // temsilciler listesi
+  const [filters, setFilters] = useState({
+    search: '',
+    status: '',
+    dateFrom: '',
+    dateTo: '',
+    representative: ''  // yeni filtre
+  });
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -15,6 +25,15 @@ const ListOrders = () => {
   const [modalOrder, setModalOrder] = useState(null);
   const [showModal, setShowModal] = useState(false);
   
+  // 1) Temsilcileri API'den çek
+  useEffect(() => {
+    apiFetch('list_users.php', { method: 'GET', credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setRepresentatives(data.users);
+      })
+      .catch(err => console.error('Temsilciler yüklenemedi', err));
+  }, []);
 
   // Siparişleri API'den çekme
   useEffect(() => {
@@ -128,9 +147,92 @@ const ListOrders = () => {
     loadOrders();   // Sayfayı yeniden render et (güncel veri çek)
   };
 
+  // 1) Filtreler değiştiğinde veya component mount olduğunda yeniden yükle
+  useEffect(() => {
+    setLoading(true);
+    // 2) Query string oluştur
+    const params = new URLSearchParams();
+    if (customerId > 0)      params.append('customer_id', customerId);
+    if (filters.status)        params.append('status', filters.status);
+    if (filters.dateFrom)      params.append('date_from', filters.dateFrom);
+    if (filters.dateTo)        params.append('date_to', filters.dateTo);
+    if (filters.representative)params.append('representative', filters.representative);
+
+      apiFetch(`list_orders.php?${params.toString()}`, {
+        method: 'GET',
+        credentials: 'include'
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            setOrders(data.orders);
+          } else {
+            setError(data.message || 'Siparişler alınamadı');
+          }
+        })
+        .catch(() => setError('Sunucu hatası'))
+        .finally(() => setLoading(false));
+    }, [customerId, filters.status, filters.dateFrom, filters.dateTo, filters.representative]);
+
   return (
     <div className="mt-3">
       <h3 className="mb-4">Sipariş Listesi</h3>
+
+      <div className="row mb-2">
+        <div className='col-md-3'>
+          <label>Sipariş Durumu</label>
+          <select
+            className="form-select"
+            value={filters.status}
+            onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}
+          >
+            <option value="">Tüm Durumlar</option>
+            {['Sipariş Alındı','Montaj Yapıldı','Abonelik Yok','Proje Onayda','Sözleşme Yok','Randevu Bekliyor','Randevu Alındı','Gaz Açıldı','İş Tamamlandı'].map(s => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+            
+          </select>
+        </div>
+
+        {/* Müşteri Temsilcisi */}
+        <div className='col-md-3'>
+        <label>Müşteri Temsilcisi</label>
+        <select
+          className="form-select"
+          value={filters.representative}
+          onChange={e => setFilters(f => ({ ...f, representative: e.target.value }))}
+        >
+          <option value="">Tüm Temsilciler</option>
+          {representatives.map(rep => (
+            <option key={rep.id} value={rep.id}>
+              {rep.name}
+            </option>
+          ))}
+        </select>
+        </div>
+
+        <div className='col-md-3'>
+        <label>Başlangıç Tarihi</label>
+        <input
+          type="date"
+          className="form-control"
+          value={filters.dateFrom}
+          onChange={e => setFilters(f => ({ ...f, dateFrom: e.target.value }))}
+          placeholder="Başlangıç"
+        />
+        </div>
+
+        <div className='col-md-3'>
+        <label>Bitiş Tarihi</label>
+        <input
+          type="date"
+          className="form-control"
+          value={filters.dateTo}
+          onChange={e => setFilters(f => ({ ...f, dateTo: e.target.value }))}
+          placeholder="Bitiş"
+        />
+        </div>
+      </div>
 
       <div className="mb-3">
         <input
@@ -198,18 +300,25 @@ const ListOrders = () => {
                         <td>{Number(item.discounted_unit_price).toFixed(2)} ₺</td>
                         <td>{Number(item.total_amount).toFixed(2)} ₺</td>
 
-                        {/* İkonu TD yerine bağımsız koyuyoruz */}
-                        {item.installation && (
-                          <div className="expand-icon">
-                            {openRows[order.id]?.[idx] ? <FaAngleUp /> : <FaAngleDown />}
-                          </div>
-                        )}
+                        <td className="expand-cell">
+                          {item.installation && (
+                            <div
+                              className="expand-icon"
+                              onClick={e => {
+                                e.stopPropagation();
+                                toggleRow(order.id, idx);
+                              }}
+                            >
+                              {openRows[order.id]?.[idx] ? <FaAngleUp /> : <FaAngleDown />}
+                            </div>
+                          )}
+                        </td>
                       </tr>
 
                       {/* Detay Satırı */}
                       {openRows[order.id]?.[idx] && item.installation && (
                         <tr>
-                          <td colSpan="6">
+                          <td colSpan="7">
                             <div className="border py-2 px-3 bg-light rounded">
                               <div className='row'>
                               <div className='col-md-12'>
@@ -238,11 +347,17 @@ const ListOrders = () => {
                                     </div>
                                     <div className='col-md-4 mb-2'>
                                       <strong><small>Telefon Numarası</small></strong><br />
-                                      {item.installation?.phone_number || '-'}
+                                      {item.installation?.phone_number
+                                        ? formatTurkishPhone(item.installation.phone_number)
+                                        : '-'
+                                      }
                                     </div>
                                     <div className='col-md-4 mb-2'>
                                       <strong><small>2. Telefon Numarası</small></strong><br />
-                                      {item.installation?.phone_number2 || '-'}
+                                      {item.installation?.phone_number2
+                                        ? formatTurkishPhone(item.installation.phone_number2)
+                                        : '-'
+                                      }
                                     </div>
                                     <div className='col-md-12 mb-2'>
                                       <strong><small>Montaj Adresi</small></strong><br />
@@ -273,7 +388,7 @@ const ListOrders = () => {
                                   <strong className='kobiGoTitle'>Not Bilgisi</strong>
                                   <div className='row'>
                                     <div className='col-md-12'>
-                                      <div class="alert alert-info" role="alert">
+                                      <div className="alert alert-info" role="alert">
                                         {item.installation?.not_text || '-'}
                                       </div>
                                     </div>

@@ -13,8 +13,9 @@ $data = json_decode(file_get_contents("php://input"), true);
 $customer_id = $data['customer_id'];
 $total_amount = $data['total_amount'];
 $order_items = $data['order_items']; // order_items bir dizi olacak
-$order_type = $_POST['order_type'] ?? 'Tekli Satış'; // Varsayılan 'Tekli Satış' olarak belirlenmiş
-
+$order_type = isset($data['order_type']) && $data['order_type'] !== ''
+            ? $data['order_type']
+            : 'Tekli Satış';
 // Veritabanı işlemleri için başlat
 $conn->begin_transaction();
 
@@ -76,36 +77,50 @@ try {
 
         // Montaj kaydı gerekiyor diyelim
         if (isset($item['is_installation_required']) && $item['is_installation_required']) {
-        // Boş gelme durumunda boş string ata
-        $tuketimNo     = isset($item['tuketimNo'])     && $item['tuketimNo']     !== '' ? $item['tuketimNo']     : '';
-        $igdasSozlesme = isset($item['igdasSozlesme']) && $item['igdasSozlesme'] !== '' ? $item['igdasSozlesme'] : '';
-        $adSoyad       = $item['adSoyad']       ?? '';
-        $telefon1      = $item['telefon1']      ?? '';
-        $telefon2      = $item['telefon2']      ?? '';
-        $il            = $item['il']            ?? '';
-        $ilce          = $item['ilce']          ?? '';
-        $mahalle       = $item['mahalle']       ?? '';
-        $sokakAdi      = $item['sokakAdi']      ?? '';
-        $binaNo        = $item['binaNo']        ?? '';
-        $daireNo       = $item['daireNo']       ?? '';
+            // Ham değerler
+            $rawT1 = $item['telefon1'] ?? '';
+            $rawT2 = $item['telefon2'] ?? '';
 
-        // --- installations tablosuna ekle ---
-        $detailStmt->bind_param(
-            "isssssssssss",
-            $orderItemId,
-            $item['tuketimNo'],
-            $item['igdasSozlesme'],
-            $item['adSoyad'],
-            $item['telefon1'],
-            $item['telefon2'],
-            $item['il'],
-            $item['ilce'],
-            $item['mahalle'],
-            $item['sokakAdi'],
-            $item['binaNo'],
-            $item['daireNo']
-        );
-        $detailStmt->execute();
+            // 1) Rakam olmayan her şeyi sil
+            $t1 = preg_replace('/\D+/', '', $rawT1);
+            $t2 = preg_replace('/\D+/', '', $rawT2);
+
+            // 2) Eğer 10 haneden uzunsa son 10 haneyi al (ülke kodunu at)
+            if (strlen($t1) > 10) {
+                $t1 = substr($t1, -10);
+            }
+            if (strlen($t2) > 10) {
+                $t2 = substr($t2, -10);
+            }
+
+            // Diğer alanlar
+            $tuketimNo     = $item['tuketimNo']     ?? '';
+            $igdasSozlesme = $item['igdasSozlesme'] ?? '';
+            $adSoyad       = $item['adSoyad']       ?? '';
+            $il            = $item['il']            ?? '';
+            $ilce          = $item['ilce']          ?? '';
+            $mahalle       = $item['mahalle']       ?? '';
+            $sokakAdi      = $item['sokakAdi']      ?? '';
+            $binaNo        = $item['binaNo']        ?? '';
+            $daireNo       = $item['daireNo']       ?? '';
+
+            // --- installations tablosuna ekle ---
+            $detailStmt->bind_param(
+                "isssssssssss",
+                $orderItemId,
+                $tuketimNo,
+                $igdasSozlesme,
+                $adSoyad,
+                $t1,          // temizlenmiş telefon1
+                $t2,          // temizlenmiş telefon2
+                $il,
+                $ilce,
+                $mahalle,
+                $sokakAdi,
+                $binaNo,
+                $daireNo
+            );
+            $detailStmt->execute();
         }
 
         $total_order_amount += $item_total_amount;

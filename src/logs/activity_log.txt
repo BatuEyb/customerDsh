@@ -718,3 +718,8 @@ Fiyat: 123000.00 → 45000
 [2025-04-29 11:59:20] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 81
 [2025-04-29 15:14:14] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 21
 [2025-04-30 13:16:13] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 82
+[2025-05-01 08:44:53] - Kullanıcı: aytekindemir (ID: 94b6cf23-2657-11f0-9093-74d4dd37c6d2) - Sipariş Oluşturuldu : 83
+[2025-05-01 10:05:05] - Kullanıcı: aytekindemir (ID: 94b6cf23-2657-11f0-9093-74d4dd37c6d2) - Sipariş Oluşturuldu : 84
+[2025-05-01 11:30:51] - Kullanıcı: aytekindemir (ID: 94b6cf23-2657-11f0-9093-74d4dd37c6d2) - Sipariş Oluşturuldu : 85
+[2025-05-05 12:52:36] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 86
+[2025-05-06 10:24:25] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 87
