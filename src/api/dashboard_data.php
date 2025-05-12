@@ -100,16 +100,14 @@ switch ($action) {
     // 8. Marka Bazlı Satış Dağılımı (Sadece "Kombi" kategorisi)
     case 'brand_sales_distribution':
         $sql = "SELECT
-                    u.name AS representative,
-                    s.brand,
-                    COUNT(oi.id) AS quantity_sold
-                FROM users u
-                JOIN orders o ON u.id = o.created_by
-                JOIN order_items oi ON o.id = oi.order_id
-                JOIN stocks s ON oi.stock_id = s.id
-                JOIN categories c ON s.category_id = c.id
-                WHERE c.name = 'Kombi'
-                GROUP BY u.name, s.brand";
+    s.brand,
+    COUNT(oi.id) AS quantity_sold
+FROM orders o
+JOIN order_items oi ON o.id = oi.order_id
+JOIN stocks s ON oi.stock_id = s.id
+JOIN categories c ON s.category_id = c.id
+WHERE c.name = 'Kombi'
+GROUP BY s.brand";
         $result = $conn->query($sql);
         $data = array();
         while ($row = $result->fetch_assoc()) {
@@ -255,86 +253,90 @@ switch ($action) {
     echo json_encode($data);
     break;
 
-    // 13. Kombi Marka Satış Özeti
+    // 13. Kombi Marka Satış Özeti (servis_yonlendirildi flag’ine göre)
     case 'kombi_sales_by_brand':
-    $data = [];
-    $sql = "SELECT
+        $data = [];
+        $sql = "
+            SELECT
                 s.brand,
                 SUM(oi.quantity) AS total_sold,
-                SUM(CASE WHEN o.status = 'İş Tamamlandı' THEN oi.quantity ELSE 0 END) AS completed,
-                SUM(CASE WHEN o.status <> 'İş Tamamlandı' THEN oi.quantity ELSE 0 END) AS pending
+                SUM(CASE WHEN oi.servis_yonlendirildi = 1 THEN oi.quantity ELSE 0 END) AS completed,
+                SUM(CASE WHEN oi.servis_yonlendirildi <> 1 OR oi.servis_yonlendirildi IS NULL THEN oi.quantity ELSE 0 END) AS pending
             FROM order_items oi
-            JOIN orders o ON oi.order_id = o.id
-            JOIN stocks s ON oi.stock_id = s.id
-            JOIN categories c ON s.category_id = c.id
+            JOIN stocks s       ON oi.stock_id     = s.id
+            JOIN categories c   ON s.category_id   = c.id
             WHERE c.name = 'Kombi'
-            GROUP BY s.brand";
-    $res = $conn->query($sql);
-    while ($row = $res->fetch_assoc()) {
-        $row['total_sold'] = (int)$row['total_sold'];
-        $row['completed'] = (int)$row['completed'];
-        $row['pending'] = (int)$row['pending'];
-        $data[] = $row;
-    }
-    echo json_encode($data);
-    break;
+            GROUP BY s.brand
+        ";
+        $res = $conn->query($sql);
+        while ($row = $res->fetch_assoc()) {
+            $row['total_sold'] = (int)$row['total_sold'];
+            $row['completed']  = (int)$row['completed'];
+            $row['pending']    = (int)$row['pending'];
+            $data[] = $row;
+        }
+        echo json_encode($data);
+        break;
 
-    // 14. Tüm Siparişler Listesi (sadece installation’ı olanlar + order_type eklendi)
-case 'orders_list':
-    $orders = [];
-    $sql = "
-        SELECT
-          o.id,
-          o.customer_id,
-          c.name           AS customer_name,
-          o.status,
-          o.total_amount,
-          o.order_type,                    -- yeni alan
-          o.created_at,
-          u.name           AS creator_name,
-          MAX(inst.hata_durumu)  AS has_error,
-          MAX(inst.ad_soyad)    AS ad_soyad,
-          MAX(inst.igdas_adi)   AS igdas_adi,
-          MAX(inst.tuketim_no)  AS tuketim_no,
-          MAX(inst.telefon1)    AS telefon1,
-          MAX(inst.sokak_adi)   AS sokak_adi,
-          MAX(inst.bina_no)     AS bina_no,
-          MAX(inst.daire_no)    AS daire_no
-        FROM orders o
-        INNER JOIN order_items oi      ON o.id = oi.order_id
-        INNER JOIN installations inst  ON oi.id = inst.order_item_id
-        LEFT JOIN customers c          ON o.customer_id = c.id
-        LEFT JOIN users u              ON o.created_by = u.id
-        WHERE o.status != 'İş Tamamlandı'  -- <<< filtre eklendi
-        GROUP BY o.id
-        ORDER BY o.created_at DESC
-    ";
-    if (!($res = $conn->query($sql))) {
-        echo json_encode(['error' => $conn->error]);
-        exit;
-    }
-    while ($row = $res->fetch_assoc()) {
-        $orders[] = [
-            'id'             => (int)  $row['id'],
-            'customer_id'    => (int)  $row['customer_id'],
-            'customer_name'  =>        $row['customer_name'],
-            'status'         =>        $row['status'],
-            'order_type'     =>        $row['order_type'],    // yeni ekleme
-            'total_amount'   => (float)$row['total_amount'],
-            'created_at'     =>        $row['created_at'],
-            'creator_name'   =>        $row['creator_name'],
-            'ad_soyad'       =>        $row['ad_soyad'],
-            'igdas_adi'      =>        $row['igdas_adi'],
-            'tuketim_no'     =>        $row['tuketim_no'],
-            'telefon1'       =>        $row['telefon1'],
-            'sokak_adi'      =>        $row['sokak_adi'],
-            'bina_no'        =>        $row['bina_no'],
-            'daire_no'       =>        $row['daire_no'],
-            'has_error'      => (int)  $row['has_error'],
-        ];
-    }
-    echo json_encode($orders);
-    break;
+    // 14. Tüm Siparişler Listesi
+    case 'orders_list':
+        $rows = [];
+        $sql = "
+          SELECT
+            inst.id                AS installation_id,
+            inst.tuketim_no,
+            inst.igdas_adi,
+            inst.randevu_tarihi,
+            inst.ad_soyad,
+            inst.telefon1,
+            inst.telefon2,
+            inst.sokak_adi,
+            inst.bina_no,
+            inst.daire_no,
+            oi.servis_yonlendirildi,
+            o.status               AS order_status,
+            o.order_type,
+            oi.serial_number,
+            s.brand,
+            c.name                 AS customer_name
+          FROM installations inst
+          JOIN order_items oi ON inst.order_item_id = oi.id
+          JOIN orders o       ON oi.order_id        = o.id
+          JOIN customers c    ON o.customer_id      = c.id
+          JOIN stocks s       ON oi.stock_id        = s.id
+          WHERE o.status != 'İş Tamamlandı' AND oi.servis_yonlendirildi != 1
+          ORDER BY inst.created_at DESC
+        ";
+    
+        $res = $conn->query($sql);
+        if (!$res) {
+            echo json_encode(['error' => $conn->error]);
+            exit;
+        }
+    
+        while ($r = $res->fetch_assoc()) {
+            $rows[] = [
+                'installation_id' => (int)$r['installation_id'],
+                'tuketim_no'      => $r['tuketim_no'],
+                'igdas_adi'       => $r['igdas_adi'],
+                'randevu_tarihi'  => $r['randevu_tarihi'],
+                'ad_soyad'        => $r['ad_soyad'],
+                'telefon1'        => $r['telefon1'],
+                'telefon2'        => $r['telefon2'],
+                'sokak_adi'       => $r['sokak_adi'],
+                'bina_no'         => $r['bina_no'],
+                'daire_no'        => $r['daire_no'],
+                'order_status'    => $r['order_status'],
+                'order_type'      => $r['order_type'],
+                'serial_number'   => $r['serial_number'],
+                'brand'           => $r['brand'],
+                'customer_name'   => $r['customer_name']
+            ];
+        }
+    
+        echo json_encode($rows);
+        break;    
+    
 
 }
 

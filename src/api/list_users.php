@@ -7,7 +7,7 @@ try {
     $result = $stmt->get_result();
     $users = [];
     while ($row = $result->fetch_assoc()) {
-        $users[] = ['id' => (int)$row['id'], 'name' => $row['name']];
+        $users[] = ['id' => $row['id'], 'name' => $row['name']];
     }
     $response = ['success' => true, 'users' => $users];
 } catch (Exception $e) {

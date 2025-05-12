@@ -150,29 +150,22 @@ const ListOrders = ({ customerId = 0 }) => {
   // 1) Filtreler değiştiğinde veya component mount olduğunda yeniden yükle
   useEffect(() => {
     setLoading(true);
-    // 2) Query string oluştur
     const params = new URLSearchParams();
-    if (customerId > 0)      params.append('customer_id', customerId);
-    if (filters.status)        params.append('status', filters.status);
-    if (filters.dateFrom)      params.append('date_from', filters.dateFrom);
-    if (filters.dateTo)        params.append('date_to', filters.dateTo);
-    if (filters.representative)params.append('representative', filters.representative);
+    if (customerId > 0)         params.append('customer_id', customerId);
+    if (filters.status)         params.append('status', filters.status);
+    if (filters.dateFrom)       params.append('date_from', filters.dateFrom);
+    if (filters.dateTo)         params.append('date_to', filters.dateTo);
+    if (filters.representative) params.append('representative', filters.representative);
 
-      apiFetch(`list_orders.php?${params.toString()}`, {
-        method: 'GET',
-        credentials: 'include'
+    apiFetch(`list_orders.php?${params.toString()}`, { method: 'GET', credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setOrders(data.orders);
+        else setError(data.message || 'Siparişler alınamadı');
       })
-        .then(r => r.json())
-        .then(data => {
-          if (data.success) {
-            setOrders(data.orders);
-          } else {
-            setError(data.message || 'Siparişler alınamadı');
-          }
-        })
-        .catch(() => setError('Sunucu hatası'))
-        .finally(() => setLoading(false));
-    }, [customerId, filters.status, filters.dateFrom, filters.dateTo, filters.representative]);
+      .catch(() => setError('Sunucu hatası'))
+      .finally(() => setLoading(false));
+  }, [customerId, filters.status, filters.dateFrom, filters.dateTo, filters.representative]);
 
   return (
     <div className="mt-3">
@@ -204,9 +197,7 @@ const ListOrders = ({ customerId = 0 }) => {
         >
           <option value="">Tüm Temsilciler</option>
           {representatives.map(rep => (
-            <option key={rep.id} value={rep.id}>
-              {rep.name}
-            </option>
+            <option key={rep.id} value={rep.id}>{rep.name}</option>
           ))}
         </select>
         </div>
@@ -278,12 +269,14 @@ const ListOrders = ({ customerId = 0 }) => {
               <table className="table table-sm">
                 <thead>
                   <tr>
-                    <th>Ürün</th>
-                    <th>Seri No</th>
-                    <th>Birim Fiyat</th>
-                    <th>İskonto</th>
-                    <th>İskontolu Fiyat</th>
-                    <th>Toplam</th>
+                    <th style={{ width: '41%' }}>Ürün</th>
+                    <th style={{ width: '20%' }}>Seri No</th>
+                    <th style={{ width: '10%' }}>Birim Fiyat</th>
+                    <th style={{ width: '5%' }}>İskonto</th>
+                    <th style={{ width: '10%' }}>İskontolu Fiyat</th>
+                    <th style={{ width: '10%' }}>Toplam</th>
+                    <th style={{ width: '2%' }}>T</th>
+                    <th style={{ width: '2%' }}>S</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -299,6 +292,20 @@ const ListOrders = ({ customerId = 0 }) => {
                         <td>{Number(item.discount).toFixed(2)}%</td>
                         <td>{Number(item.discounted_unit_price).toFixed(2)} ₺</td>
                         <td>{Number(item.total_amount).toFixed(2)} ₺</td>
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={item.delivery === 1}
+                            readOnly
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={item.servis_yonlendirildi === 1}
+                            readOnly
+                          />
+                        </td>
 
                         <td className="expand-cell">
                           {item.installation && (
@@ -318,7 +325,7 @@ const ListOrders = ({ customerId = 0 }) => {
                       {/* Detay Satırı */}
                       {openRows[order.id]?.[idx] && item.installation && (
                         <tr>
-                          <td colSpan="7">
+                          <td colSpan="9">
                             <div className="border py-2 px-3 bg-light rounded">
                               <div className='row'>
                               <div className='col-md-12'>

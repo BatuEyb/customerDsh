@@ -6,7 +6,7 @@ $customerId = isset($_GET['customer_id']) ? (int) $_GET['customer_id'] : 0;
 $status     = isset($_GET['status'])      ? $_GET['status']         : '';
 $dateFrom   = isset($_GET['date_from'])   ? $_GET['date_from']      : '';
 $dateTo     = isset($_GET['date_to'])     ? $_GET['date_to']        : '';
-$representative = isset($_GET['representative'])  ? (int)$_GET['representative'] : 0;
+$representative = isset($_GET['representative']) ? $_GET['representative']       : '';
 
 $response = [];
 
@@ -36,10 +36,11 @@ try {
         $params[]     = $dateTo;
         $types       .= 's';
     }
-    if ($representative > 0) {
+    // UUID tipindeki temsilci kıyaslaması now a string
+    if ($representative !== '') {
         $whereParts[] = 'o.created_by = ?';
         $params[]     = $representative;
-        $types       .= 'i';
+        $types       .= 's';
     }
 
     $whereClause = $whereParts
@@ -59,6 +60,7 @@ try {
             o.status,
             o.order_type,
             u.name AS created_by_name,
+            u.id AS created_by_id,
             o.created_at,
             o.updated_at
         FROM orders o
@@ -110,7 +112,9 @@ try {
                 inst.randevu_tarihi,
                 inst.hata_durumu,
                 inst.hata_sebebi,
-                inst.not_text
+                inst.not_text,
+                oi.delivery,
+                oi.servis_yonlendirildi
             FROM order_items oi
             JOIN stocks s ON oi.stock_id = s.id
             LEFT JOIN installations inst 
@@ -160,6 +164,8 @@ try {
                 'total_amount'           => (float)$item['total_amount'],
                 'serial_number'          => $item['serial_number'],
                 'installation'           => $installation,
+                'delivery'      => $item['delivery'],
+                'servis_yonlendirildi'      => $item['servis_yonlendirildi'],
             ];
         }
 

@@ -1,8 +1,27 @@
 <?php
-/// Oturumun başlatılması yalnızca bir kez yapılmalıdır
+// 1. Oturumu başlatıyoruz (sadece bir kez)
 if (session_status() === PHP_SESSION_NONE) {
-    session_start(); // Eğer oturum başlatılmamışsa başlatıyoruz
+    session_start();
 }
+
+// 2. İnaktivite limiti (saniye cinsinden)
+$inactiveLimit = 20 * 60; // 20 dakika = 1.200 saniye
+
+// 3. Daha önce kaydedilmiş 'last_activity' var mı, kontrol et
+if (isset($_SESSION['last_activity'])) {
+    $elapsed = time() - $_SESSION['last_activity'];
+    if ($elapsed > $inactiveLimit) {
+        // 4.a Oturumu tamamen sonlandır
+        session_unset();
+        session_destroy();
+        // 4.b Ana sayfaya yönlendir
+        header("Location: /");
+        exit();
+    }
+}
+
+// 5. Her istekte 'last_activity' zaman damgasını güncelle
+$_SESSION['last_activity'] = time();
 
 // Oturumda kullanıcı bilgileri varsa, mevcut oturumdaki kullanıcı bilgilerine erişim sağlıyoruz
 if (isset($_SESSION['user_id'])) {

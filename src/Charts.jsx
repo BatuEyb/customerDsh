@@ -5,7 +5,7 @@ import { Carousel, OverlayTrigger, Tooltip as BSTooltip  } from "react-bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
 import dayjs from 'dayjs';
 import { DataGrid } from '@mui/x-data-grid';
-import { Box } from '@mui/material';
+import { Box, Chip } from '@mui/material';
 import { apiFetch } from "./api";
 import DashboardShortcuts from "./components/DashboardShortcuts";
 import { formatTurkishPhone } from "./utils/formatters";
@@ -115,29 +115,33 @@ export default function Dashboard() {
             }))
           )],
           ["orders_list", data => setOrdersList(
-            data.map(o => ({
-              id: o.id,
-              customerId: o.customer_id,
-              customerName: o.customer_name,
-              category: o.has_error
-                ? 'Hatalı İşler'
-                : ({
-                    'Sipariş Alındı':   'Montaj Bekleyenler',
-                    'Montaj Yapıldı':   'Proje Bekleyenler',
-                    'Randevu Bekliyor': 'Randevu Bekleyenler',
-                    'Gaz Açıldı':       'Servis Bekleyenler',
-                  }[o.status] || o.status),
-              orderType: o.order_type,       // yeni field
-              totalAmount: Number(o.total_amount),
-              createdAt: dayjs(o.created_at).format('DD.MM.YYYY'),
-              // İşte yeni sütunlar:
-              installerName: o.ad_soyad,
-              igdasName:     o.igdas_adi,
-              tuketimNo:     o.tuketim_no,
-              phone:         formatTurkishPhone(o.telefon1),
-              street:        o.sokak_adi,
-              building:      o.bina_no,
-              flat:          o.daire_no
+            data.map(inst => ({
+              id:            inst.installation_id,
+              tuketimNo:     inst.tuketim_no,
+              igdasAdi:      inst.igdas_adi,
+              randevuTarihi: inst.randevu_tarihi,
+              installerName: inst.ad_soyad,
+              phone:         formatTurkishPhone(inst.telefon1),
+              street:        inst.sokak_adi,
+              building:      inst.bina_no,
+              flat:          inst.daire_no,
+              orderType:     inst.order_type,
+          
+              // Yeni eklenenler:
+              brand:         inst.brand,
+              serialNumber:  inst.serial_number,
+              customerName:  inst.customer_name,
+          
+              category: ({
+                'Sipariş Alındı':   'Montaj Yapılmalı',
+                'Montaj Yapıldı':   'Proje Çizilmeli',
+                'Abonelik Yok':     'Hatalı İş',
+                'Proje Onayda':     'Hatalı İş',
+                'Sözleşme Yok':     'Hatalı İş',
+                'Randevu Bekliyor': 'Randevu Alınmalı',
+                'Randevu Alındı':   'Randevu Alındı',
+                'Gaz Açıldı':       'Servis Yönlendirilmeli'
+              }[inst.order_status] || inst.order_status)
             }))
           )]
         ];
@@ -177,17 +181,79 @@ export default function Dashboard() {
   };
   const groupedData = chunkArray(kombiSalesSummary, 3);
 
+  const brandsColorMap = {
+    'Demirdöküm': 'warning',
+    'Baymak':  'info',
+    'Eca':'primary',
+    'Buderus':'success',
+    'Bosch':'default',
+    'Vaillant':'error',
+    'Viessmann':'error',
+  };
+
+  const statusColorMap = {
+    'Montaj Yapılmalı': 'warning',
+    'Proje Çizilmeli':  'info',
+    'Randevu Alınmalı':'primary',
+    'Servis Yönlendirilmeli':'success',
+    'Randevu Alındı':'default',
+    'Hatalı İş':       'error'
+  };
+  
+  const typeColorMap = {
+    'Tekli Satış':     'primary',
+    'Cihaz Değişimi':  'secondary',
+    'Yeni Proje':      'success'
+  };
+
+  
+
   const columns = [
-    { field: 'customerName',  headerName: 'Müşteri',  width: 161 },
-    { field: 'orderType',   headerName:'Sipariş Tipi', width: 116 },
-    { field: 'category',      headerName: 'İş Durumu', width: 170 },
-    { field: 'installerName', headerName: 'Montaj Ad Soyad', width: 150 },
-    { field: 'igdasName',     headerName: 'İGDAŞ Adı', width: 150 },
-    { field: 'tuketimNo',     headerName: 'Tüketim No', width: 110 },
-    { field: 'phone',         headerName: 'Telefon',  width: 147 },
-    { field: 'street',        headerName: 'Sokak',    width: 150 },
-    { field: 'building',      headerName: 'Bina',  width: 70 },
-    { field: 'flat',          headerName: 'Daire', width: 55 },
+    { field: 'customerName',  headerName: 'Müşteri Adı',  width: 150 },
+    { 
+      field: 'brand',         headerName: 'Marka',
+      width: 90,
+      renderCell: params => (
+        <Chip
+          label={params.value}
+          size="small"
+          color={brandsColorMap[params.value] || 'default'}
+        />
+      )
+    },
+    { field: 'serialNumber',  headerName: 'Seri No',      width: 150 },
+    {
+      field: 'orderType',
+      headerName: 'Sipariş Tipi',
+      width: 100,
+      renderCell: params => (
+        <Chip
+          label={params.value}
+          size="small"
+          color={typeColorMap[params.value] || 'default'}
+        />
+      )
+    },
+    {
+      field: 'category',
+      headerName: 'Durum',
+      width: 140,
+      renderCell: params => (
+        <Chip
+          label={params.value}
+          size="small"
+          color={statusColorMap[params.value] || 'default'}
+        />
+      )
+    },
+    { field: 'installerName', headerName: 'Ad Soyad',     width: 140 },
+    { field: 'phone',         headerName: 'Telefon',      width: 135 },
+    { field: 'igdasAdi',      headerName: 'İGDAŞ Adı',    width: 140 },
+    { field: 'tuketimNo',     headerName: 'Tüketim No',   width: 110 },
+    { field: 'street',        headerName: 'Sokak',        width: 130 },
+    { field: 'building',      headerName: 'Bina',         width: 60 },
+    { field: 'flat',          headerName: 'Daire',        width: 60 },
+    { field: 'randevuTarihi', headerName: 'Randevu Tarihi', width: 100 },  
   ];
 
   return (
@@ -234,7 +300,6 @@ export default function Dashboard() {
             <DataGrid className="border-2"
               rows={ordersList}
               columns={columns}
-
               // **v8 kontrollü pagination**
               pagination
               paginationModel={paginationModel}

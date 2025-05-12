@@ -1,11 +1,14 @@
 <?php
+// update_order_installations.php
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
 header('Content-Type: application/json; charset=UTF-8');
 
-include 'api.php';    // veritabanı bağlantısı
-include 'session.php'; 
+include 'api.php';      // Veritabanı bağlantısı
+include 'session.php';  // Oturum kontrolü vs.
 
 $data = json_decode(file_get_contents('php://input'), true);
 if (
@@ -19,13 +22,15 @@ if (
 
 $order_id = (int)$data['order_id'];
 $items    = $data['items'];
-$status = isset($data['status']) ? $data['status'] : null;
+$status   = isset($data['status']) ? $data['status'] : null;
 
 $response = [
-    'inserted' => 0,
-    'updated'  => 0,
-    'deleted'  => 0,
-    'skipped'  => 0
+    'inserted'      => 0,
+    'updated'       => 0,
+    'deleted'       => 0,
+    'skipped'       => 0,
+    'serials'       => 0,
+    'flags_updated' => 0
 ];
 
 $conn->begin_transaction();
@@ -34,7 +39,26 @@ try {
     foreach ($items as $item) {
         $order_item_id = intval($item['order_item_id']);
 
-        // Kayıtta “veri var mı?” kontrolü
+        // order_items tablosuna seri, delivery ve servis flag güncelle (her item için)
+        $sn   = $item['serial_number']      ?? null;
+        $delv = intval($item['delivery']           ?? 0);
+        $serv = intval($item['servis_yonlendirildi'] ?? 0);
+
+        $updOI = $conn->prepare("UPDATE order_items SET
+                serial_number        = ?,
+                delivery             = ?,
+                servis_yonlendirildi = ?
+            WHERE id = ?
+        ");
+        $updOI->bind_param("siii", $sn, $delv, $serv, $order_item_id);
+        $updOI->execute();
+        $updOI->close();
+
+        // sayaçları güncelle (opsiyonel)
+        if ($sn !== null) { $response['serials']++; }
+        $response['flags_updated']++;
+
+        // Kurulum verilerinin dolu olup olmadığını kontrol et
         $hasData = false;
         foreach ([
             'tuketim_no','igdas_adi','ad_soyad','telefon1','telefon2',
@@ -48,127 +72,104 @@ try {
         }
         $hataDurumu = isset($item['hata_durumu']) ? intval($item['hata_durumu']) : 0;
 
-        // Önce bu order_item_id için bir kayıt var mı?
+        // installations kaydı var mı bak
         $chk = $conn->prepare("SELECT id FROM installations WHERE order_item_id = ?");
         $chk->bind_param("i", $order_item_id);
         $chk->execute();
         $exists = $chk->get_result()->num_rows > 0;
         $chk->close();
 
-        // Eğer hiçbir alan dolu değilse ve hata_durumu=0 ise
+        // Veri yoksa veya hata durumu yoksa sil veya atla
         if (!$hasData && $hataDurumu === 0) {
             if ($exists) {
-                // daha önce eklenmişse sil
                 $del = $conn->prepare("DELETE FROM installations WHERE order_item_id = ?");
                 $del->bind_param("i", $order_item_id);
                 $del->execute();
                 $del->close();
                 $response['deleted']++;
             } else {
-                // silinecek de yok, atla
                 $response['skipped']++;
             }
-            continue;
-        }
-
-        // 1) Randevu tarihini normalize et
-        $randevu = isset($item['randevu_tarihi']) 
-        ? trim($item['randevu_tarihi']) 
-        : '';
-        if ($randevu === '') {
-        // boşsa NULL kullan
-        $randevu = null;
-        }
-
-        // Buraya gelinirse kayıt ekleme/güncelleme yapılacak
-        // Hazırla
-        $fields = [
-            $item['tuketim_no']      ?? '',
-            $item['igdas_adi']       ?? '',
-            $randevu,
-            $hataDurumu,
-            $item['hata_sebebi']     ?? '',
-            $item['not_text']        ?? '',
-            $item['ad_soyad']        ?? '',
-            $item['telefon1']        ?? '',
-            $item['telefon2']        ?? '',
-            $item['il']              ?? '',
-            $item['ilce']            ?? '',
-            $item['mahalle']         ?? '',
-            $item['sokak_adi']       ?? '',
-            $item['bina_no']         ?? '',
-            $item['daire_no']        ?? ''
-        ];
-
-        if ($exists) {
-            // Güncelle
-            $upd = $conn->prepare("
-                UPDATE installations SET
-                  tuketim_no     = ?, igdas_adi      = ?, randevu_tarihi = ?,
-                  hata_durumu    = ?, hata_sebebi    = ?, not_text       = ?,
-                  ad_soyad       = ?, telefon1       = ?, telefon2       = ?,
-                  il             = ?, ilce           = ?, mahalle        = ?,
-                  sokak_adi      = ?, bina_no        = ?, daire_no       = ?,
-                  updated_at     = NOW()
-                WHERE order_item_id = ?
-            ");
-            $upd->bind_param(
-                "sssissssssssssis",
-                $fields[0], $fields[1], $fields[2], $fields[3], $fields[4],
-                $fields[5], $fields[6], $fields[7], $fields[8], $fields[9],
-                $fields[10], $fields[11], $fields[12], $fields[13], $fields[14],
-                $order_item_id
-            );
-            $upd->execute();
-            $upd->close();
-            $response['updated']++;
-
         } else {
-            // Yeni kayıt
-            $ins = $conn->prepare("
-            INSERT INTO installations (
-                order_item_id, tuketim_no, igdas_adi, randevu_tarihi,
-                hata_durumu, hata_sebebi, not_text, ad_soyad,
-                telefon1, telefon2, il, ilce, mahalle,
-                sokak_adi, bina_no, daire_no
-            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-            ");
+            // randevu tarihini normalize et
+            $randevu = isset($item['randevu_tarihi']) ? trim($item['randevu_tarihi']) : '';
+            if ($randevu === '') {
+                $randevu = null;
+            }
 
-            // Artık 1 “i” + 15 “s” = 16 tip tanımı
-            $ins->bind_param(
-                "ississssssssssss",
-                $order_item_id,
-                $fields[0],  // tuketim_no
-                $fields[1],  // igdas_adi
-                $fields[2],  // randevu_tarihi
-                $fields[3],  // hata_durumu  (int)
-                $fields[4],  // hata_sebebi
-                $fields[5],  // not_text
-                $fields[6],  // ad_soyad
-                $fields[7],  // telefon1
-                $fields[8],  // telefon2
-                $fields[9],  // il
-                $fields[10], // ilce
-                $fields[11], // mahalle
-                $fields[12], // sokak_adi
-                $fields[13], // bina_no
-                $fields[14]  // daire_no    ← EKLENDİ
-            );
-            $ins->execute();
-            $ins->close();
-            $response['inserted']++;
+            // Installation tablosu için alan dizisi
+            $instFields = [
+                $item['tuketim_no']   ?? '',
+                $item['igdas_adi']    ?? '',
+                $randevu,
+                $hataDurumu,
+                $item['hata_sebebi']  ?? '',
+                $item['not_text']     ?? '',
+                $item['ad_soyad']     ?? '',
+                $item['telefon1']     ?? '',
+                $item['telefon2']     ?? '',
+                $item['il']           ?? '',
+                $item['ilce']         ?? '',
+                $item['mahalle']      ?? '',
+                $item['sokak_adi']    ?? '',
+                $item['bina_no']      ?? '',
+                $item['daire_no']     ?? ''
+            ];
+
+            if ($exists) {
+                // Güncelle
+                $upd = $conn->prepare("UPDATE installations SET
+                      tuketim_no     = ?, igdas_adi      = ?, randevu_tarihi = ?,
+                      hata_durumu    = ?, hata_sebebi    = ?, not_text       = ?,
+                      ad_soyad       = ?, telefon1       = ?, telefon2       = ?,
+                      il             = ?, ilce           = ?, mahalle        = ?,
+                      sokak_adi      = ?, bina_no        = ?, daire_no       = ?,
+                      updated_at     = NOW()
+                  WHERE order_item_id = ?");
+                $upd->bind_param(
+                    "sssisssssssssssi",
+                    $instFields[0], $instFields[1], $instFields[2], $instFields[3],
+                    $instFields[4], $instFields[5], $instFields[6], $instFields[7],
+                    $instFields[8], $instFields[9], $instFields[10], $instFields[11],
+                    $instFields[12], $instFields[13], $instFields[14],
+                    $order_item_id
+                );
+                $upd->execute();
+                $upd->close();
+                $response['updated']++;
+            } else {
+                // Yeni kayıt
+                $ins = $conn->prepare("INSERT INTO installations (
+                        order_item_id, tuketim_no, igdas_adi, randevu_tarihi,
+                        hata_durumu, hata_sebebi, not_text, ad_soyad,
+                        telefon1, telefon2, il, ilce, mahalle,
+                        sokak_adi, bina_no, daire_no
+                    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                $ins->bind_param(
+                    "isssisssssssssss",
+                    $order_item_id,
+                    $instFields[0], $instFields[1], $instFields[2], $instFields[3],
+                    $instFields[4], $instFields[5], $instFields[6], $instFields[7],
+                    $instFields[8], $instFields[9], $instFields[10], $instFields[11],
+                    $instFields[12], $instFields[13], $instFields[14]
+                );
+                $ins->execute();
+                $ins->close();
+                $response['inserted']++;
+            }
         }
     }
 
     $conn->commit();
 
-    // Sipariş tablosunda durumu güncelle
+    // sipariş durumu güncelleme
     if ($status !== null) {
         $updStatus = $conn->prepare("UPDATE orders SET status = ? WHERE id = ?");
         $updStatus->bind_param("si", $status, $order_id);
         $updStatus->execute();
         $updStatus->close();
     }
+
     echo json_encode([
         'success' => true,
         'message' => 'İşlem tamamlandı.',
@@ -184,4 +185,3 @@ try {
     ]);
     exit;
 }
-?>

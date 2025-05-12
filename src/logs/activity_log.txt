@@ -723,3 +723,4 @@ Fiyat: 123000.00 → 45000
 [2025-05-01 11:30:51] - Kullanıcı: aytekindemir (ID: 94b6cf23-2657-11f0-9093-74d4dd37c6d2) - Sipariş Oluşturuldu : 85
 [2025-05-05 12:52:36] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 86
 [2025-05-06 10:24:25] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 87
+[2025-05-07 10:43:23] - Kullanıcı: aytekindemir (ID: 94b6cf23-2657-11f0-9093-74d4dd37c6d2) - Sipariş Oluşturuldu : 88
