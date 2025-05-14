@@ -724,3 +724,20 @@ Fiyat: 123000.00 → 45000
 [2025-05-05 12:52:36] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 86
 [2025-05-06 10:24:25] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 87
 [2025-05-07 10:43:23] - Kullanıcı: aytekindemir (ID: 94b6cf23-2657-11f0-9093-74d4dd37c6d2) - Sipariş Oluşturuldu : 88
+[2025-05-12 18:18:37] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 86
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: BAYMAK ELEGANT PLUS UV 09 A++ (MD)-K, Stock Code: 100023592
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: BAYMAK ELEGANT PLUS UV 12 A++ (MD)-K, Stock Code: 100023594
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: BAYMAK ELEGANT PLUS UV 18 A++ (MD)-K, Stock Code: 100023596
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: BAYMAK ELEGANT PLUS UV 24 A++ (MD), Stock Code: 100023137
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Spylos Pro Serisi 9000 BTU, Stock Code: ESA13000100-9
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Ecotech Serisi 9000 BTU, Stock Code: ESA2100A100-9
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Ecotech Serisi 12000 BTU, Stock Code: ESA2100A100-12
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Ecotech Serisi 18000 BTU, Stock Code: ESA2100A100-18
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Ecotech Serisi 24000 BTU, Stock Code: ESA2100A100-24
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Niobe Blue Serisi 12000 BTU, Stock Code: ESB1400A100-12
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Niobe Blue Serisi 16000 BTU, Stock Code: ESB1400A100-16
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Niobe Blue Serisi 18000 BTU, Stock Code: ESB1400A100-18
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Spylos Pro Serisi 12000 BTU, Stock Code: ESA13000100-12
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Spylos Pro Serisi 15000 BTU, Stock Code: ESA13000100-15
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Spylos Pro Serisi 18000 BTU, Stock Code: ESA13000100-18
+[2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Spylos Pro Serisi 24000 BTU, Stock Code: ESA13000100-24

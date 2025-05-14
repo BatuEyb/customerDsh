@@ -57,7 +57,6 @@ try {
             c.email AS customer_email,
             c.phone AS customer_phone,
             o.total_amount,
-            o.status,
             o.order_type,
             u.name AS created_by_name,
             u.id AS created_by_id,
@@ -114,7 +113,7 @@ try {
                 inst.hata_sebebi,
                 inst.not_text,
                 oi.delivery,
-                oi.servis_yonlendirildi
+                oi.order_item_status
             FROM order_items oi
             JOIN stocks s ON oi.stock_id = s.id
             LEFT JOIN installations inst 
@@ -165,7 +164,7 @@ try {
                 'serial_number'          => $item['serial_number'],
                 'installation'           => $installation,
                 'delivery'      => $item['delivery'],
-                'servis_yonlendirildi'      => $item['servis_yonlendirildi'],
+                'order_item_status'      => $item['order_item_status'],
             ];
         }
 

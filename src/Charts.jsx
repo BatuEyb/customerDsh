@@ -432,7 +432,7 @@ export default function Dashboard() {
                     // eğer tooltip değerlerinin yanındaki etiket metnini de özelleştirmek isterseniz
                     formatter={(value, name) => [value, name]} 
                   />
-                  <Line type="monotone" dataKey="count" name="Sipariş Adeti" stroke={PRIMARY} strokeWidth={2} />
+                  <Line type="monotone" dataKey="total_amount" name="Sipariş Tutarı" stroke={PRIMARY} strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </Card>

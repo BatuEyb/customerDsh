@@ -252,7 +252,6 @@ const ListOrders = ({ customerId = 0 }) => {
                 <h5>{order.customer_name}</h5>
                 <div>
                   <span className="badge bg-warning me-1">#{order.id}</span>
-                  <span className="badge bg-primary me-1">{order.status}</span>
                   <span className="badge bg-danger">{order.order_type}</span><br />
                   <span className="badge bg-success w-100">{order.created_by_name}</span><br />
                 </div>
@@ -269,14 +268,14 @@ const ListOrders = ({ customerId = 0 }) => {
               <table className="table table-sm">
                 <thead>
                   <tr>
-                    <th style={{ width: '41%' }}>Ürün</th>
+                    <th style={{ width: '31%' }}>Ürün</th>
                     <th style={{ width: '20%' }}>Seri No</th>
                     <th style={{ width: '10%' }}>Birim Fiyat</th>
                     <th style={{ width: '5%' }}>İskonto</th>
                     <th style={{ width: '10%' }}>İskontolu Fiyat</th>
                     <th style={{ width: '10%' }}>Toplam</th>
-                    <th style={{ width: '2%' }}>T</th>
-                    <th style={{ width: '2%' }}>S</th>
+                    <th style={{ width: '4%' }}>T</th>
+                    <th style={{ width: '10%' }}>Sipariş Durumu</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -299,13 +298,7 @@ const ListOrders = ({ customerId = 0 }) => {
                             readOnly
                           />
                         </td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            checked={item.servis_yonlendirildi === 1}
-                            readOnly
-                          />
-                        </td>
+                        <td>{item.order_item_status}</td>
 
                         <td className="expand-cell">
                           {item.installation && (

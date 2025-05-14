@@ -24,7 +24,6 @@ export const generateOrderPDF = (order) => {
         <div style="flex:1 1 200px;"><strong>Adres:</strong> ${order.customer_address || '-'}</div>
         <div style="flex:1 1 200px;"><strong>Telefon:</strong> ${order.customer_phone || '-'}</div>
         <div style="flex:1 1 200px;"><strong>E-Posta:</strong> ${order.customer_email || '-'}</div>
-        <div style="flex:1 1 200px;"><strong>Durum:</strong> ${order.status}</div>
         <div style="flex:1 1 200px;"><strong>Tip:</strong> ${order.order_type}</div>
       </div>
     </section>
@@ -55,7 +54,7 @@ export const generateOrderPDF = (order) => {
                 <div><strong>Telefon 1:</strong> ${item.installation.phone_number}</div>
                 <div><strong>Telefon 2:</strong> ${item.installation.phone_number2}</div>
                 <div style="flex:1 1 100%;"><strong>Adres:</strong> ${item.installation.address}</div>
-                <div><strong>Durum:</strong> ${item.installation.job_status}</div>
+                <div><strong>Durum:</strong> ${item.order_item_status}</div>
                 <div style="flex:1 1 100%;"><strong>Not:</strong> ${item.installation.not_text || '-'}</div>
                 <div><strong>Hata Durumu:</strong> ${
                   item.installation.hata_durumu === 0

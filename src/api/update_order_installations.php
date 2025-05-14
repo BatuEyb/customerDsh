@@ -22,7 +22,6 @@ if (
 
 $order_id = (int)$data['order_id'];
 $items    = $data['items'];
-$status   = isset($data['status']) ? $data['status'] : null;
 
 $response = [
     'inserted'      => 0,
@@ -42,15 +41,15 @@ try {
         // order_items tablosuna seri, delivery ve servis flag güncelle (her item için)
         $sn   = $item['serial_number']      ?? null;
         $delv = intval($item['delivery']           ?? 0);
-        $serv = intval($item['servis_yonlendirildi'] ?? 0);
+        $oistatus = $item['order_item_status'] ?? 'Sipariş Alındı';
 
         $updOI = $conn->prepare("UPDATE order_items SET
                 serial_number        = ?,
                 delivery             = ?,
-                servis_yonlendirildi = ?
+                order_item_status = ?
             WHERE id = ?
         ");
-        $updOI->bind_param("siii", $sn, $delv, $serv, $order_item_id);
+        $updOI->bind_param("sisi", $sn, $delv, $oistatus, $order_item_id);
         $updOI->execute();
         $updOI->close();
 
@@ -161,14 +160,6 @@ try {
     }
 
     $conn->commit();
-
-    // sipariş durumu güncelleme
-    if ($status !== null) {
-        $updStatus = $conn->prepare("UPDATE orders SET status = ? WHERE id = ?");
-        $updStatus->bind_param("si", $status, $order_id);
-        $updStatus->execute();
-        $updStatus->close();
-    }
 
     echo json_encode([
         'success' => true,

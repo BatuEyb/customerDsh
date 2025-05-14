@@ -5,7 +5,6 @@ import { apiFetch } from '../api';
 const OrderInstallationModal = ({ show, onHide, order, onSaved }) => {
   const [items, setItems] = useState([]);
   const [expanded, setExpanded] = useState({});
-  const [status, setStatus] = useState('Sipariş Alındı');
 
   useEffect(() => {
     if (order && Array.isArray(order.items)) {
@@ -31,6 +30,7 @@ const OrderInstallationModal = ({ show, onHide, order, onSaved }) => {
         not_text: it.installation?.not_text || it.not_text || '',
         delivery: it.delivery ?? it.delivery ?? 0,
         servis_yonlendirildi: it.servis_yonlendirildi ?? it.servis_yonlendirildi ?? 0,
+        order_item_status: it.order_item_status?.order_item_status || it.order_item_status || '',
       }));
       setItems(mapped);
       // installation bilgisi olanları açık, diğerleri kapalı
@@ -39,7 +39,6 @@ const OrderInstallationModal = ({ show, onHide, order, onSaved }) => {
         exp[it.order_item_id] = Boolean(it.tuketim_no || it.igdas_adi || it.ad_soyad || it.telefon1 || it.telefon2 || it.randevu_tarihi);
       });
       setExpanded(exp);
-      setStatus(order.status || 'Sipariş Alındı');
     }
   }, [order]);
 
@@ -80,6 +79,7 @@ const OrderInstallationModal = ({ show, onHide, order, onSaved }) => {
       serial_number:        it.serial_number,
       delivery:             it.delivery,
       servis_yonlendirildi: it.servis_yonlendirildi,
+      order_item_status: it.order_item_status,
       // 👉 only include installation‐fields if that row is expanded
       ...(expanded[it.order_item_id] && {
         tuketim_no:     it.tuketim_no,
@@ -111,7 +111,7 @@ const OrderInstallationModal = ({ show, onHide, order, onSaved }) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ order_id: order.id, items: toSave, status })
+      body: JSON.stringify({ order_id: order.id, items: toSave})
     })
       .then(async res => {
         const text = await res.text();
@@ -134,18 +134,10 @@ const OrderInstallationModal = ({ show, onHide, order, onSaved }) => {
         <Modal.Title>Sipariş Montaj Bilgileri Düzenle</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Col md={6} className="mb-2">
-          <Form.Group>
-            <Form.Label>Sipariş Durumu</Form.Label>
-            <Form.Select value={status} onChange={e => setStatus(e.target.value)}>
-              {['Sipariş Alındı','Montaj Yapıldı','Abonelik Yok','Proje Onayda','Sözleşme Yok','Randevu Bekliyor','Randevu Alındı','Gaz Açıldı','İş Tamamlandı'].map(s => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-        </Col>
         {items.map((it, idx) => (
-          <div key={it.order_item_id} className="mb-4 p-3 border rounded">
+          <div key={it.order_item_id}
+              className={`mb-4 p-3 border rounded ${idx % 2 === 1 ? 'bg-light' : 'bg-white'}`}
+            >
             <Row className="align-items-center">
               <Col md={9} ><h5>{`${idx + 1}. ${it.product_name}`}</h5></Col>
               <Col md={3} className="text-end">
@@ -181,16 +173,13 @@ const OrderInstallationModal = ({ show, onHide, order, onSaved }) => {
                       </Form.Select>
                     </Form.Group>
                   </Col>
-                  <Col md={3} className="mb-2">
+                  <Col md={6} className="mb-2">
                     <Form.Group>
-                      <Form.Label>SERVİS YÖNLENDİRİLDİ</Form.Label>
-                      <Form.Select
-                        name="servis_yonlendirildi"
-                        value={it.servis_yonlendirildi}
-                        onChange={e => handleChange(idx, 'servis_yonlendirildi', e.target.value)}
-                      >
-                        <option value={0}>Hayır</option>
-                        <option value={1}>Evet</option>
+                      <Form.Label>SİPARİŞ DURUMU</Form.Label>
+                      <Form.Select value={it.order_item_status} onChange={e => handleChange(idx, 'order_item_status', e.target.value)}>
+                        {['Sipariş Alındı','Montaj Yapıldı','Abonelik Yok','Proje Onayda','Sözleşme Yok','Randevu Bekliyor','Randevu Alındı','Gaz Açıldı','İş Tamamlandı'].map(s => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
                       </Form.Select>
                     </Form.Group>
                   </Col>

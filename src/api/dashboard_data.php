@@ -37,9 +37,9 @@ switch ($action) {
         echo json_encode($row);
         break;
 
-    // 4. Son 7 Günlük Sipariş Hareketleri
+    // 4. Son 7 Günlük Sipariş Hareketleri (Tutar Bazlı)
     case 'recent_movements':
-        $sql = "SELECT DATE(created_at) AS date, COUNT(*) AS count
+        $sql = "SELECT DATE(created_at) AS date, SUM(total_amount) AS total_amount
                 FROM orders
                 WHERE created_at >= CURDATE() - INTERVAL 7 DAY
                 GROUP BY DATE(created_at)
@@ -47,10 +47,14 @@ switch ($action) {
         $result = $conn->query($sql);
         $data = array();
         while ($row = $result->fetch_assoc()) {
-            $data[] = $row;
+            $data[] = [
+                'date' => $row['date'],
+                'total_amount' => (float)$row['total_amount'] // JSON çıktısında float olarak
+            ];
         }
         echo json_encode($data);
         break;
+
 
     // 5. Önümüzdeki 7 Günlük Randevular
     case 'upcoming_appointments':
@@ -203,7 +207,7 @@ GROUP BY s.brand";
     // 11. Verilen Siparişler
     case 'orders_overview':
     $orders = [];
-    $sql1 = "SELECT o.id, o.customer_id, o.total_amount, o.status, o.created_by, o.created_at,
+    $sql1 = "SELECT o.id, o.customer_id, o.total_amount, o.created_by, o.created_at,
                         c.name AS customer_name, u.name AS creator_name
                 FROM orders o
                 LEFT JOIN customers c ON o.customer_id = c.id
@@ -260,8 +264,9 @@ GROUP BY s.brand";
             SELECT
                 s.brand,
                 SUM(oi.quantity) AS total_sold,
-                SUM(CASE WHEN oi.servis_yonlendirildi = 1 THEN oi.quantity ELSE 0 END) AS completed,
-                SUM(CASE WHEN oi.servis_yonlendirildi <> 1 OR oi.servis_yonlendirildi IS NULL THEN oi.quantity ELSE 0 END) AS pending
+                SUM(oi.quantity) AS total_sold,   
+                SUM(CASE WHEN oi.order_item_status = 'İş Tamamlandı' THEN oi.quantity ELSE 0 END) AS completed,
+                SUM(CASE WHEN oi.order_item_status <> 'İş Tamamlandı' THEN oi.quantity ELSE 0 END) AS pending
             FROM order_items oi
             JOIN stocks s       ON oi.stock_id     = s.id
             JOIN categories c   ON s.category_id   = c.id
@@ -293,8 +298,7 @@ GROUP BY s.brand";
             inst.sokak_adi,
             inst.bina_no,
             inst.daire_no,
-            oi.servis_yonlendirildi,
-            o.status               AS order_status,
+            oi.order_item_status               AS order_status,
             o.order_type,
             oi.serial_number,
             s.brand,
@@ -304,7 +308,7 @@ GROUP BY s.brand";
           JOIN orders o       ON oi.order_id        = o.id
           JOIN customers c    ON o.customer_id      = c.id
           JOIN stocks s       ON oi.stock_id        = s.id
-          WHERE o.status != 'İş Tamamlandı' AND oi.servis_yonlendirildi != 1
+          WHERE oi.order_item_status != 'İş Tamamlandı'
           ORDER BY inst.created_at DESC
         ";
     
