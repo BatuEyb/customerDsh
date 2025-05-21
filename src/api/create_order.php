@@ -16,6 +16,7 @@ $order_items = $data['order_items']; // order_items bir dizi olacak
 $order_type = isset($data['order_type']) && $data['order_type'] !== ''
             ? $data['order_type']
             : 'Tekli Satış';
+$selected_rep = $data['representative_id'];
 // Veritabanı işlemleri için başlat
 $conn->begin_transaction();
 
@@ -23,7 +24,7 @@ try {
     // 1. Siparişi orders tablosuna ekle
     $stmt = $conn->prepare("INSERT INTO orders (customer_id, total_amount, created_by, updated_by, created_at, updated_at, order_type) 
                         VALUES (?, ?, ?, ?, NOW(), NOW(), ?)");
-    $stmt->bind_param("idsss", $customer_id, $total_amount, $created_by, $updated_by, $order_type);
+    $stmt->bind_param("idsss", $customer_id, $total_amount, $selected_rep, $updated_by, $order_type);
     $stmt->execute();
 
     // Yeni eklenen siparişin id'sini al

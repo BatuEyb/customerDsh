@@ -1,6 +1,6 @@
 <?php
-include 'session.php'; // Veritabanı bağlantısı
 include 'api.php'; // Veritabanı bağlantısını içe aktar
+include 'session.php'; // Veritabanı bağlantısı
 
 $created_by = $_SESSION['user_id']; // Oturumdaki kullanıcı ID'si
 $username = $_SESSION['username']; // Oturumdaki kullanıcı adı

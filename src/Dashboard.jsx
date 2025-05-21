@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Modal, Button } from 'react-bootstrap';
-import { FaUserCircle, FaBars, FaTimes, FaListAlt, FaUserPlus , FaUsers , FaPlusSquare , FaWarehouse , FaShoppingBasket , FaCartPlus , FaMoneyBillWave , FaBoxOpen , FaChartPie   } from "react-icons/fa";
+import { FaUserCircle, FaBars, FaTimes, FaTools, FaListAlt, FaUserPlus , FaUsers , FaPlusSquare , FaWarehouse , FaShoppingBasket , FaCartPlus , FaMoneyBillWave , FaBoxOpen , FaChartPie   } from "react-icons/fa";
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import { apiFetch } from "./api.js";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
@@ -18,6 +18,7 @@ import CreateOrder from "./CreateOrder.jsx";
 import ListOrders from "./ListOrders.jsx";
 import CustomerBalances from "./CustomerBalances.jsx";
 import UserModal from "./components/UserModal.jsx";
+import InstallationsList from "./InstallationsList.jsx";
 
 const Dashboard = () => {
   const location = useLocation();
@@ -195,6 +196,12 @@ const Dashboard = () => {
                         <FaShoppingBasket className="me-2" /> <span className="sidebarLabel">Sipariş Listesi</span>
                     </a>
                     </Tooltip>
+                    <Tooltip title="Montaj Listele" placement="right">
+                    <a className={`nav-link text-white ${activePage === "listInstallations" ? "active" : ""}`} 
+                        onClick={() => handlePageChange("listInstallations")}>
+                        <FaTools className="me-2" /> <span className="sidebarLabel">Montaj Listesi</span>
+                    </a>
+                    </Tooltip>
                     <Tooltip title="Sipariş Oluştur" placement="right">
                     <a className={`nav-link text-white ${activePage === "addOrder" ? "active" : ""}`} 
                         onClick={() => handlePageChange("addOrder")}>
@@ -269,6 +276,7 @@ const Dashboard = () => {
                     {location.pathname.includes("addQuote") && <CreateQuote />}
                     {location.pathname.includes("listCustomer/") && <CustomerDetail />}
                     {location.pathname.includes("listOrder") && <ListOrders />}
+                    {location.pathname.includes("listInstallations") && <InstallationsList />}
                     {location.pathname.includes("addOrder") && <CreateOrder />}
                     {location.pathname.includes("listBalances") && <CustomerBalances />}
                     </div>

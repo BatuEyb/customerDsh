@@ -183,12 +183,12 @@ export default function Dashboard() {
 
   const brandsColorMap = {
     'Demirdöküm': 'warning',
-    'Baymak':  'info',
-    'Eca':'primary',
-    'Buderus':'success',
+    'Baymak':  'success',
+    'Eca':'info',
+    'Buderus':'primary',
     'Bosch':'default',
     'Vaillant':'error',
-    'Viessmann':'error',
+    'Viessmann':'danger',
   };
 
   const statusColorMap = {
@@ -201,8 +201,8 @@ export default function Dashboard() {
   };
   
   const typeColorMap = {
-    'Tekli Satış':     'primary',
-    'Cihaz Değişimi':  'secondary',
+    'Tekli Satış':     'default',
+    'Cihaz Değişimi':  'primary',
     'Yeni Proje':      'success'
   };
 
@@ -296,7 +296,7 @@ export default function Dashboard() {
         {/* KPI Kartlar */}
         <div className="row g-3 mb-3">
           <h5 className="mt-3">Aksiyon Bekleyen İşler</h5>
-          <Box sx={{ height: 267, width: '100%' }}>
+          <Box sx={{ height: 570, width: '100%' }}>
             <DataGrid className="border-2"
               rows={ordersList}
               columns={columns}
@@ -497,21 +497,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Son Eklenen Müşteriler */}
-        <div className="row g-3">
-          <div className="col-md-6">
-            <Card className="border-2">
-              <h5>Son Eklenen 7 Müşteri</h5>
-              <ul className="list-group list-group-flush">
-                {recentCustomers.map(c => (
-                  <li key={c.id} className="list-group-item">
-                    {c.name} ({c.email})
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          </div>
-        </div>
+        
       </div>
 
 
@@ -603,6 +589,22 @@ export default function Dashboard() {
                 <Card className="border-2 border-warning"><p>Bugün oluşturulan sipariş bulunamadı.</p></Card>
               </div>
           )}
+        </div>
+
+        {/* Son Eklenen Müşteriler */}
+        <div className="row g-3">
+          <div className="col-md-12">
+            <Card className="border-2">
+              <h5>Son Eklenen 7 Müşteri</h5>
+              <ul className="list-group list-group-flush">
+                {recentCustomers.map(c => (
+                  <li key={c.id} className="list-group-item">
+                    {c.name} ({c.email})
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          </div>
         </div>
 
       </div>

@@ -741,3 +741,25 @@ Fiyat: 123000.00 → 45000
 [2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Spylos Pro Serisi 15000 BTU, Stock Code: ESA13000100-15
 [2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Spylos Pro Serisi 18000 BTU, Stock Code: ESA13000100-18
 [2025-05-14 10:56:57] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün eklendi: ECA Spylos Pro Serisi 24000 BTU, Stock Code: ESA13000100-24
+[2025-05-14 13:10:20] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 22
+[2025-05-14 13:10:36] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Teklif Oluşturuldu : 23
+[2025-05-15 14:50:17] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 90
+[2025-05-15 14:52:49] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 91
+[2025-05-15 14:54:09] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 92
+[2025-05-15 14:54:36] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 93
+[2025-05-15 14:55:21] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 94
+[2025-05-15 14:57:20] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 95
+[2025-05-15 15:02:53] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 96
+[2025-05-15 15:08:13] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 97
+[2025-05-15 15:12:58] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 97
+[2025-05-15 15:13:00] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 96
+[2025-05-15 15:13:03] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 95
+[2025-05-15 15:13:05] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 94
+[2025-05-15 15:13:07] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 93
+[2025-05-15 15:13:11] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 92
+[2025-05-15 15:13:14] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 91
+[2025-05-15 15:13:17] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş silindi: 90
+[2025-05-15 16:58:16] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Müşteri Eklendi: Abdullah Keleş
+[2025-05-16 13:14:13] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Sipariş Oluşturuldu : 99
+[2025-05-19 10:57:28] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün Silindi: 
+[2025-05-19 10:58:16] - Kullanıcı: admin (ID: bbe600c3-1059-11f0-920c-74d4dd37c6d2) - Ürün Silindi: 

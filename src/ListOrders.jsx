@@ -12,7 +12,7 @@ const ListOrders = ({ customerId = 0 }) => {
   const [representatives, setRepresentatives] = useState([]);  // temsilciler listesi
   const [filters, setFilters] = useState({
     search: '',
-    status: '',
+    orderType: '',
     dateFrom: '',
     dateTo: '',
     representative: ''  // yeni filtre
@@ -152,7 +152,7 @@ const ListOrders = ({ customerId = 0 }) => {
     setLoading(true);
     const params = new URLSearchParams();
     if (customerId > 0)         params.append('customer_id', customerId);
-    if (filters.status)         params.append('status', filters.status);
+    if (filters.orderType)         params.append('order_type', filters.orderType);
     if (filters.dateFrom)       params.append('date_from', filters.dateFrom);
     if (filters.dateTo)         params.append('date_to', filters.dateTo);
     if (filters.representative) params.append('representative', filters.representative);
@@ -165,25 +165,25 @@ const ListOrders = ({ customerId = 0 }) => {
       })
       .catch(() => setError('Sunucu hatası'))
       .finally(() => setLoading(false));
-  }, [customerId, filters.status, filters.dateFrom, filters.dateTo, filters.representative]);
+  }, [customerId, filters.orderType, filters.dateFrom, filters.dateTo, filters.representative]);
 
   return (
     <div className="mt-3">
       <h3 className="mb-4">Sipariş Listesi</h3>
 
       <div className="row mb-2">
+
         <div className='col-md-3'>
-          <label>Sipariş Durumu</label>
+          <label>Sipariş Tipi</label>
           <select
             className="form-select"
-            value={filters.status}
-            onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}
+            value={filters.orderType}
+            onChange={e => setFilters(f => ({ ...f, orderType: e.target.value }))}
           >
-            <option value="">Tüm Durumlar</option>
-            {['Sipariş Alındı','Montaj Yapıldı','Abonelik Yok','Proje Onayda','Sözleşme Yok','Randevu Bekliyor','Randevu Alındı','Gaz Açıldı','İş Tamamlandı'].map(s => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-            
+            <option value="">Tümü</option>
+            <option value="Tekli Satış">Tekli Satış</option>
+            <option value="Cihaz Değişimi">Cihaz Değişimi</option>
+            <option value="Sıfır Proje">Sıfır Proje</option>
           </select>
         </div>
 

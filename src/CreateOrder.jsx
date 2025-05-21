@@ -22,6 +22,9 @@ const CreateOrder = () => {
   const [customerType,       setCustomerType]       = useState('');   // '' | 'Bireysel' | 'Kurumsal'
   const [searchTermCustomer,         setSearchTermCustomer]         = useState('');   // arama input’u
 
+  const [representatives, setRepresentatives] = useState([]);
+  const [selectedRep, setSelectedRep] = useState('');
+
   const productsPerPage = 10;
 
   // İlçe ve mahalle verileri
@@ -71,18 +74,49 @@ const CreateOrder = () => {
     Üsküdar: ['Çengelköy', 'Altunizade'],
     Zeytinburnu: ['Beştelsiz', 'Çırpıcı', 'Gökalp', 'Kazlıçeşme', 'Maltepe', 'Merkezefendi', 'Nuripaşa', 'Seyitnizam', 'Sümer', 'Telsiz', 'Veliefendi', 'Yenidoğan', 'Yeşiltepe'],
     // Kocaeli ilçeleri
-    Başiskele: ['Tümü'],
-    Çayırova: ['Tümü'],
-    Darıca: ['Tümü'],
-    Derince: ['Tümü'],
-    Dilovası: ['Tümü'],
-    Gebze: ['Tümü'],
-    Gölcük: ['Tümü'],
-    İzmit: ['Tümü'],
-    Kandıra: ['Tümü'],
-    Karamürsel: ['Tümü'],
-    Kartepe: ['Tümü'],
-    Körfez: ['Tümü']
+    Başiskele: ['Barbaros', 'Yeşilyurt', 'Fatih', 'Serdar', 'Yeniköy Merkez', 'Paşadağ', 'Seymen', 'Mahmutpaşa', 'Atakent', 'Damlar', 'Körfez', 'Döngel', 'Altınkent', 'Vezirçiftliği', 'Yaylacık', 'Bahçecik Kılıçarslan', 'Yeşilkent', 'Aydınkent', 'Bahçecik Şehitekrem', 'Kullar Yakacık', 'Doğantepe', 'Karadenizliler', 'Sahil', 'Yuvacık Yakacık', 'Kullar Merkez', 'Sepetlipınar', 'Ovacık', 'Kullar Tepecik', 'Havuzlubahçe', 'Servetiye Karşı', 'Karşıyaka', 'Servetiye Cami', 'Tepecik', 'Kazandere', 'Camidüzü', 'Aksığın', 'Serindere'],
+    Çayırova: ['Özgürlük', 'Akse', 'Atatürk', 'Yeni', 'Emek', 'Çayırova', 'İnönü', 'Cumhuriyet', 'Şekerpınar'],
+    Darıca: ['Abdi İpekçi', 'Bağlarbaşı', 'Bayramoğlu', 'Cami', 'Emek', 'Fevzi Çakmak', 'Kazımkarabekir', 'Nenehatun', 'Osmangazi', 'Piri Reis', 'Sırasöğütler', 'Yalı', 'Yeni', 'Zincirlikuyu'],
+    Derince: ['Yenikent', 'Çınarlı', 'Sırrıpaşa', 'Yavuz Sultan', 'Çenedağ', 'İbn-i Sina', 'Fatih Sultan', 'Dumlupınar', 'Mersincik', 'Deniz', 'Çavuşlu', 'Tahtalı', 'Karagöllü', 'Geredeli', 'Kaşıkçı', 'Toylar', 'Terziler'],
+    Dilovası: ['Orhangazi', 'Mimar Sinan', 'Diliskelesi', 'Köseler', 'Kayapınar', 'Turgut Özal', 'Cumhuriyet', 'Tavşancıl', 'Çerkeşli', 'Tepecik', 'Demirciler', 'Fatih'],
+    Gebze: ['Adem Yavuz', 'Ahatlı', 'Arapçeşme', 'Balçık', 'Barış', 'Beylikbağı', 'Cumaköy', 'Cumhuriyet', 'Denizli', 'Duraklı', 'Elbizli', 'Eskihisar', 'Gaziler', 'Güzeller', 'Hacıhalil', 'Hatipler', 'Hürriyet', 'İnönü', 'İstasyon', 'Kadıllı', 'Kargalı', 'Kirazpınar', 'Köşklüçeşme', 'Mevlana', 'Mimar Sinan', 'Mollafenari', 'Muallimköy', 'Mudarli', 'Mustafapaşa', 'Osman Yılmaz', 'Ovacık', 'Pelitli', 'Sultan Orhan', 'Tatlıkuyu', 'Tavşanlı', 'Tepemanayır', 'Ulus', 'Yağcılar', 'Yavuz Selim', 'Yenikent'],
+    Gölcük: ['Atatürk', 'Ayvazpınarı', 'Cumhuriyet', 'Çiftlik', 'Değirmendere Merkez', 'Değirmendere Yalı', 'Deniz Evler', 'Donanma', 'Dumlupınar', 'Düzağaç', 'Eski Ferhadiye', 'Ferhadiye', 'Halıdere Yalı', 'Halıdere Yeni', 'Hamidiye', 'Hasaneyn', 'Hisareyn Merkez', 'İcadiye', 'İhsaniye Merkez', 'İpek Yolu', 'İrşadiye', 'Karaköprü', 'Kavaklı', 'Körfez', 'Lütfiye', 'Mamuriye', 'Merkez', 'Mesruriye', 'Nimetiye', 'Nüzhetiye', 'Örcün', 'Panayır', 'Piyalepaşa', 'Saraylı', 'Selimiye', 'Siyretiye', 'Sofular', 'Şehitler', 'Şevketiye', 'Şirinköy', 'Topçular', 'Ulaşlı Yalı', 'Ulaşlı Yavuz Sultan', 'Ümmiye', 'Yazlık Merkez', 'Yazlık Yeni', 'Yeni', 'Yukarı', 'Yunus Emre', 'Yüzbaşılar'],
+    İzmit: ['28 Haziran', 'Akarca', 'Akmeşe Atatürk', 'Akmeşe Cumhuriyet', 'Akçakoca', 'Akpınar', 'Alikahya Atatürk',
+    'Alikahya Cumhuriyet', 'Alikahya Fatih', 'Alikahya Merkez', 'Ambarcı', 'Arızlı', 'Arpalıkihsaniye', 'Ayazma',
+    'Bağlıca', 'Balören', 'Bayraktar', 'Bekirdere', 'Biberoğlu', 'Böğürgen', 'Bulduk', 'Cedit', 'Cumhuriyet',
+    'Çağırgan', 'Çavuşoğlu', 'Çayırköy', 'Çubuklubala', 'Çubukluosmaniye', 'Çukurbağ', 'Dağköy', 'Doğan',
+    'Durhasan', 'Düğmeciler', 'Emirhan', 'Erenler', 'Eseler', 'Fatih', 'Fethiye', 'Fevzi Çakmak', 'Gedikli',
+    'Gökçeören', 'Gülbahçe Kadriye', 'Gültepe', 'Gündoğdu', 'Güvercinlik', 'Hacıhasan', 'Hacihızır', 'Hakaniye',
+    'Hasancıklar', 'Hatipköy', 'Kabaoğlu', 'Kadıköy', 'Karaabdülbaki', 'Karabaş', 'Karadenizliler', 'Kaynarca',
+    'Kemalpaşa', 'Kısalar', 'Kocatepe', 'Kozluca', 'Kozluk', 'Körfez', 'Kulfalı', 'Kulmahmut', 'Kurtdere',
+    'Kuruçeşme Fatih', 'M. Alipaşa', 'Malta', 'Mecidiye', 'Nebihoca', 'Orhan', 'Orhaniye', 'Ortaburun',
+    'Ömerağa', 'Sanayi', 'Sapakpınar', 'Sarışeyh', 'Sekbanlı', 'Sepetçi', 'Serdar', 'Sultanıye', 'Süleymaniye',
+    'Süverler', 'Şahinler', 'Şirintepe', 'Tavşantepe', 'Tepecik', 'Tepeköy', 'Terzibayırı', 'Topçular', 'Turgut',
+    'Tüysüzler', 'Veli Ahmet', 'Yahyakaptan', 'Yassıbağ', 'Yeni', 'Yenice', 'Yenidoğan', 'Yenişehir', 'Yeşilova',
+    'Zabitan', 'Zeytinburnu'],
+    Kandıra: ['Ahmethacılar', 'Akbal', 'Akdurak', 'Akçabeyli', 'Akçakese', 'Akçaova', 'Akıncı', 'Alaybey', 'Alefli',
+    'Antaplı', 'Avdan', 'Ağaçağıl', 'Aydınlık', 'Babali', 'Babaköy', 'Bağırganlı', 'Balaban', 'Balcı',
+    'Ballar', 'Beyce', 'Beylerbeyi', 'Bolu', 'Bozburun', 'Cebeci', 'Çakırcaali', 'Çakmaklar', 'Çalca',
+    'Çalköy', 'Çalyer', 'Çamkonak', 'Çarşı', 'Çerçili', 'Dalca', 'Deliveli', 'Doğancılı', 'Döngelli',
+    'Duraklı', 'Eğercili', 'Elmacık', 'Esentepe', 'Ferizli', 'Gebeşler', 'Goncaaydin', 'Hacilar', 'Hacimazlı',
+    'Hacişeyh', 'Hediyeli', 'Hıdırlar', 'Hüdaverdiler', 'İncecik', 'Kabaağaç', 'Kanatlar', 'Karaağaç',
+    'Karadivan', 'Karlı', 'Kaymaz', 'Kaymaz Erikli', 'Kefken', 'Kerpe', 'Kırkarmut', 'Kızılcapınar',
+    'Kocakaymas', 'Kubuzcu', 'Kurtyeri', 'Lokmanlı', 'Mancarlar', 'Merkez Erikli', 'Mülküşehsuvar',
+    'Nasuhi', 'Orhan', 'Ömerli', 'Özbey', 'Pelitpinari', 'Pinardüzü', 'Pınarlı', 'Pirceler', 'Safali',
+    'Sariahmetler', 'Saricaali', 'Sarigazi', 'Sarnıçlar', 'Selametli', 'Selimköy', 'Sepetçi', 'Seyitali',
+    'Sinanlibilalli', 'Sucuali', 'Süllü', 'Şerefsungur', 'Tatarahmet', 'Teksen', 'Terziler', 'Topluca',
+    'Üğümce', 'Yağcılar', 'Yusufça'],
+    Karamürsel: ['4 Temmuz', 'Akpınar', 'Akçat', 'Avcıköy', 'Çamdibı', 'Çamçukur', 'Dereköy', 'Ereğli',
+    'Fulacık', 'Hayriye', 'İhsaniye', 'İnebeyli', 'Kadriye', 'Karaahmetli', 'Karapınar',
+    'Kayacık', 'Kızderbent', 'Oluklu', 'Osmaniye', 'Pazarköy', 'Safiye', 'Semetler',
+    'Senaiye', 'Suludere', 'Tahtalı', 'Tepeköy', 'Yalakdere'],
+    Kartepe: ['Acısu', 'Arslanbey', 'Ataevler', 'Ataşehir', 'Balaban', 'Derbent', 'Dumlupınar',
+    'Emekevler', 'Ertuğrul Gazi', 'Eşme', 'Eşmeahmediye', 'Fatih Sultan Mehmet',
+    'Havluburun', 'İbrikdere', 'İstasyon', 'Karatepe', 'Ketenciler', 'Köseköy',
+    'Maşukiye', 'Nusretiye', 'Pazarçayırı', 'Rahmiye', 'Sarimeşe', 'Serinlik',
+    'Suadiye', 'Sultaniye', 'Şevkatiye', 'Şirinsulhiye', 'Uzunbey', 'Uzunçiftlik',
+    'Uzuntarla'],
+    Körfez: ['17 Ağustos', 'Agah Ateş', 'Alihocalar', 'Atalar', 'Barbaros', 'Cuma', 'Cumhuriyet', 'Çamlıtepe', 'Çıraklı', 'Dere', 'Dikenli', 'Elmacık', 'Esentepe', 'Fatih', 'Güney', 'Hacı Akif', 'Hacı Osman', 'Hacıosman', 'Halıdere', 'Himmetli', 'İlimtepe', 'Kalburcu', 'Karayakuplu', 'Kirazlıyalı', 'Kışladüzü', 'Kuzey', 'Mimar Sinan', 'Naipköy', 'Sevindikli', 'Şirinyalı', 'Tütünçiftlik', 'Yavuz Sultan Selim', 'Yeniyalı', 'Yukarı Hereke', 'Yunus Emre']
   };
 
   const maskPhoneNumber = (value) => {
@@ -92,6 +126,15 @@ const CreateOrder = () => {
     if (cleaned.length <= 8) return `0 (${cleaned.slice(0,3)}) ${cleaned.slice(3,6)} ${cleaned.slice(6)}`;
     return `0 (${cleaned.slice(0,3)}) ${cleaned.slice(3,6)} ${cleaned.slice(6,8)} ${cleaned.slice(8,10)}`;
   };
+
+  useEffect(() => {
+    apiFetch('list_users.php', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setRepresentatives(data.users);
+      })
+      .catch(err => console.error('Temsilciler yüklenemedi', err));
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -204,6 +247,7 @@ const CreateOrder = () => {
     setError(null);
     const payload = {
       customer_id: selectedCustomer,
+      representative_id: selectedRep,
       total_amount: totalAmount,
       order_type: orderType,
       order_items: selectedItems.map(it => ({
@@ -289,7 +333,7 @@ const CreateOrder = () => {
         </div>
 
         {/* — Filtrelenmiş Select — */}
-        <div className="col-md-3">
+        <div className="col-md-6">
           <label>Müşteri Seç</label>
           <select
             className="form-control"
@@ -311,15 +355,6 @@ const CreateOrder = () => {
                 </option>
               ))
             }
-          </select>
-        </div>
-
-        <div className="col-md-3">
-          <label>İş Tipi Seç</label>
-          <select className="form-control" name="order_type" value={orderType} onChange={(e) => setOrderType(e.target.value)}>
-            <option value="Tekli Satış">Tekli Satış</option>
-            <option value="Cihaz Değişimi">Cihaz Değişimi</option>
-            <option value="Yeni Proje">Yeni Proje</option>
           </select>
         </div>
 
@@ -373,6 +408,7 @@ const CreateOrder = () => {
         </div>
       </div>
 
+      
       <div className="mt-4">
         <h5>Sepet</h5>
         <table className="table table-stripped">
@@ -440,7 +476,16 @@ const CreateOrder = () => {
                   <tr>
                     <td colSpan="9" className='px-4 py-3'>
                       <div className="row">
-                        <h5>İletişim Bilgileri</h5>
+                        <h5 className="d-flex align-items-center">
+                          İletişim Bilgileri
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-secondary ms-2"
+                            onClick={() => updateField(i, 'adSoyad', '-')}
+                          >
+                            Bilgileri Sonradan Mı Alınacak?
+                          </button>
+                        </h5>
                         <div className="col-md-4">
                           <label>Ad Soyad</label>
                           <input
@@ -469,7 +514,7 @@ const CreateOrder = () => {
                           />
                         </div>
                       </div>
-                      <div className="row mt-2">
+                      <div className="row mt-4">
                         <h5>Montaj Bilgileri</h5>
                         <div className="col-md-4">
                           <label>İl</label>
@@ -513,7 +558,7 @@ const CreateOrder = () => {
                           <input type="text" className="form-control" value={it.daireNo} onChange={e => updateField(i, 'daireNo', e.target.value)} />
                         </div>
                       </div>
-                      <div className='row mt-2'>
+                      <div className='row mt-4'>
                         <h5>İgdaş Bilgileri</h5>
                         <div className="col-md-6">
                           <label>İGDAŞ Sözleşme No</label>
@@ -534,8 +579,33 @@ const CreateOrder = () => {
         <div className="mt-3 text-right">
           <h5>Toplam Tutar: {totalAmount.toFixed(2)} ₺</h5>
         </div>
-        <div className="mt-3">
-          <button className="btn btn-primary" onClick={submitOrder}>Siparişi Oluştur</button>
+
+        <div className='d-flex flex-row order-buttons-column gap-3'>
+          <div className="col-md-3 col-sm-12 mb-3">
+            <select className="form-control" name="order_type" value={orderType} onChange={(e) => setOrderType(e.target.value)}>
+              <option value="Tekli Satış">Tekli Satış</option>
+              <option value="Cihaz Değişimi">Cihaz Değişimi</option>
+              <option value="Yeni Proje">Yeni Proje</option>
+            </select>
+          </div>
+          <div className="col-md-3 col-sm-12 mb-3">
+            <select
+              className="form-control"
+              value={selectedRep}
+              onChange={e => {
+                setSelectedRep(e.target.value);
+                setSelectedCustomer('');   // temsilci değişince müşteri seçimini sıfırla
+              }}
+            >
+              <option value="">Müşteri Temsilcisi Seç</option>
+              {representatives.map(rep => (
+                <option key={rep.id} value={rep.id}>{rep.name}</option>
+              ))}
+            </select>
+            </div>
+            <div className='col-auto mb-3'>
+              <button className="btn btn-primary" onClick={submitOrder}>Siparişi Oluştur</button>
+            </div>
         </div>
       </div>
     </div>

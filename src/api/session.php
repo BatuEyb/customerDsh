@@ -34,7 +34,8 @@ if (isset($_SESSION['user_id'])) {
 
 // Kullanıcı oturumunu kontrol et
 if ($user_id === null || $username === null) {
-    echo json_encode(['success' => false, 'message' => 'Kullanıcı oturumu bulunamadı']);
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Oturum süresi doldu']);
     exit();
 }
 

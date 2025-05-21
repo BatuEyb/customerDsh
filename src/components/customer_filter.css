@@ -8,6 +8,11 @@
     background: #ff9000;
     border-radius: 8px;
   }
+  @media (max-width: 768px) {
+    .order-buttons-column{
+        display: block!important;
+    }
+  }
 
 @media (min-width: 768px) {
     .markaSatis .carousel-control-prev {

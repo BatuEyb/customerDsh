@@ -2,11 +2,11 @@
 include 'api.php'; // veritabanı bağlantısı
 include 'session.php';
 
-$customerId = isset($_GET['customer_id']) ? (int) $_GET['customer_id'] : 0;
-$status     = isset($_GET['status'])      ? $_GET['status']         : '';
-$dateFrom   = isset($_GET['date_from'])   ? $_GET['date_from']      : '';
-$dateTo     = isset($_GET['date_to'])     ? $_GET['date_to']        : '';
-$representative = isset($_GET['representative']) ? $_GET['representative']       : '';
+$customerId     = isset($_GET['customer_id'])   ? (int) $_GET['customer_id'] : 0;
+$orderType         = isset($_GET['order_type'])        ? $_GET['order_type']         : '';
+$dateFrom       = isset($_GET['date_from'])     ? $_GET['date_from']      : '';
+$dateTo         = isset($_GET['date_to'])       ? $_GET['date_to']        : '';
+$representative = isset($_GET['representative'])? $_GET['representative'] : '';
 
 $response = [];
 
@@ -21,11 +21,14 @@ try {
         $params[]     = $customerId;
         $types       .= 'i';
     }
-    if ($status !== '') {
-        $whereParts[] = 'o.status = ?';
-        $params[]     = $status;
+
+    if ($orderType !== '') {
+        // Burada order_item_status filtresini ekliyoruz
+        $whereParts[] = 'o.order_type = ?';
+        $params[]     = $orderType;
         $types       .= 's';
     }
+
     if ($dateFrom !== '') {
         $whereParts[] = 'DATE(o.created_at) >= ?';
         $params[]     = $dateFrom;
@@ -36,7 +39,7 @@ try {
         $params[]     = $dateTo;
         $types       .= 's';
     }
-    // UUID tipindeki temsilci kıyaslaması now a string
+
     if ($representative !== '') {
         $whereParts[] = 'o.created_by = ?';
         $params[]     = $representative;
