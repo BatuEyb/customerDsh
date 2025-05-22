@@ -24,18 +24,61 @@ switch ($action) {
         echo json_encode($row);
         break;
 
-    // 3. Toplam Bakiye, Borç ve Ödeme
-    case 'balance':
-        $sql = "SELECT
-                    SUM(CASE WHEN type = 'Borç' THEN amount ELSE 0 END) AS total_debt,
-                    SUM(CASE WHEN type = 'Ödeme' THEN amount ELSE 0 END) AS total_payment,
-                    (SUM(CASE WHEN type = 'Ödeme' THEN amount ELSE 0 END)
-                     - SUM(CASE WHEN type = 'Borç' THEN amount ELSE 0 END)) AS total_balance
-                FROM transactions";
-        $result = $conn->query($sql);
-        $row = $result->fetch_assoc();
-        echo json_encode($row);
-        break;
+    // 3. Toplam Bakiye, Borç ve Ödeme (hem genel hem müşteri bazlı)
+case 'balance':
+    // 1) Genel toplamlar
+    $sql = "
+        SELECT
+            SUM(CASE WHEN type = 'Borç'  THEN amount ELSE 0 END) AS total_debt,
+            SUM(CASE WHEN type = 'Ödeme' THEN amount ELSE 0 END) AS total_payment,
+            (SUM(CASE WHEN type = 'Ödeme' THEN amount ELSE 0 END)
+             - SUM(CASE WHEN type = 'Borç'  THEN amount ELSE 0 END)
+            ) AS total_balance
+        FROM transactions
+    ";
+    $res = $conn->query($sql);
+    if (!$res) {
+        echo json_encode(['success'=>false,'message'=>$conn->error]);
+        exit;
+    }
+    $totals = $res->fetch_assoc();
+
+    // 2) Net bakiyesi negatif (yani borç > ödeme) olan müşteriler
+    $custSql = "
+        SELECT
+            c.id            AS customer_id,
+            c.name          AS customer_name,
+            (
+              SUM(CASE WHEN t.type = 'Ödeme' THEN t.amount ELSE 0 END)
+              - SUM(CASE WHEN t.type = 'Borç'  THEN t.amount ELSE 0 END)
+            ) AS net_balance
+        FROM transactions t
+        JOIN customers c ON t.customer_id = c.id
+        GROUP BY c.id, c.name
+        HAVING net_balance < 0
+        ORDER BY net_balance ASC
+    ";
+    $custRes = $conn->query($custSql);
+    $byCustomer = [];
+    if ($custRes) {
+        while ($row = $custRes->fetch_assoc()) {
+            $byCustomer[] = [
+                'customer_id'   => (int)   $row['customer_id'],
+                'customer_name' =>         $row['customer_name'],
+                'net_balance'   => (float) $row['net_balance'],  // negatif bir değer
+            ];
+        }
+    }
+
+    // 3) JSON olarak geri dön
+    echo json_encode([
+        'success'        => true,
+        'total_debt'     => (float)$totals['total_debt'],
+        'total_payment'  => (float)$totals['total_payment'],
+        'total_balance'  => (float)$totals['total_balance'],
+        'by_customer'    => $byCustomer
+    ]);
+    break;
 
     // 4. Son 7 Günlük Sipariş Hareketleri (Tutar Bazlı)
     case 'recent_movements':
@@ -309,6 +352,7 @@ GROUP BY s.brand";
           JOIN customers c    ON o.customer_id      = c.id
           JOIN stocks s       ON oi.stock_id        = s.id
           WHERE oi.order_item_status != 'İş Tamamlandı'
+            AND DATE(o.updated_at) = CURDATE()
           ORDER BY inst.created_at DESC
         ";
     

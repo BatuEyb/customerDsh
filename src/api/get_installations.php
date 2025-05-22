@@ -20,7 +20,7 @@ $params  = [];
 $types   = '';
 
 if ($customerName !== '') {
-    $where[]  = "inst.ad_soyad LIKE ?";
+    $where[]  = "c.name LIKE ?";
     $params[] = "%{$customerName}%";
     $types   .= 's';
 }

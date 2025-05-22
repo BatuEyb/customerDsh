@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { FaCrown } from "react-icons/fa";
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip as RechartTooltip, ResponsiveContainer } from "recharts";
+import { FaCrown, FaInfoCircle } from "react-icons/fa";
 import { Carousel, OverlayTrigger, Tooltip as BSTooltip  } from "react-bootstrap";
+import Tooltip from '@mui/material/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import dayjs from 'dayjs';
 import { DataGrid } from '@mui/x-data-grid';
@@ -42,7 +43,7 @@ const COLORS = [
 export default function Dashboard() {
   const [totalCustomers, setTotalCustomers] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
-  const [balance, setBalance] = useState({ total_debt: 0, total_payment: 0, total_balance: 0 });
+  const [balance, setBalance] = useState({ total_debt: 0, total_payment: 0, total_balance: 0, by_customer: [] });
   const [movements, setMovements] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [recentCustomers, setRecentCustomers] = useState([]);
@@ -132,16 +133,7 @@ export default function Dashboard() {
               serialNumber:  inst.serial_number,
               customerName:  inst.customer_name,
           
-              category: ({
-                'Sipariş Alındı':   'Montaj Yapılmalı',
-                'Montaj Yapıldı':   'Proje Çizilmeli',
-                'Abonelik Yok':     'Hatalı İş',
-                'Proje Onayda':     'Hatalı İş',
-                'Sözleşme Yok':     'Hatalı İş',
-                'Randevu Bekliyor': 'Randevu Alınmalı',
-                'Randevu Alındı':   'Randevu Alındı',
-                'Gaz Açıldı':       'Servis Yönlendirilmeli'
-              }[inst.order_status] || inst.order_status)
+              order_status:  inst.order_status,
             }))
           )]
         ];
@@ -192,12 +184,15 @@ export default function Dashboard() {
   };
 
   const statusColorMap = {
-    'Montaj Yapılmalı': 'warning',
-    'Proje Çizilmeli':  'info',
-    'Randevu Alınmalı':'primary',
-    'Servis Yönlendirilmeli':'success',
-    'Randevu Alındı':'default',
-    'Hatalı İş':       'error'
+  'Sipariş Alındı':        'warning',
+  'Montaj Yapıldı':        'info',
+  'Abonelik Yok':          'error',
+  'Proje Onayda':          'error',
+  'Sözleşme Yok':          'error',
+  'Randevu Bekliyor':      'primary',
+  'Randevu Alındı':        'default',
+  'Gaz Açıldı':            'success',
+  'İş Tamamlandı':         'success'
   };
   
   const typeColorMap = {
@@ -235,7 +230,7 @@ export default function Dashboard() {
       )
     },
     {
-      field: 'category',
+      field: 'order_status',
       headerName: 'Durum',
       width: 140,
       renderCell: params => (
@@ -278,7 +273,30 @@ export default function Dashboard() {
               </Card>
             </div>
             <div className="col-md-6">
-              <Card className="border-2 border-warning">
+              <Card className="border-2 border-warning position-relative">
+                <Tooltip
+        title={
+          balance.by_customer.length > 0
+            ? (
+              <div>
+                {balance.by_customer.map(cust => (
+                  <div key={cust.customer_id} style={{ lineHeight: 1.4, fontSize:14 }}>
+                    {cust.customer_name}:{" "}
+                    {cust.net_balance.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺
+                  </div>
+                ))}
+              </div>
+            )
+            : <div>Borcu olan müşteri yok</div>
+        }
+        placement="right"
+      >
+        <FaInfoCircle
+          className="position-absolute"
+          style={{ top: 8, right: 8, cursor: 'pointer', color: '#ff8552' }}
+          size={20}
+        />
+      </Tooltip>
                 <div className="row">
                   <div className="col-md-8">
                     <h5>Toplam Bakiye</h5>
@@ -295,8 +313,8 @@ export default function Dashboard() {
 
         {/* KPI Kartlar */}
         <div className="row g-3 mb-3">
-          <h5 className="mt-3">Aksiyon Bekleyen İşler</h5>
-          <Box sx={{ height: 570, width: '100%' }}>
+          <h5 className="mt-3">Gün İçinde Güncellenen İşler</h5>
+          <Box sx={{ height: 585, width: '100%', marginTop: 0 }}>
             <DataGrid className="border-2"
               rows={ordersList}
               columns={columns}
@@ -420,7 +438,7 @@ export default function Dashboard() {
                     }}
                   />
                   <YAxis allowDecimals={false} />
-                  <Tooltip
+                  <RechartTooltip
                     // tooltip’ta label olarak gelen timestamp’i aynı fonksiyonla biçimlendiriyoruz
                     labelFormatter={timestamp => {
                       const d     = new Date(timestamp);
@@ -445,7 +463,7 @@ export default function Dashboard() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="representative" />
                   <YAxis/>
-                  <Tooltip formatter={(value) => [`${value.toLocaleString()} TL`, 'Toplam Ciro']} />
+                  <RechartTooltip formatter={(value) => [`${value.toLocaleString()} TL`, 'Toplam Ciro']} />
                   <Bar dataKey="total_sales_revenue" name="Toplam Ciro">
                   {formattedData.map((entry, idx) => (
                     <Cell key={`cell-${idx}`} fill={COLORS[idx % COLORS.length]} />
@@ -475,7 +493,7 @@ export default function Dashboard() {
                         <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => new Intl.NumberFormat().format(value)} />
+                    <RechartTooltip formatter={(value) => new Intl.NumberFormat().format(value)} />
                   </PieChart>
                 </ResponsiveContainer>
               ) : (

@@ -8,11 +8,14 @@ import {
   InputLabel,
   FormControl,
   Stack,
-  Button
+  Button,
+  Typography
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { apiFetch } from './api';
 import { formatTurkishPhone } from './utils/formatters';
+import { FaPen  } from 'react-icons/fa';
+
 
 export default function InstallationsList() {
   // --- filtre state’leri ---
@@ -55,7 +58,7 @@ export default function InstallationsList() {
           brand:         item.brand,
           serialNumber:  item.serial_number,
           orderType:     item.order_type,
-          order_status: item.order_status,
+          order_status:  item.order_status,
           installerName: item.ad_soyad,
           phone:         formatTurkishPhone(item.telefon1),
           igdasAdi:      item.igdas_adi,
@@ -102,6 +105,11 @@ export default function InstallationsList() {
     'Cihaz Değişimi': 'primary',
     'Yeni Proje':     'success'
   };
+    const statusOptions = [
+    'Sipariş Alındı','Montaj Yapıldı','Abonelik Yok',
+    'Proje Onayda','Sözleşme Yok','Randevu Bekliyor',
+    'Randevu Alındı','Gaz Açıldı','İş Tamamlandı'
+    ];
 
   const columns = [
     { field: 'customerName',  headerName: 'Müşteri',       width: 160 },
@@ -125,13 +133,22 @@ export default function InstallationsList() {
       )
     },
     {
-      field: 'order_status',
-      headerName: 'Durum',
-      width: 130,
-      renderCell: params => (
-        <Chip size="small" label={params.value}
-              color={statusColorMap[params.value] || 'default'} />
-      )
+    field: 'order_status',
+    headerName: 'Durum',
+    width: 150,
+    editable: true,              // hücre düzenlenebilir olsun
+    type: 'singleSelect',        // dropdown
+    valueOptions: statusOptions, // seçenekler
+    renderCell: params => (      // badge olarak göstermeyi koruyoruz
+      <Chip
+        size="small"
+        label={params.value}
+        color={statusColorMap[params.value] || 'default'}
+        deleteIcon={<FaPen size={12} style={{ marginLeft: 2, marginRight: 10 }}/>}
+        onDelete={() => handleCellEdit(params)}
+        sx={{ cursor: 'pointer' }}
+      />
+    )
     },
     { field: 'installerName', headerName: 'Ad Soyad',      width: 140 },
     { field: 'phone',         headerName: 'Telefon',       width: 135 },
@@ -245,12 +262,49 @@ export default function InstallationsList() {
 
       <Box sx={{ width: '100%', height:720}}>
         <DataGrid
-          rows={rows}
-          columns={columns}
-          loading={loading}
-          pageSizeOptions={[15, 30, 50]}
-          initialState={{ pagination: { paginationModel: { pageSize: 15, page: 0 } } }}
-          disableRowSelectionOnClick
+            rows={rows}
+            columns={columns}
+            loading={loading}
+            pageSizeOptions={[15,30,50]}
+            initialState={{ pagination: { paginationModel: { pageSize: 15, page: 0 } } }}
+            disableRowSelectionOnClick
+
+            // Yeni API’yi açıyoruz
+            experimentalFeatures={{ newEditingApi: true }}
+
+            // satır tamamlandığında burası çalışacak
+            processRowUpdate={async (newRow, oldRow) => {
+                // eğer durum değişmediyse bir şey yapma
+                if (newRow.order_status === oldRow.order_status) {
+                return oldRow;
+                }
+                try {
+                const res = await apiFetch('update_installation_status.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                    installation_id: newRow.id,
+                    order_item_status:    newRow.order_status
+                    })
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message || 'Kayıt hatası');
+                // başarılıysa state’i güncelle
+                setRows(rows.map(r => r.id === newRow.id ? newRow : r));
+                return newRow;
+                } catch (err) {
+                alert('Güncelleme başarısız: ' + err.message);
+                // hata olduysa eski satırı geri döndür (UI eski haline gelir)
+                return oldRow;
+                }
+            }}
+
+            // kullanıcı ESC ile vazgeçerse veya hata olduysa eski satırı geri getir
+            onProcessRowUpdateError={(err) => {
+                console.error('Row update error:', err);
+                alert('Satır güncellenemedi.');
+            }}
         />
       </Box>
     </Box>

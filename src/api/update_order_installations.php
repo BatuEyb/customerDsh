@@ -53,6 +53,16 @@ try {
         $updOI->execute();
         $updOI->close();
 
+        $updOrderTs = $conn->prepare("
+        UPDATE orders o
+        JOIN order_items oi ON oi.order_id = o.id
+        SET o.updated_at = NOW()
+        WHERE oi.id = ?
+        ");
+        $updOrderTs->bind_param("i", $order_item_id);
+        $updOrderTs->execute();
+        $updOrderTs->close();
+
         // sayaçları güncelle (opsiyonel)
         if ($sn !== null) { $response['serials']++; }
         $response['flags_updated']++;
